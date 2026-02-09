@@ -1,0 +1,6 @@
+- This is a Next.js 14+ App Router project with TypeScript and Tailwind CSS.
+- The app is a **redirect-only portal** — it resolves tenant slugs to booking URLs and redirects. No data mutation happens here.
+- Tenant data lives in `src/lib/tenantRegistry.ts` (in-memory array). Keep `getTenantBySlug()` and `listPublicTenants()` signatures stable for future DB migration.
+- URL validation logic is in `src/lib/urlGuard.ts`. Only `https` and allowed hosts (`script.google.com`, `script.googleusercontent.com`) are permitted.
+- Never accept user-supplied URLs for redirection (open-redirect prevention).
+- Tests use Vitest. Run with `npm test`.
