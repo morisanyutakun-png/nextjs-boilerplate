@@ -1,6 +1,8 @@
 - This is a Next.js 14+ App Router project with TypeScript and Tailwind CSS.
-- The app is a **redirect-only portal** — it resolves tenant slugs to booking URLs and redirects. No data mutation happens here.
-- Tenant data lives in `src/lib/tenantRegistry.ts` (in-memory array). Keep `getTenantBySlug()` and `listPublicTenants()` signatures stable for future DB migration.
+- The app is a **portal site** — it displays tenant info (photos, descriptions, menus) fetched from Supabase and provides a booking button that links to the tenant's GAS Web App. No data mutation happens here.
+- Data source: Supabase `tenants` table. Falls back to local data in `src/lib/tenantRegistry.ts` when env vars are not set.
+- Supabase client is in `src/lib/supabase.ts`. Env vars: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
+- Keep `getTenantBySlug()` and `listPublicTenants()` async signatures stable.
 - URL validation logic is in `src/lib/urlGuard.ts`. Only `https` and allowed hosts (`script.google.com`, `script.googleusercontent.com`) are permitted.
 - Never accept user-supplied URLs for redirection (open-redirect prevention).
 - Tests use Vitest. Run with `npm test`.

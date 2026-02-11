@@ -5,17 +5,19 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-      <div className="mb-6 text-5xl">🔍</div>
-      <h1 className="mb-4 text-xl font-bold text-gray-900">
+    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-rose-50 text-4xl">
+        🔍
+      </div>
+      <h1 className="mb-3 text-2xl font-extrabold text-gray-900">
         ページが見つかりません
       </h1>
-      <p className="mb-8 text-sm text-gray-500">
-        指定されたテナントは存在しないか、現在非公開に設定されています。
+      <p className="mb-8 max-w-sm text-sm leading-relaxed text-gray-500">
+        指定された店舗は存在しないか、現在非公開に設定されています。URLをご確認のうえ、再度お試しください。
       </p>
       <Link
         href="/"
-        className="rounded-lg bg-rose-600 px-6 py-2 text-sm font-medium text-white transition hover:bg-rose-700"
+        className="rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-rose-200 transition hover:from-rose-600 hover:to-pink-600 hover:shadow-xl"
       >
         トップに戻る
       </Link>
