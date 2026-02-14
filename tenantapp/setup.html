@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ポータル登録セットアップ</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI','Hiragino Sans','Noto Sans JP',sans-serif;background:#f0f4f8;color:#1e293b;line-height:1.6}
+    .container{max-width:780px;margin:0 auto;padding:20px 16px 80px}
+    .header{text-align:center;margin-bottom:28px}
+    .header h1{font-size:1.45rem;margin-bottom:2px}
+    .header p{color:#64748b;font-size:.9rem}
+    .progress-bar{display:flex;align-items:center;gap:0;margin-bottom:24px;padding:0 8px}
+    .pb-step{display:flex;align-items:center;gap:0;flex:1}
+    .pb-step:last-child{flex:0}
+    .pb-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;background:#cbd5e1;color:#fff;transition:.3s;flex-shrink:0;position:relative;z-index:1}
+    .pb-dot.active{background:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.18)}
+    .pb-dot.done{background:#16a34a}
+    .pb-line{flex:1;height:3px;background:#cbd5e1;transition:.3s}
+    .pb-line.done{background:#16a34a}
+    .pb-label{position:absolute;top:40px;font-size:.7rem;color:#64748b;white-space:nowrap;font-weight:500}
+    .card{background:#fff;border-radius:16px;padding:28px 24px;box-shadow:0 1px 6px rgba(0,0,0,.06);margin-bottom:20px;transition:.3s}
+    .card.collapsed .card-body{display:none}
+    .card h2{font-size:1.05rem;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+    .card h2:hover{color:#2563eb}
+    .card h2 .icon{font-size:1.2rem}
+    .card h2 .badge{font-size:.65rem;padding:2px 8px;border-radius:99px;font-weight:600}
+    .badge-required{background:#dbeafe;color:#1d4ed8}
+    .badge-optional{background:#fef3c7;color:#92400e}
+    .badge-done{background:#dcfce7;color:#166534}
+    .card p.desc{color:#64748b;font-size:.88rem;margin:6px 0 0}
+    .hidden{display:none !important}
+    .divider{border:none;border-top:1px solid #e2e8f0;margin:16px 0}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;border:none;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:.15s}
+    .btn-primary{background:#2563eb;color:#fff}.btn-primary:hover{background:#1d4ed8}
+    .btn-success{background:#16a34a;color:#fff}.btn-success:hover{background:#15803d}
+    .btn-outline{background:#fff;color:#2563eb;border:1.5px solid #2563eb}.btn-outline:hover{background:#eff6ff}
+    .btn-secondary{background:#e2e8f0;color:#1e293b}.btn-secondary:hover{background:#cbd5e1}
+    .btn-danger{background:#ef4444;color:#fff}.btn-danger:hover{background:#dc2626}
+    .btn-ghost{background:transparent;color:#64748b;border:1px solid #e2e8f0}.btn-ghost:hover{background:#f8fafc}
+    .btn:disabled{opacity:.4;cursor:not-allowed}
+    .btn-sm{padding:7px 14px;font-size:.82rem}
+    .btn-lg{padding:12px 32px;font-size:1rem}
+    .btn-block{width:100%;justify-content:center}
+    .form-group{margin-bottom:14px}
+    .form-group label{display:block;font-size:.82rem;font-weight:600;margin-bottom:3px;color:#334155}
+    .form-group .hint{font-size:.76rem;color:#94a3b8;margin-bottom:3px}
+    .form-input{width:100%;padding:10px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:.9rem;transition:.15s}
+    .form-input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+    textarea.form-input{min-height:80px;resize:vertical}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:540px){.form-row{grid-template-columns:1fr}}
+    .photo-preview{margin-top:8px}
+    .photo-preview img{max-width:220px;max-height:150px;border-radius:10px;border:1px solid #e2e8f0;object-fit:cover}
+    .menu-list{display:flex;flex-direction:column;gap:10px;margin-bottom:10px}
+    .menu-item{display:grid;grid-template-columns:1fr 100px auto;gap:8px;align-items:start;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px}
+    .menu-item input{width:100%}
+    .menu-item .menu-desc{grid-column:1/3}
+    .menu-item .btn-remove{padding:5px 10px;font-size:.75rem;border-radius:6px}
+    .tags-display{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+    .tag-chip{display:inline-flex;align-items:center;gap:4px;background:#eff6ff;color:#1d4ed8;padding:4px 10px;border-radius:99px;font-size:.8rem;font-weight:500}
+    .tag-chip button{background:none;border:none;color:#93c5fd;cursor:pointer;font-size:1rem;line-height:1}
+    .tag-chip button:hover{color:#ef4444}
+    .status-box{padding:12px 16px;border-radius:8px;margin-top:10px;font-size:.86rem;line-height:1.55}
+    .status-ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+    .status-err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+    .status-info{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+    .status-warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+    .spinner{display:inline-block;width:14px;height:14px;border:2.5px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .conn-indicator{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;font-size:.78rem;font-weight:600}
+    .conn-ok{background:#dcfce7;color:#166534}
+    .conn-ng{background:#fee2e2;color:#991b1b}
+    .conn-unknown{background:#f1f5f9;color:#64748b}
+    .preview-panel{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin-top:16px}
+    .preview-panel h3{font-size:.95rem;margin-bottom:12px;color:#334155;display:flex;align-items:center;gap:6px}
+    .preview-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .preview-card .pv-img{width:100%;height:180px;object-fit:cover;background:#e2e8f0;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:.85rem}
+    .preview-card .pv-img img{width:100%;height:100%;object-fit:cover}
+    .preview-card .pv-body{padding:16px}
+    .preview-card .pv-cat{font-size:.72rem;color:#64748b;background:#f1f5f9;display:inline-block;padding:2px 8px;border-radius:4px;margin-bottom:6px}
+    .preview-card .pv-name{font-size:1.1rem;font-weight:700;margin-bottom:4px}
+    .preview-card .pv-catch{font-size:.85rem;color:#475569;margin-bottom:8px}
+    .preview-card .pv-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+    .preview-card .pv-tag{font-size:.7rem;background:#eff6ff;color:#1d4ed8;padding:2px 8px;border-radius:99px}
+    .preview-card .pv-info{font-size:.8rem;color:#64748b;line-height:1.7}
+    .preview-card .pv-info span{display:block}
+    .preview-card .pv-menus{margin-top:10px;border-top:1px solid #f1f5f9;padding-top:10px}
+    .preview-card .pv-menu{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;border-bottom:1px solid #f8fafc}
+    .preview-card .pv-menu .pv-mprice{color:#2563eb;font-weight:600}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+    .actions-center{justify-content:center}
+    .done-card{text-align:center;padding:40px 24px}
+    .done-card .done-icon{font-size:3.5rem;margin-bottom:12px}
+    .done-card h2{justify-content:center;font-size:1.2rem}
+    .done-card .done-url{color:#2563eb;font-weight:600;font-size:.9rem;margin-top:8px;word-break:break-all}
+    .done-card .done-url a{color:#2563eb;text-decoration:underline}
+    .chevron{transition:transform .2s;font-size:.8rem;color:#94a3b8;margin-left:auto}
+    .collapsed .chevron{transform:rotate(-90deg)}
+    .tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#e2e8f0;border-radius:50%;font-size:.7rem;color:#64748b;cursor:help;font-weight:700}
+    .tip:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:6px 10px;border-radius:6px;font-size:.72rem;white-space:nowrap;z-index:10;font-weight:400}
+    .input-group{display:flex;gap:8px;align-items:center}
+    .input-group .form-input{flex:1;min-width:0}
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>ポータル登録セットアップ</h1>
+    <p>企業・店舗情報を入力して、ポータルサイトに登録しましょう</p>
+  </div>
+
+  <div class="progress-bar">
+    <div class="pb-step"><div class="pb-dot active" id="dot1">1<span class="pb-label">接続設定</span></div><div class="pb-line" id="line1"></div></div>
+    <div class="pb-step"><div class="pb-dot" id="dot2">2<span class="pb-label">企業情報</span></div><div class="pb-line" id="line2"></div></div>
+    <div class="pb-step"><div class="pb-dot" id="dot3">3<span class="pb-label">確認・登録</span></div></div>
+  </div>
+
+  <!-- STEP 1: ポータル接続設定 -->
+  <div class="card" id="step1">
+    <h2 onclick="toggleCard('step1')">
+      <span class="icon">&#x1F517;</span> ポータル接続設定
+      <span class="badge badge-required" id="badge1">必須</span>
+      <span class="chevron">&#x25BC;</span>
+    </h2>
+    <p class="desc">ポータルサイトへの接続情報を設定します。最初に一度だけ行えばOKです。</p>
+    <div class="card-body">
+      <hr class="divider">
+      <div class="form-group">
+        <label>ポータル API URL *</label>
+        <div class="hint">Vercel にデプロイしたポータルサイトの URL です（例: https://your-portal.vercel.app）</div>
+        <input type="url" class="form-input" id="portal_api_url" placeholder="https://your-portal.vercel.app">
+      </div>
+      <div class="form-group">
+        <label>Admin Secret * <span class="tip" data-tip="Vercel の環境変数 ADMIN_SHARED_SECRET と同じ値を入力">?</span></label>
+        <div class="hint">ポータルの環境変数 ADMIN_SHARED_SECRET と完全一致させてください</div>
+        <div class="input-group">
+          <input type="password" class="form-input" id="portal_admin_secret" placeholder="ポータル管理者から共有されたシークレット">
+          <button class="btn btn-ghost btn-sm" onclick="toggleSecretVisibility()" id="btnToggleSecret" title="表示/非表示">&#x1F441;</button>
+        </div>
+        <div id="secretSavedHint" class="hidden" style="font-size:.78rem;color:#16a34a;margin-top:4px">&#x2713; 設定済み（変更する場合は新しい値を入力してください）</div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="btnTestConn" onclick="testConnection()">&#x1F50D; 接続テスト</button>
+        <span id="connStatus"></span>
+      </div>
+      <div id="step1Status"></div>
+      <div class="actions" style="margin-top:12px">
+        <button class="btn btn-primary btn-block" id="btnNext1" onclick="goToStep(2)" disabled>次へ: 企業情報を入力 &#x2192;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: 企業・店舗情報入力 -->
+  <div class="card hidden" id="step2">
+    <h2 onclick="toggleCard('step2')">
+      <span class="icon">&#x1F3E2;</span> 企業・店舗情報
+      <span class="badge badge-required" id="badge2">入力</span>
+      <span class="chevron">&#x25BC;</span>
+    </h2>
+    <p class="desc">ポータルサイトに表示される情報を入力してください。</p>
+    <div class="card-body">
+      <hr class="divider">
+      <div style="font-weight:700;font-size:.92rem;margin-bottom:10px;color:#1e293b">&#x1F4CC; 基本情報</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>店舗名 / 企業名 * <span class="tip" data-tip="ポータル一覧に表示される名前です">?</span></label>
+          <input type="text" class="form-input" id="pf_name" placeholder="例: さくらビューティーサロン">
+        </div>
+        <div class="form-group">
+          <label>スラッグ（URL識別子）<span class="tip" data-tip="ポータルURLの一部: /t/your-slug">?</span></label>
+          <div class="hint">英数字・ハイフンのみ。空欄なら自動生成されます</div>
+          <input type="text" class="form-input" id="pf_slug" placeholder="例: sakura-beauty" oninput="validateSlug()">
+          <div id="slugHint" style="font-size:.76rem;margin-top:2px"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>カテゴリ</label>
+        <input type="text" class="form-input" id="pf_category" placeholder="例: 美容・サロン / 医療・クリニック / IT・Web">
+      </div>
+      <div class="form-group">
+        <label>キャッチコピー</label>
+        <div class="hint">ポータル一覧で名前の下に表示される短い紹介文</div>
+        <input type="text" class="form-input" id="pf_catch_copy" placeholder="例: 駅チカ徒歩3分。癒しの空間で最高のキレイを。">
+      </div>
+      <div class="form-group">
+        <label>詳細説明</label>
+        <textarea class="form-input" id="pf_description" placeholder="店舗の特徴や強みを自由に記入してください"></textarea>
+      </div>
+
+      <hr class="divider">
+      <div style="font-weight:700;font-size:.92rem;margin-bottom:10px;color:#1e293b">&#x1F5BC; メイン画像</div>
+      <div class="form-group">
+        <label>画像URL</label>
+        <div class="hint">httpsで始まる画像URL。ポータルのカード画像になります。</div>
+        <input type="url" class="form-input" id="pf_photo_url" placeholder="https://example.com/photo.jpg" oninput="previewPhoto()">
+        <div class="photo-preview" id="photoPreview"></div>
+      </div>
+
+      <hr class="divider">
+      <div style="font-weight:700;font-size:.92rem;margin-bottom:10px;color:#1e293b">&#x1F4CD; 店舗情報</div>
+      <div class="form-group">
+        <label>住所</label>
+        <input type="text" class="form-input" id="pf_address" placeholder="例: 東京都渋谷区神南1-2-3 サクラビル 2F">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>電話番号</label>
+          <input type="tel" class="form-input" id="pf_phone" placeholder="例: 03-1234-5678">
+        </div>
+        <div class="form-group">
+          <label>営業時間</label>
+          <input type="text" class="form-input" id="pf_business_hours" placeholder="例: 10:00-21:00">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>定休日</label>
+        <input type="text" class="form-input" id="pf_closed_days" placeholder="例: 毎週火曜日">
+      </div>
+
+      <hr class="divider">
+      <div style="font-weight:700;font-size:.92rem;margin-bottom:10px;color:#1e293b">&#x1F4CB; メニュー</div>
+      <p style="font-size:.82rem;color:#64748b;margin-bottom:10px">ポータルに表示するメニューを追加してください（任意）。</p>
+      <div class="menu-list" id="menuList"></div>
+      <button class="btn btn-outline btn-sm" onclick="addMenuItem()">+ メニューを追加</button>
+
+      <hr class="divider">
+      <div style="font-weight:700;font-size:.92rem;margin-bottom:10px;color:#1e293b">&#x1F3F7; タグ</div>
+      <div class="form-group">
+        <div class="hint">Enterまたはカンマで追加。例: 駅チカ, カード可, 当日予約OK</div>
+        <div class="input-group" style="margin-bottom:4px">
+          <input type="text" class="form-input" id="tagInput" placeholder="タグを入力してEnter" onkeydown="handleTagKey(event)">
+          <button class="btn btn-secondary btn-sm" onclick="addTag()">追加</button>
+        </div>
+        <div class="tags-display" id="tagDisplay"></div>
+      </div>
+
+      <hr class="divider">
+      <div style="font-weight:700;font-size:.92rem;margin-bottom:10px;color:#1e293b">&#x1F517; 予約ページURL</div>
+      <div class="form-group">
+        <label>予約ページURL（GAS Web App等）</label>
+        <div class="hint">お客様が予約する際に遷移するURL。空欄でもポータル登録は可能です。</div>
+        <input type="url" class="form-input" id="pf_booking_url" placeholder="https://script.google.com/macros/s/xxxxx/exec">
+      </div>
+
+      <hr class="divider">
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="pf_is_public" checked style="width:18px;height:18px">
+          ポータルサイトに公開する
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="goToStep(1)">&#x2190; 接続設定に戻る</button>
+        <button class="btn btn-primary" id="btnSaveProfile" onclick="saveProfileAndNext()">次へ: プレビューで確認 &#x2192;</button>
+      </div>
+      <div id="step2Status"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3: プレビュー & 登録 -->
+  <div class="card hidden" id="step3">
+    <h2 onclick="toggleCard('step3')">
+      <span class="icon">&#x1F680;</span> プレビュー＆ポータル登録
+      <span class="badge badge-required" id="badge3">確認</span>
+      <span class="chevron">&#x25BC;</span>
+    </h2>
+    <p class="desc">入力内容をプレビューで確認し、ポータルに登録しましょう。</p>
+    <div class="card-body">
+      <hr class="divider">
+      <div class="preview-panel">
+        <h3>&#x1F440; ポータルでの表示プレビュー</h3>
+        <div class="preview-card" id="previewCard">
+          <div class="pv-img" id="pvImg"><span>画像なし</span></div>
+          <div class="pv-body">
+            <div class="pv-cat" id="pvCategory">カテゴリ未設定</div>
+            <div class="pv-name" id="pvName">店舗名</div>
+            <div class="pv-catch" id="pvCatch"></div>
+            <div class="pv-tags" id="pvTags"></div>
+            <div class="pv-info" id="pvInfo"></div>
+            <div class="pv-menus" id="pvMenus"></div>
+          </div>
+        </div>
+      </div>
+      <div id="step3Status"></div>
+      <div class="actions actions-center" style="margin-top:20px">
+        <button class="btn btn-secondary" onclick="goToStep(2)">&#x2190; 企業情報を修正する</button>
+        <button class="btn btn-success btn-lg" id="btnRegister" onclick="registerToPortal()">&#x1F680; ポータルに登録する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DONE CARD -->
+  <div class="card hidden done-card" id="cardDone">
+    <div class="done-icon">&#x1F389;</div>
+    <h2>ポータル登録が完了しました！</h2>
+    <p style="color:#475569;margin-top:8px">企業情報がポータルサイトに登録されました。</p>
+    <div class="done-url" id="donePortalLink"></div>
+    <div class="actions actions-center" style="margin-top:20px">
+      <button class="btn btn-primary" onclick="startEdit()">企業情報を編集・再登録する</button>
+      <button class="btn btn-ghost" id="btnOpenPortal" onclick="" style="display:none">ポータルを開く &#x2197;</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var currentStep = 1;
+var menuItems = [];
+var tags = [];
+var connectionVerified = false;
+var portalApiUrl = '';
+var savedSecretExists = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+  loadProfile();
+});
+
+function loadProfile() {
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || !res.ok) return;
+      var p = res.profile || {};
+      setVal('pf_name', p.name);
+      setVal('pf_slug', p.slug);
+      setVal('pf_category', p.category);
+      setVal('pf_catch_copy', p.catch_copy);
+      setVal('pf_description', p.description);
+      setVal('pf_photo_url', p.photo_url);
+      setVal('pf_address', p.address);
+      setVal('pf_phone', p.phone);
+      setVal('pf_business_hours', p.business_hours);
+      setVal('pf_closed_days', p.closed_days);
+      setVal('pf_booking_url', p.booking_url);
+      document.getElementById('pf_is_public').checked = (p.is_public !== 'false' && p.is_public !== '0');
+      previewPhoto();
+      tags = [];
+      var rawTags = String(p.tags || '').trim();
+      if (rawTags) tags = rawTags.split(',').map(function(t){return t.trim()}).filter(function(t){return t});
+      renderTags();
+      menuItems = [];
+      try { var mj = String(p.menus_json || '').trim(); if (mj) menuItems = JSON.parse(mj); } catch(e) {}
+      renderMenus();
+      if (res.portal) {
+        if (res.portal.api_url) {
+          setVal('portal_api_url', res.portal.api_url);
+          portalApiUrl = res.portal.api_url;
+        }
+        if (res.portal.deploy_url && !getVal('pf_booking_url')) {
+          setVal('pf_booking_url', res.portal.deploy_url);
+        }
+        if (res.portal.configured) {
+          savedSecretExists = true;
+          document.getElementById('secretSavedHint').classList.remove('hidden');
+          document.getElementById('portal_admin_secret').placeholder = String.fromCharCode(9679)+String.fromCharCode(9679)+String.fromCharCode(9679)+String.fromCharCode(9679)+String.fromCharCode(9679)+String.fromCharCode(9679)+String.fromCharCode(9679)+String.fromCharCode(9679)+' (change only if needed)';
+        }
+      }
+      if (p.name && res.portal && res.portal.configured) {
+        connectionVerified = true;
+        showDone(p.slug || p.name, res.portal.api_url);
+      }
+    })
+    .withFailureHandler(function() {})
+    .adminGetTenantProfile();
+}
+
+/* ---- Step 1: Connection ---- */
+function testConnection() {
+  var apiUrl = getVal('portal_api_url');
+  var secret = getVal('portal_admin_secret');
+  if (!apiUrl) { showStatus('step1Status', 'err', 'Portal API URL is required.'); return; }
+  if (!secret && !savedSecretExists) { showStatus('step1Status', 'err', 'Admin Secret is required.'); return; }
+  var btn = document.getElementById('btnTestConn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Testing...';
+  showConnStatus('testing');
+  showStatus('step1Status', 'info', '<span class="spinner"></span> Connecting to portal...');
+  var testData = { portal_api_url: apiUrl };
+  if (secret) {
+    testData.portal_admin_secret = secret;
+  }
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled = false; btn.innerHTML = '&#x1F50D; 接続テスト';
+      if (res && res.ok) {
+        connectionVerified = true;
+        portalApiUrl = apiUrl;
+        showConnStatus('ok');
+        showStatus('step1Status', 'ok', '&#x2705; ポータルへの接続に成功しました！認証もOKです。<br>「次へ」で企業情報の入力に進みましょう。');
+        document.getElementById('btnNext1').disabled = false;
+        savedSecretExists = true;
+        document.getElementById('secretSavedHint').classList.remove('hidden');
+      } else {
+        connectionVerified = false;
+        if (res && res.reachable && !res.authenticated) {
+          showConnStatus('auth-ng');
+          showStatus('step1Status', 'err', '&#x274C; 認証エラー: Admin Secret が一致しません。<br>Vercel の環境変数 ADMIN_SHARED_SECRET と同じ値を入力してください。');
+        } else if (res && !res.reachable) {
+          showConnStatus('unreachable');
+          showStatus('step1Status', 'err', '&#x274C; ポータルに接続できません。URLを確認してください。');
+        } else {
+          showConnStatus('ng');
+          showStatus('step1Status', 'err', '&#x274C; ' + (res && res.error ? res.error : 'Connection failed'));
+        }
+        document.getElementById('btnNext1').disabled = true;
+      }
+    })
+    .withFailureHandler(function(err) {
+      btn.disabled = false; btn.innerHTML = '&#x1F50D; 接続テスト';
+      connectionVerified = false;
+      showConnStatus('ng');
+      showStatus('step1Status', 'err', 'Error: ' + errMsg(err));
+      document.getElementById('btnNext1').disabled = true;
+    })
+    .adminTestPortalConnection(testData);
+}
+
+function showConnStatus(type) {
+  var el = document.getElementById('connStatus');
+  if (type === 'ok') el.innerHTML = '<span class="conn-indicator conn-ok">&#x2713; 接続OK</span>';
+  else if (type === 'auth-ng') el.innerHTML = '<span class="conn-indicator conn-ng">&#x2717; 認証NG</span>';
+  else if (type === 'unreachable') el.innerHTML = '<span class="conn-indicator conn-ng">&#x2717; 接続不可</span>';
+  else if (type === 'ng') el.innerHTML = '<span class="conn-indicator conn-ng">&#x2717; 失敗</span>';
+  else if (type === 'testing') el.innerHTML = '<span class="conn-indicator conn-unknown"><span class="spinner"></span> テスト中</span>';
+  else el.innerHTML = '';
+}
+
+function toggleSecretVisibility() {
+  var inp = document.getElementById('portal_admin_secret');
+  if (inp.type === 'password') { inp.type = 'text'; }
+  else { inp.type = 'password'; }
+}
+
+/* ---- Step 2: Profile ---- */
+function validateSlug() {
+  var v = getVal('pf_slug');
+  var el = document.getElementById('slugHint');
+  if (!v) { el.innerHTML = '<span style="color:#94a3b8">空欄の場合は自動生成されます</span>'; return; }
+  if (/^[a-z0-9][a-z0-9\-]{0,63}$/.test(v)) {
+    el.innerHTML = '<span style="color:#16a34a">&#x2713; OK: /t/' + escHtml(v) + '</span>';
+  } else {
+    el.innerHTML = '<span style="color:#ef4444">&#x2717; 英小文字・数字・ハイフンのみ（先頭は英数字）</span>';
+  }
+}
+
+function saveProfileAndNext() {
+  var data = collectProfileData();
+  if (!data.name) { showStatus('step2Status', 'err', '「店舗名 / 企業名」は必須です。'); return; }
+  var btn = document.getElementById('btnSaveProfile');
+  btn.disabled = true; btn.textContent = '保存中...';
+  showStatus('step2Status', 'info', '<span class="spinner"></span> 保存中...');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled = false; btn.innerHTML = '次へ: プレビューで確認 &#x2192;';
+      if (res && res.ok) {
+        showStatus('step2Status', 'ok', '&#x2713; 保存しました');
+        setTimeout(function(){ goToStep(3); }, 400);
+      } else {
+        showStatus('step2Status', 'err', '保存失敗: ' + (res && res.error ? res.error : 'unknown'));
+      }
+    })
+    .withFailureHandler(function(err) {
+      btn.disabled = false; btn.innerHTML = '次へ: プレビューで確認 &#x2192;';
+      showStatus('step2Status', 'err', 'Error: ' + errMsg(err));
+    })
+    .adminSaveTenantProfile(data);
+}
+
+/* ---- Step 3: Preview & Register ---- */
+function updatePreview() {
+  var d = collectProfileData();
+  var imgEl = document.getElementById('pvImg');
+  if (d.photo_url && d.photo_url.match(/^https?:\/\/.+/)) {
+    imgEl.innerHTML = '<img src="' + escAttr(d.photo_url) + '" onerror="this.parentElement.innerHTML=\'<span>画像を読み込めません</span>\'" alt="preview">';
+  } else {
+    imgEl.innerHTML = '<span>画像なし</span>';
+  }
+  document.getElementById('pvCategory').textContent = d.category || 'カテゴリ未設定';
+  document.getElementById('pvName').textContent = d.name || '（店舗名未入力）';
+  document.getElementById('pvCatch').textContent = d.catch_copy || '';
+  var tagsHtml = '';
+  if (tags.length > 0) { tags.forEach(function(t) { tagsHtml += '<span class="pv-tag">' + escHtml(t) + '</span>'; }); }
+  document.getElementById('pvTags').innerHTML = tagsHtml;
+  var infoHtml = '';
+  if (d.address) infoHtml += '<span>&#x1F4CD; ' + escHtml(d.address) + '</span>';
+  if (d.phone) infoHtml += '<span>&#x1F4DE; ' + escHtml(d.phone) + '</span>';
+  if (d.business_hours) infoHtml += '<span>&#x1F550; ' + escHtml(d.business_hours) + '</span>';
+  if (d.closed_days) infoHtml += '<span>&#x1F6AB; 定休日: ' + escHtml(d.closed_days) + '</span>';
+  document.getElementById('pvInfo').innerHTML = infoHtml;
+  var menusHtml = '';
+  if (menuItems.length > 0) {
+    menuItems.forEach(function(m) {
+      if (m.name) {
+        menusHtml += '<div class="pv-menu"><span>' + escHtml(m.name);
+        if (m.description) menusHtml += ' <small style="color:#94a3b8">' + escHtml(m.description) + '</small>';
+        menusHtml += '</span><span class="pv-mprice">' + escHtml(m.price || '') + '</span></div>';
+      }
+    });
+  }
+  document.getElementById('pvMenus').innerHTML = menusHtml;
+}
+
+function registerToPortal() {
+  var data = collectProfileData();
+  if (!data.name) { showStatus('step3Status', 'err', '店舗名が未入力です。Step 2 で入力してください。'); return; }
+  data.portal_api_url = getVal('portal_api_url');
+  var secretVal = getVal('portal_admin_secret');
+  if (secretVal) data.portal_admin_secret = secretVal;
+  var btn = document.getElementById('btnRegister');
+  btn.disabled = true; btn.textContent = '登録中...';
+  showStatus('step3Status', 'info', '<span class="spinner"></span> ポータルに登録中... しばらくお待ちください');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled = false; btn.innerHTML = '&#x1F680; ポータルに登録する';
+      if (!res || !res.ok) {
+        showStatus('step3Status', 'err', '&#x274C; ' + (res && res.error ? res.error : 'Unknown error'));
+        return;
+      }
+      var pr = res.portal_result || {};
+      if (pr.skipped) {
+        var reason = pr.reason || 'ポータル連携設定が未完了です。Step 1 で接続テストを行ってください。';
+        showStatus('step3Status', 'warn', '&#x26A0; ' + reason);
+      } else if (pr.ok) {
+        var slug = data.slug || data.name;
+        showDone(slug, portalApiUrl || getVal('portal_api_url'));
+      } else {
+        showStatus('step3Status', 'err', '&#x274C; ポータル登録に失敗: ' + (pr.error || 'Unknown'));
+      }
+    })
+    .withFailureHandler(function(err) {
+      btn.disabled = false; btn.innerHTML = '&#x1F680; ポータルに登録する';
+      showStatus('step3Status', 'err', '&#x274C; Error: ' + errMsg(err));
+    })
+    .adminSaveAndRegisterToPortal(data);
+}
+
+/* ---- Form helpers ---- */
+function collectProfileData() {
+  return {
+    name: getVal('pf_name'),
+    slug: getVal('pf_slug'),
+    category: getVal('pf_category'),
+    catch_copy: getVal('pf_catch_copy'),
+    description: getVal('pf_description'),
+    photo_url: getVal('pf_photo_url'),
+    address: getVal('pf_address'),
+    phone: getVal('pf_phone'),
+    business_hours: getVal('pf_business_hours'),
+    closed_days: getVal('pf_closed_days'),
+    tags: tags.join(','),
+    menus_json: JSON.stringify(menuItems),
+    is_public: document.getElementById('pf_is_public').checked ? 'true' : 'false',
+    booking_url: getVal('pf_booking_url')
+  };
+}
+
+function previewPhoto() {
+  var url = getVal('pf_photo_url');
+  var el = document.getElementById('photoPreview');
+  if (url && url.match(/^https?:\/\/.+/)) {
+    el.innerHTML = '<img src="' + escHtml(url) + '" onerror="this.style.display=\'none\'" alt="preview">';
+  } else { el.innerHTML = ''; }
+}
+
+function renderMenus() {
+  var el = document.getElementById('menuList');
+  if (menuItems.length === 0) { el.innerHTML = '<div style="color:#94a3b8;font-size:.83rem">メニューがまだありません</div>'; return; }
+  var html = '';
+  menuItems.forEach(function(m, i) {
+    html += '<div class="menu-item">' +
+      '<input class="form-input" placeholder="メニュー名" value="' + escAttr(m.name || '') + '" onchange="updateMenu(' + i + ',\'name\',this.value)">' +
+      '<input class="form-input" placeholder="価格" value="' + escAttr(m.price || '') + '" onchange="updateMenu(' + i + ',\'price\',this.value)">' +
+      '<button class="btn btn-danger btn-remove" onclick="removeMenu(' + i + ')">&#x2715;</button>' +
+      '<input class="form-input menu-desc" placeholder="説明（任意）" value="' + escAttr(m.description || '') + '" onchange="updateMenu(' + i + ',\'description\',this.value)">' +
+      '</div>';
+  });
+  el.innerHTML = html;
+}
+function addMenuItem() { menuItems.push({name:'',price:'',description:''}); renderMenus(); }
+function removeMenu(i) { menuItems.splice(i,1); renderMenus(); }
+function updateMenu(i,key,val) { if(menuItems[i]) menuItems[i][key]=val; }
+
+function renderTags() {
+  var el = document.getElementById('tagDisplay');
+  if (tags.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = tags.map(function(t,i) {
+    return '<span class="tag-chip">' + escHtml(t) + '<button onclick="removeTag(' + i + ')">&#x2715;</button></span>';
+  }).join('');
+}
+function addTag() {
+  var inp = document.getElementById('tagInput');
+  var val = (inp.value || '').trim();
+  if (val) { val.split(',').forEach(function(t){ t=t.trim(); if(t && tags.indexOf(t)===-1) tags.push(t); }); inp.value=''; renderTags(); }
+}
+function removeTag(i) { tags.splice(i,1); renderTags(); }
+function handleTagKey(e) { if(e.key==='Enter' || e.key===',') { e.preventDefault(); addTag(); } }
+
+/* ---- Navigation ---- */
+function goToStep(n) {
+  if (n === 3) updatePreview();
+  currentStep = n;
+  for (var i = 1; i <= 3; i++) {
+    var card = document.getElementById('step' + i);
+    var dot = document.getElementById('dot' + i);
+    if (!card || !dot) continue;
+    if (i < n) { card.classList.add('hidden'); dot.classList.remove('active'); dot.classList.add('done'); }
+    else if (i === n) { card.classList.remove('hidden'); dot.classList.add('active'); dot.classList.remove('done'); }
+    else { card.classList.add('hidden'); dot.classList.remove('active'); dot.classList.remove('done'); }
+    var line = document.getElementById('line' + i);
+    if (line) { if (i < n) line.classList.add('done'); else line.classList.remove('done'); }
+  }
+  document.getElementById('cardDone').classList.add('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleCard(cardId) {
+  document.getElementById(cardId).classList.toggle('collapsed');
+}
+
+function showDone(slug, pUrl) {
+  for (var i = 1; i <= 3; i++) {
+    var card = document.getElementById('step' + i);
+    var dot = document.getElementById('dot' + i);
+    if (card) card.classList.add('hidden');
+    if (dot) { dot.classList.add('done'); dot.classList.remove('active'); }
+    var line = document.getElementById('line' + i);
+    if (line) line.classList.add('done');
+  }
+  document.getElementById('cardDone').classList.remove('hidden');
+  if (pUrl) {
+    var url = pUrl.replace(/\/+$/, '') + '/t/' + encodeURIComponent(slug);
+    document.getElementById('donePortalLink').innerHTML =
+      '<p style="margin-bottom:4px;color:#64748b;font-size:.82rem">ポータルページ:</p>' +
+      '<a href="' + escAttr(url) + '" target="_blank">' + escHtml(url) + '</a>';
+    var ob = document.getElementById('btnOpenPortal');
+    ob.style.display = 'inline-flex';
+    ob.setAttribute('onclick', "window.open('" + escAttr(url) + "','_blank')");
+  }
+}
+
+function startEdit() {
+  document.getElementById('cardDone').classList.add('hidden');
+  connectionVerified = true;
+  document.getElementById('btnNext1').disabled = false;
+  goToStep(1);
+}
+
+/* ---- Utility ---- */
+function showStatus(elId, type, html) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var cls = type === 'ok' ? 'status-ok' : type === 'err' ? 'status-err' : type === 'warn' ? 'status-warn' : 'status-info';
+  el.innerHTML = '<div class="status-box ' + cls + '">' + html + '</div>';
+}
+function errMsg(e) { return (e && e.message) ? e.message : String(e); }
+function getVal(id) { var el = document.getElementById(id); return el ? (el.value || '').trim() : ''; }
+function setVal(id, v) { var el = document.getElementById(id); if (el) el.value = v || ''; }
+function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function escAttr(s) { return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>

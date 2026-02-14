@@ -1,0 +1,2447 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>管理画面</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        /* HotPepper-like Admin */
+        --bg: #ffffff;
+        --panel: #ffffff;
+        --text: #333333;
+        --text-head: #111111;
+        --muted: #888888;
+        --line: #e0e0e0;
+        --accent: #ff4081;
+        --accent-hover: #e91e63;
+        --accent-light: #ffeef4;
+        --danger: #ef4444;
+        --ok: #10b981;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+        --shadow: 0 2px 8px rgba(0,0,0,0.08);
+        --radius: 4px;
+      }
+      * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+      body {
+        margin: 0;
+        font-family: 'Noto Sans JP', sans-serif;
+        background-color: #f5f5f5;
+        color: var(--text);
+        line-height: 1.6;
+      }
+      .wrap{max-width:1280px;margin:0 auto;padding:24px 24px 80px}
+      
+      /* Topbar */
+      .top{
+        display:flex;align-items:center;justify-content:space-between;gap:16px;
+        background: var(--panel-trans);
+        padding: 12px 20px;
+        border-radius: var(--radius);
+        margin-bottom: 24px;
+        backdrop-filter: blur(8px);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(255,255,255,0.6);
+      }
+      .brand{font-weight:800;font-size:18px; color: var(--text-head); display:flex; align-items:center; gap:8px;}
+      .brand::before { content:''; display:block; width:16px; height:16px; background:var(--accent); border-radius:4px; }
+
+      .pill{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:6px 14px;border:1px solid var(--line);border-radius:999px;
+        background: #fff;
+        color:var(--muted);font-size:12px;
+        box-shadow: var(--shadow-sm);
+      }
+      a{color:var(--accent);text-decoration:none;font-weight:500;transition:color .2s}
+      a:hover{color:var(--accent-hover);}
+
+      .grid{display:grid;grid-template-columns: 1fr; gap:24px; margin-top:24px}
+      .row2{display:grid;grid-template-columns: minmax(0,1.3fr) minmax(0,0.7fr); gap:24px; align-items:start}
+      .row2 > * { min-width: 0; }
+      @media(max-width: 1024px){ .row2{grid-template-columns:1fr} }
+      
+      .card{
+        border:1px solid var(--line);
+        background: var(--panel);
+        border-radius: var(--radius);
+        padding: 24px;
+        box-shadow: var(--shadow);
+        transition: box-shadow .2s;
+      }
+      .card:hover { box-shadow: var(--shadow-lg); }
+      h2{
+        margin:0 0 16px;font-size:18px; color:var(--text-head);
+        padding-bottom:12px; border-bottom:1px solid var(--line);
+      }
+      h3{margin:20px 0 10px;font-size:15px;color:var(--text-head);font-weight:700}
+      
+      label{display:block;margin:14px 0 6px;color:var(--text-head);font-size:13px;font-weight:600}
+      input, textarea, select{
+        width:100%;
+        border:1px solid var(--line);
+        background: #fdfdfd;
+        color: var(--text-head);
+        border-radius: 8px;
+        padding: 10px 12px;
+        outline:none;
+        font-family:inherit;
+        transition: all .2s;
+      }
+      input:focus, textarea:focus, select:focus{
+        border-color:var(--accent); background:#fff;
+        box-shadow:0 0 0 3px rgba(59,130,246,0.1);
+      }
+      textarea{min-height:86px;resize:vertical}
+      
+      .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+      button{
+        border:1px solid transparent;
+        background: var(--accent);
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor:pointer;
+        font-weight:600;
+        font-family:inherit;
+        font-size:13px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: all .2s ease;
+      }
+      button:hover:not(:disabled){transform: translateY(-1px); box-shadow: 0 4px 6px rgba(59,130,246,0.2)}
+      button.secondary{
+        background: #fff; border:1px solid var(--line); color: var(--text);
+        box-shadow: var(--shadow-sm);
+      }
+      button.secondary:hover:not(:disabled){background: #f8fafc; border-color:var(--muted); color:var(--text-head);}
+      button.danger{background: #fee2e2; color: #b91c1c; box-shadow:none;}
+      button.danger:hover{background: #fecaca;}
+      button:disabled{opacity:.6;cursor:not-allowed;box-shadow:none;transform:none;}
+      
+      .muted{color:var(--muted); font-size:13px}
+      
+      /* Table Stylings */
+      .table-wrap{
+        overflow:auto; margin-top:16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+      table{width:100%;border-collapse:collapse; background:#fff;}
+      th, td{
+        padding:12px 16px; font-size:13px; text-align:left; vertical-align:middle;
+        border-bottom:1px solid var(--line);
+      }
+      th{
+        color:var(--muted); font-weight:600; background: #f8fafc;
+        text-transform:uppercase; letter-spacing:0.05em; font-size:11px;
+        position: sticky; top: 0; z-index: 10;
+      }
+      tr:last-child td { border-bottom: none; }
+      tr:hover td{background: #f1f5f9;}
+      
+      .right{display:flex;justify-content:flex-end;gap:10px}
+      .badge{
+        display:inline-flex;align-items:center;gap:6px;
+        border:1px solid var(--line);
+        border-radius:999px;
+        padding:4px 10px;
+        font-size:11px; font-weight:600;
+        background: #fff;
+      }
+      .badge.ok{border-color: rgba(16,185,129,.3); color: var(--ok); background:rgba(16,185,129,.05);}
+      .badge.ng{border-color: rgba(239,68,68,.3); color: var(--danger); background:rgba(239,68,68,.05);}
+
+      /* Course list meta */
+      .course-row{display:flex;gap:12px;align-items:flex-start;}
+      .course-thumb{width:56px;height:56px;border-radius:8px;object-fit:cover;border:1px solid var(--line);background:#f8fafc;}
+      .course-thumb-large{width:120px;height:120px;border-radius:8px;object-fit:cover;border:1px solid var(--line);background:#f8fafc;}
+      .course-meta{display:flex;flex-direction:column;gap:4px;}
+      .course-desc{font-size:12px;color:var(--muted);line-height:1.4;}
+      .course-times{font-size:12px;color:var(--muted);font-weight:600;}
+      
+      .flex{display:flex;gap:16px;flex-wrap:wrap}
+      .flex > *{flex:1;min-width:200px}
+      .mono{font-family: ui-monospace, SFMono-Regular, Consolas, monospace;}
+      .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px; margin-bottom:12px;}
+      
+      /* Modal */
+      .modal-backdrop{
+        position:fixed;inset:0;background:rgba(15,23,42,0.4);backdrop-filter:blur(2px);
+        display:none;z-index:60; animation: fadeIn .2s ease;
+      }
+      .event-modal{
+        position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+        width:560px;max-width:95%;z-index:70;
+        padding:28px; border-radius:16px;
+        border:1px solid rgba(255,255,255,0.8);
+        background:#fff;
+        box-shadow:0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        animation: scaleIn .2s ease;
+      }
+      @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+      @keyframes scaleIn { from{opacity:0;transform:translate(-50%,-48%) scale(0.96)} to{opacity:1;transform:translate(-50%,-50%) scale(1)} }
+
+      /* Event creator compact layout */
+      .event-creator{
+        width:520px;max-width:95%;max-height:80vh;overflow:auto;padding:20px;
+      }
+      .event-creator label{margin:10px 0 4px;font-size:12px;}
+      .event-creator input, .event-creator textarea{padding:8px 10px;}
+      .event-creator .event-actions{
+        position:sticky;bottom:0;background:#fff;padding-top:10px;margin-top:12px;border-top:1px solid var(--line);
+      }
+
+      /* Calendar Grid Customization for Admin */
+      #calendarGrid table{border-spacing:2px; border-collapse:separate; table-layout: fixed; width:100%;}
+      #calendarGrid td{
+        vertical-align:top; padding:8px; min-height:120px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        transition: all .2s;
+        word-break: break-word; overflow-wrap: anywhere;
+      }
+      #calendarGrid td:hover { border-color:var(--accent); box-shadow: var(--shadow); }
+      
+      .toast{
+        margin-top:10px;
+        border-left:4px solid var(--line);
+        background: #fff;
+        border-radius:4px;
+        padding:12px 16px;
+        white-space: pre-wrap;
+        box-shadow: var(--shadow-sm);
+        animation: fadeIn .3s;
+      }
+      .ok{border-left-color: var(--ok); background:#ecfdf5; color:#064e3b;}
+      .ng{border-left-color: var(--danger); background:#fef2f2; color:#7f1d1d;}
+
+      /* Utility */
+      .help{font-size:12px;color:var(--muted);margin-top:4px;}
+
+      /* Admin layout helpers */
+      .calendar-card{padding:0; overflow:hidden;}
+      .card-head{background:#fff; padding:16px 24px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; gap:12px;}
+      .card-body{padding:12px 24px 24px;}
+      .admin-hint{font-size:12px; color:var(--muted); margin-top:6px;}
+      .course-card{display:flex; flex-direction:column; gap:12px; max-height:80vh;}
+      .course-scroll{overflow:auto; padding:12px; border:1px solid var(--line); border-radius:8px; background:#fff;}
+      @media(max-width: 1024px){
+        .course-card{max-height:none;}
+        .course-scroll{max-height:none;}
+      }
+
+      /* Mobile: unify card widths and padding */
+      @media(max-width: 640px){
+        .wrap{padding:12px 12px 48px;}
+        .row2{gap:14px;}
+        .card{width:100%; padding:16px; border-radius:12px;}
+        .calendar-card{padding:0;}
+        .card-head{padding:14px 16px;}
+        .card-body{padding:10px 16px 16px;}
+        .course-scroll{padding:10px;}
+      }
+    </style>
+  </head>
+  <body>
+    <!-- DEBUG START -->
+    <div style="background:#f0f9ff; border-bottom:1px solid #e0f2fe; padding:4px 10px; font-size:11px; color:#0369a1; text-align:center;">
+      管理画面ロード完了
+</div>
+    <!-- DEBUG END -->
+    <div id="authError" style="display:none;padding:40px;font-family:'Noto Sans JP',sans-serif;text-align:center;">
+      <h1 style="color:#ef4444;">アクセス権限がありません</h1>
+      <p style="color:#6b7280;">この画面はスプレッドシートの所有者のみが利用できます。</p>
+    </div>
+    <div class="wrap">
+      <div class="top" style="margin-bottom:8px">
+        <div class="brand">管理画面</div>
+        <div class="right">
+          <button id="btnOpenPublic" class="secondary">予約ページを開く</button>
+        </div>
+      </div>
+      <div id="msg" class="toast" style="display:none;margin-bottom:8px"></div>
+      <div id="bookingsLast" style="font-size:12px;color:var(--muted);margin-bottom:8px">最終取得: -</div>
+
+      <!-- Main Content: Calendar + Bookings -->
+      <div class="grid">
+        <div class="row2">
+          <div class="card calendar-card">
+            <div class="card-head">
+              <div>
+                <h2 style="margin:0; border:none; padding:0; font-size:18px;">予約カレンダー</h2>
+                <div class="admin-hint">日付タップで新規の空き枠を作成します。講座の編集は右側で行います。</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button id="calPrev" class="secondary" style="padding:6px 12px;">‹</button>
+                <button id="calToday" class="secondary">今月</button>
+                <button id="calNext" class="secondary" style="padding:6px 12px;">›</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div style="text-align:center; padding:10px; font-weight:700; font-size:16px;" id="calLabel"></div>
+              <div id="calendarGrid"></div>
+            </div>
+          </div>
+
+          <div class="card course-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px">
+              <h2 style="margin:0;font-size:16px">講座一覧</h2>
+              <div class="btns" style="margin:0">
+                <button id="btnRefreshCourseList" class="secondary">更新</button>
+              </div>
+            </div>
+            <div class="course-scroll">
+              <div id="courseList">
+                <div class="muted">読み込み中...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Booking history moved below (hidden per request) -->
+      <div id="bookingHistoryContainer" style="margin-top:18px; display:none;">
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px">
+            <h2 style="margin:0;font-size:16px">予約履歴</h2>
+            <div class="btns" style="margin:0">
+              <button id="btnLoadBookings" class="secondary">一覧更新</button>
+            </div>
+          </div>
+              <div class="table-wrap">
+            <table id="tblBookings"><thead></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modals (Preserved) -->
+      <div id="detailModal" class="event-modal" style="display:none;">
+          <h3 id="detail_title">詳細</h3>
+          <div style="margin-top:8px">
+            <div id="detail_customer_row" style="margin-bottom:6px"><strong>顧客:</strong> <span id="detail_customer"></span></div>
+            <div id="detail_email_row" style="margin-bottom:6px"><strong>メール:</strong> <a id="detail_email" href="#"></a></div>
+            <div id="detail_datetime_row" style="margin-bottom:6px"><strong>実施日時:</strong> <span id="detail_datetime"></span></div>
+            <div id="detail_capacity_row" style="margin-bottom:6px"><strong>空き枠設定:</strong> <span id="detail_capacity"></span></div>
+            <div style="margin-top:8px"><strong>講座情報:</strong>
+              <div id="detail_desc" style="white-space:pre-wrap;margin-top:6px;padding:8px;border:1px solid rgba(255,255,255,0.04);border-radius:8px;background:rgba(255,255,255,0.02);"></div>
+            </div>
+          </div>
+          <!-- Hidden legacy IDs to avoid JS errors -->
+          <span id="detail_start" style="display:none"></span>
+          <span id="detail_end" style="display:none"></span>
+          <div class="btns" style="margin-top:12px"><button id="btnCloseDetail" class="secondary">閉じる</button></div>
+       </div>
+
+      <div id="eventCreator" class="event-creator" style="position:fixed; z-index:100; left:50%; top:50%; transform:translate(-50%, -50%); background:#fff; padding:20px; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.15); width:520px; max-width:95%; border:1px solid var(--line); display:none;">
+          <h3 style="margin-top:0;">日付設定</h3>
+           <div>
+             <label>講座名 / タイトル</label>
+             <input id="c_title" placeholder="例）ヨガ入門" />
+           </div>
+
+          
+          <div class="flex" style="flex-direction:column; gap:12px;">
+            <div>
+              <label>日付</label>
+              <input id="c_start_date" type="date" style="background:#f9f9f9;" />
+            </div>
+            <div style="display:flex; gap:10px;">
+              <div style="flex:1">
+                 <label>開始</label>
+                 <input id="c_start_time" type="time" />
+              </div>
+              <div style="flex:1">
+                 <label>時間(分)</label>
+                 <input id="c_duration" type="number" value="60" />
+              </div>
+            </div>
+            <div>
+              <label>受付人数</label>
+              <input id="c_capacity" type="number" min="1" value="1" />
+            </div>
+            <div>
+              <label>講座情報（説明）</label>
+               <input id="c_description" placeholder="この講座の説明（公開用）。講座情報として保存する場合は下のチェックをONにしてください。" />
+            </div>
+            <div>
+              <label>講座サムネイル（任意）</label>
+              <input id="c_thumbnail" type="file" accept="image/*" />
+              <div id="c_thumb_preview" class="muted" style="margin-top:8px;">画像なし</div>
+              <div class="help" style="margin-top:8px">選択した画像と説明は自動的に講座情報として保存されます。</div>
+            </div>
+          </div>
+          <div class="btns event-actions" style="justify-content:flex-end; margin-top:20px;">
+            <button class="secondary" id="btnCloseCreator">キャンセル</button>
+            <button id="btnAddAvailabilityFromModal">枠を作成</button>
+          </div>
+          <!-- Hidden utility buttons/lists the JS expects -->
+          <div style="display:none;">
+             <button id="btnClearCreator"></button>
+             <div id="modalBookings"></div>
+             <div id="modalEvents"></div>
+             <div id="eventEditor">
+                 <input id="ev_event_id" /> <input id="ev_status" /> <input id="ev_title" /> 
+                 <input id="ev_start_iso" /> <input id="ev_end_iso" /> <input id="ev_description" /> 
+                 <input id="ev_capacity" /> <input id="ev_booking_id" />
+                 <button id="btnSaveEvent"></button> <button id="btnCancelEdit"></button>
+             </div>
+          </div>
+       </div>
+
+    </div>
+
+    <!-- ══════════ テナントプロフィール ══════════ -->
+    <div id="tenantProfileSection" style="margin-top:24px;">
+      <div class="card">
+        <h2 style="display:flex; align-items:center; justify-content:space-between;">
+          <span>🏢 テナントプロフィール（ポータル連携）</span>
+          <div style="display:flex; gap:8px;">
+            <button id="btnToggleProfile" class="secondary" style="font-size:12px; padding:6px 12px;" onclick="toggleProfilePanel()">▼ 開く</button>
+          </div>
+        </h2>
+
+        <div id="profilePanel" style="display:none;">
+          <div style="font-size:13px; color:#64748b; margin-bottom:14px;">
+            ポータルサイトに表示する店舗情報を編集できます。保存後「ポータルに登録」ボタンで反映されます。
+          </div>
+
+          <!-- 基本情報 -->
+          <div style="font-weight:600; font-size:14px; margin:12px 0 8px; padding-top:10px; border-top:1px solid var(--line);">基本情報</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div>
+              <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">店舗名 *</label>
+              <input id="tp_name" placeholder="例: さくらビューティーサロン" style="width:100%;" />
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">スラッグ（URL識別子）</label>
+              <input id="tp_slug" placeholder="例: sakura-beauty" style="width:100%;" />
+            </div>
+          </div>
+          <div style="margin-top:8px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">カテゴリ</label>
+            <input id="tp_category" placeholder="例: 美容・サロン" style="width:100%;" />
+          </div>
+          <div style="margin-top:8px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">キャッチコピー</label>
+            <input id="tp_catch_copy" placeholder="一覧に表示される短い紹介文" style="width:100%;" />
+          </div>
+          <div style="margin-top:8px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">詳細説明</label>
+            <textarea id="tp_description" placeholder="店舗の詳細説明…" style="width:100%; min-height:60px;"></textarea>
+          </div>
+
+          <!-- 画像 -->
+          <div style="font-weight:600; font-size:14px; margin:14px 0 8px; padding-top:10px; border-top:1px solid var(--line);">画像</div>
+          <div>
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">メイン画像URL</label>
+            <input id="tp_photo_url" placeholder="https://..." style="width:100%;" oninput="tpPreviewPhoto()" />
+            <div id="tpPhotoPreview" style="margin-top:6px;"></div>
+          </div>
+
+          <!-- 店舗情報 -->
+          <div style="font-weight:600; font-size:14px; margin:14px 0 8px; padding-top:10px; border-top:1px solid var(--line);">店舗情報</div>
+          <div>
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">住所</label>
+            <input id="tp_address" placeholder="東京都..." style="width:100%;" />
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+            <div>
+              <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">電話番号</label>
+              <input id="tp_phone" placeholder="03-1234-5678" style="width:100%;" />
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">営業時間</label>
+              <input id="tp_business_hours" placeholder="10:00〜21:00" style="width:100%;" />
+            </div>
+          </div>
+          <div style="margin-top:8px;">
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">定休日</label>
+            <input id="tp_closed_days" placeholder="毎週火曜日" style="width:100%;" />
+          </div>
+
+          <!-- メニュー -->
+          <div style="font-weight:600; font-size:14px; margin:14px 0 8px; padding-top:10px; border-top:1px solid var(--line);">メニュー</div>
+          <div id="tpMenuList" style="margin-bottom:8px;"></div>
+          <button class="secondary" style="font-size:12px; padding:5px 12px;" onclick="tpAddMenu()">＋ メニュー追加</button>
+
+          <!-- タグ -->
+          <div style="font-weight:600; font-size:14px; margin:14px 0 8px; padding-top:10px; border-top:1px solid var(--line);">タグ</div>
+          <div style="display:flex; gap:6px; margin-bottom:6px;">
+            <input id="tpTagInput" placeholder="タグを入力してEnter…" style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();tpAddTag();}" />
+            <button class="secondary" style="font-size:12px; padding:5px 10px;" onclick="tpAddTag()">追加</button>
+          </div>
+          <div id="tpTagDisplay" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+
+          <!-- 公開設定 -->
+          <div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">
+            <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
+              <input type="checkbox" id="tp_is_public" checked style="width:16px; height:16px;">
+              ポータルに公開する
+            </label>
+          </div>
+
+          <!-- ポータル連携設定 -->
+          <div style="font-weight:600; font-size:14px; margin:14px 0 8px; padding-top:10px; border-top:1px solid var(--line);">ポータル連携設定</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div>
+              <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">ポータル API URL</label>
+              <input id="tp_portal_api_url" placeholder="https://your-portal.vercel.app" style="width:100%;" />
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">Admin Secret</label>
+              <input id="tp_portal_admin_secret" type="password" placeholder="共有シークレット" style="width:100%;" />
+            </div>
+          </div>
+
+          <!-- アクションボタン -->
+          <div id="tpStatus" style="margin-top:10px;"></div>
+          <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+            <button id="btnTpSave" onclick="tpSaveProfile()">💾 保存</button>
+            <button id="btnTpRegister" class="secondary" onclick="tpRegisterToPortal()" style="background:#16a34a; color:#fff; border:none;">📡 ポータルに登録</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const $ = (id) => document.getElementById(id);
+
+      // key -> human friendly Japanese label
+      const LABELS = {
+        // Services (UI removed)
+        name: '名称', duration_min: '所要分', buffer_before: '前バッファ(分)', buffer_after: '後バッファ(分)',
+        allowed_weekdays: '許可曜日', time_windows: '時間帯', step_min: 'ステップ(分)',
+        // Availabilities
+        availability_id: '空き枠ID', capacity: '受付人数', source: 'ソース', updated_at: '更新日時',
+        // Bookings
+        booking_id: '予約ID', created_at: '作成日時', status: 'ステータス', service_name: 'サービス名',
+        customer_name: '顧客名', customer_email: 'メール', start_iso: '開始', end_iso: '終了', answers_json: '回答(JSON)', cancel_token: 'キャンセルTOKEN', event_id: 'イベントID',
+        // Events
+        event_id: 'イベントID', source: 'ソース', title: 'タイトル', location: '場所', description: '説明', updated_at: '更新日時', last_synced_at: '最終同期',
+        // UI
+        actions: '操作'
+      };
+
+      function humanLabel(k) { return LABELS[k] || String(k || ''); }
+      function translateCols(arr) { return (arr || []).map(a => humanLabel(a)); }
+
+      // Tabs removed — single Events UI
+
+      // Event editor helpers
+      let selectedEvent = null;
+      function openEventEditor(evt) {
+        selectedEvent = evt;
+        $('eventEditor').style.display = '';
+        $('ev_event_id').value = evt.event_id || '';
+        $('ev_status').value = evt.status || '';
+        $('ev_title').value = evt.title || '';
+        $('ev_start_iso').value = evt.start_iso || '';
+        $('ev_end_iso').value = evt.end_iso || '';
+        $('ev_booking_id').value = evt.booking_id || '';
+        $('ev_description').value = evt.description || '';
+        if ($('ev_capacity')) $('ev_capacity').value = (evt.capacity || '');
+        // service_id removed: nothing to set
+        // highlight selected row
+        document.querySelectorAll('#tblEvents tbody tr').forEach(tr => tr.classList.remove('selected'));
+        const sel = document.querySelector(`#tblEvents tbody tr[data-event-id="${cssEscape(evt.event_id || '')}"]`);
+        if (sel) sel.classList.add('selected');
+      }
+      function clearEventEditor() {
+        selectedEvent = null;
+        $('eventEditor').style.display = 'none';
+        document.querySelectorAll('#tblEvents tbody tr').forEach(tr => tr.classList.remove('selected'));
+      }
+      function cssEscape(s){ return String(s||'').replace(/"/g,'\\"'); }
+      $('btnCancelEdit')?.addEventListener('click', (e)=>{ e.preventDefault(); clearEventEditor(); });
+      $('btnSaveEvent')?.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const up = {
+          event_id: $('ev_event_id').value.trim(),
+          status: $('ev_status').value.trim(),
+          title: $('ev_title').value.trim(),
+          // service_id removed
+          start_iso: $('ev_start_iso').value.trim(),
+          end_iso: $('ev_end_iso').value.trim(),
+          booking_id: $('ev_booking_id').value.trim(),
+          description: $('ev_description').value.trim(),
+          capacity: $('ev_capacity') ? Number($('ev_capacity').value || 0) : undefined,
+          source: 'manual'
+        };
+        const btn = $('btnSaveEvent');
+        setLoading(btn, true);
+        google.script.run
+          .withSuccessHandler((res)=>{ setLoading(btn, false); if (!res || !res.ok) { showMsg('更新失敗', false); return; } showMsg('更新しました。', true); loadEvents(); clearEventEditor(); })
+          .withFailureHandler((err)=>{ setLoading(btn, false); showMsg('更新失敗: ' + (err?.message || err), false); })
+          .adminUpsertEvent(up);
+      });
+
+      // small style for selected row
+      const style = document.createElement('style');
+      style.textContent = '\n#tblEvents tbody tr.selected td { background: rgba(122,167,255,0.10) !important; }\n.tab{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.12);cursor:pointer} .tab.active{background:var(--panel2);border-color:var(--line);}';
+      document.head.appendChild(style);
+
+      let statusCache = null;
+      let services = []; // kept for compatibility but not used in simplified UI
+      let publicUrlCache = '';
+      let courseMetaMap = new Map();
+      let currentCourseEditName = '';
+
+      function showMsg(text, ok=true) {
+        const box = $('msg');
+        box.style.display = 'block';
+        box.textContent = text;
+        box.classList.toggle('ok', !!ok);
+        box.classList.toggle('ng', !ok);
+      }
+      function clearMsg() {
+        const box = $('msg');
+        box.style.display = 'none';
+        box.textContent = '';
+        box.classList.remove('ok','ng');
+      }
+      function setLoading(btn, loading) {
+        if (!btn) return;
+        btn.disabled = !!loading;
+        btn.dataset._old = btn.dataset._old || btn.textContent;
+        btn.textContent = loading ? '処理中…' : btn.dataset._old;
+      }
+
+      // Resize image file to a data URL (JPEG by default) to reduce upload size
+      function resizeImageFileToDataUrl(file, maxW, maxH, quality, cb) {
+        try {
+          const reader = new FileReader();
+          reader.onload = function () {
+            const img = new Image();
+            img.onload = function () {
+              let w = img.width, h = img.height;
+              const ratio = Math.min(1, Math.min(maxW / w, maxH / h));
+              if (ratio < 1) { w = Math.round(w * ratio); h = Math.round(h * ratio); }
+              const canvas = document.createElement('canvas');
+              canvas.width = w; canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              // prefer jpeg for smaller size unless original mime indicates png with transparency
+              const useMime = (file && file.type === 'image/png') ? 'image/png' : 'image/jpeg';
+              const dataUrl = canvas.toDataURL(useMime, Number(quality || 0.7));
+              cb(null, dataUrl);
+            };
+            img.onerror = function (err) { cb(err || new Error('image load failed')); };
+            img.src = String(reader.result || '');
+          };
+          reader.onerror = function (err) { cb(err || new Error('file read failed')); };
+          reader.readAsDataURL(file);
+        } catch (e) { cb(e); }
+      }
+
+      // Status/config UI removed — no renderStatus/loadStatus needed
+
+      function boot() {
+        try { clearMsg(); } catch(_) {}
+        try { loadPublicUrl(); } catch(e) { console.warn('loadPublicUrl failed', e); }
+        try {
+          const today = new Date();
+          const end = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+          if ($('av_range_start') && !$('av_range_start').value) $('av_range_start').value = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+          if ($('av_range_end') && !$('av_range_end').value) $('av_range_end').value = `${end.getFullYear()}-${pad(end.getMonth()+1)}-${pad(end.getDate())}`;
+        } catch (_) {}
+        // simplified boot: skip status/services UI
+        try { loadBookings(); } catch(e) { console.warn('loadBookings failed', e); }
+        try { loadCourseMetaAdmin(() => { try { renderCourseList(lastAdminEvents || []); } catch (e) { console.warn('renderCourseList failed', e); } }); } catch(e) { console.warn('loadCourseMetaAdmin failed', e); }
+        try { loadEvents(); } catch(e) { console.warn('loadEvents failed', e); }
+        setTimeout(() => { try { refreshSheetList(); } catch(e) { console.warn('refreshSheetList failed', e); } }, 200);
+      }
+
+      function loadCourseMetaAdmin(cb) {
+        google.script.run
+          .withSuccessHandler((list) => {
+            courseMetaMap = new Map();
+            (list || []).forEach(c => { if (c && c.course_name) courseMetaMap.set(String(c.course_name), c); });
+            if (cb) cb(list || []);
+          })
+          .withFailureHandler(() => { if (cb) cb([]); })
+          .adminListCourses();
+      }
+
+      function loadPublicUrl() {
+        const link = $('publicLink');
+        if (link) link.href = '#';
+        google.script.run
+          .withSuccessHandler((url) => {
+            publicUrlCache = String(url || '').trim();
+            if (link) link.href = publicUrlCache || '#';
+          })
+          .withFailureHandler((err) => {
+            publicUrlCache = '';
+            if (link) link.href = '#';
+            console.warn('public url fetch failed', err);
+          })
+          .getPublicUrl();
+      }
+
+      function navigateToPublic(url) {
+        const target = String(url || '').trim();
+        if (!target) { alert('公開ページのURLが未設定です。'); return; }
+        try {
+          window.top.location.href = target;
+        } catch (e) {
+          try { window.location.href = target; } catch (e2) { alert('公開ページへ遷移できませんでした: ' + (e2 && e2.message ? e2.message : e2)); }
+        }
+      }
+
+      function loadServices() { /* removed: Services list hidden in admin */ }
+
+      function populateServiceSelectors() { /* removed: Services UI hidden; services are auto-generated from Events */ }
+
+      function loadAvailabilities() { /* removed: Admin UI is Events-only; availabilities are created from Events. */ }
+
+      function renderAvailabilitiesTable(rows) { /* removed: Admin UI is Events-only */ }
+
+      function renderTableHead(el, cols) {
+        const thead = el.querySelector('thead');
+        thead.innerHTML = '';
+        const tr = document.createElement('tr');
+        cols.forEach(c => {
+          const th = document.createElement('th');
+          th.textContent = humanLabel(c);
+          tr.appendChild(th);
+        });
+        thead.appendChild(tr);
+      }
+
+        // safe escape for HTML insertion
+        function escapeHtml(s) {
+          return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        }
+
+      function renderServicesTable(rows) { /* removed: Services UI hidden */ }
+
+      // Services UI removed: service form helpers omitted.
+
+      function loadBookings() {
+        const btn = $('btnLoadBookings');
+        if (btn) setLoading(btn, true);
+
+        // reduce limit for faster response; show core columns only
+        const limit = 100;
+
+        google.script.run
+            .withSuccessHandler((rows) => {
+              // normalize possible server responses to an array
+              let result = rows || [];
+              if (!Array.isArray(result)) {
+                if (rows && Array.isArray(rows.bookings)) result = rows.bookings;
+                else if (rows && Array.isArray(rows.rows)) result = rows.rows;
+                else if (rows && Array.isArray(rows.events)) result = rows.events;
+                else result = [];
+              }
+              // keep only rows that look like actual bookings (filter out 'available' events/availabilities)
+              result = (result || []).filter(isBookingRow);
+              bookingsCache = result;
+              // update last-updated indicator and render filtered bookings
+              try {
+                const el = $('bookingsLast');
+                if (el) {
+                  const d = new Date();
+                  el.textContent = '最終取得: ' + d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+                }
+              } catch (e) {}
+              renderBookingsTable(bookingsCache);
+              try { renderCourseList(lastAdminEvents || []); } catch (e) { /* ignore */ }
+
+              // if empty, fetch raw preview and try to map rows by header
+              if (bookingsCache.length === 0) {
+                google.script.run
+                  .withSuccessHandler((raw) => {
+                    try {
+                      if (raw && raw.ok) {
+                        const header = Array.isArray(raw.header) ? raw.header : [];
+                        const rows2 = Array.isArray(raw.rows) ? raw.rows : [];
+                        if (header.length > 0 && rows2.length > 0) {
+                          const mapped = rows2.map(r => {
+                            const obj = {};
+                            header.forEach((h, i) => { if (h) obj[h] = r[i]; });
+                            return obj;
+                          });
+                          // map then filter only bookings
+                          const mappedFiltered = (mapped || []).filter(isBookingRow);
+                          bookingsCache = mappedFiltered;
+                          try {
+                            const el = $('bookingsLast');
+                            if (el) {
+                              const d = new Date();
+                              el.textContent = '最終取得: ' + d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+                            }
+                          } catch (e) {}
+                          renderBookingsTable(bookingsCache);
+                        } else {
+                          try {
+                            const el = $('bookingsLast');
+                            if (el) {
+                              const d = new Date();
+                              el.textContent = '最終取得: ' + d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+                            }
+                          } catch (e) {}
+                        }
+                      }
+                    } catch (e) { console.warn('raw bookings parse failed', e); }
+                    if (btn) setLoading(btn, false);
+                  })
+                  .withFailureHandler((err) => {
+                    console.warn('adminListBookingsRaw failed', err);
+                    if (btn) setLoading(btn, false);
+                  })
+                  .adminListBookingsRaw(30);
+                return;
+              }
+
+              if (btn) setLoading(btn, false);
+            })
+          .withFailureHandler((err) => {
+            showMsg('Bookings取得失敗: ' + (err?.message || err), false);
+            if (btn) setLoading(btn, false);
+          })
+          .adminListBookings(limit);
+      }
+
+      let bookingsCache = [];
+      function applyBookingFilters(rows) {
+        const q = String($('bkFilterText')?.value || '').trim().toLowerCase();
+        const st = String($('bkFilterStatus')?.value || '').trim();
+        return (rows || []).filter(r => {
+          const status = String(r.status || '').trim();
+          if (st && st !== status) return false;
+          if (!q) return true;
+          const hay = [r.booking_id, r.customer_name, r.customer_email, r.service_name].map(v => String(v || '').toLowerCase()).join(' ');
+          return hay.indexOf(q) >= 0;
+        });
+      }
+
+      function statusJa(status) {
+        const st = String(status || '').toLowerCase();
+        if (st === 'confirmed') return '予約';
+        if (st === 'canceled' || st === 'cancelled' || st.indexOf('cancel') >= 0) return 'キャンセル';
+        return status || '';
+      }
+
+      // Determine whether a row represents an actual booking (not an availability/event row)
+      function isBookingRow(r) {
+        if (!r) return false;
+        const bookingId = String(r.booking_id || r.bookingId || r.id || '').trim();
+        const name = String(r.customer_name || r.booking_name || r.name || '').trim();
+        const email = String(r.customer_email || r.email || '').trim();
+        const status = String(r.status || '').toLowerCase();
+        if (bookingId) return true;
+        if (name || email) return true;
+        if (status === 'confirmed' || status === 'canceled' || status === 'cancelled' || status.indexOf('cancel') >= 0) return true;
+        return false;
+      }
+
+      function renderBookingsTable(rows) {
+        const tbl = $('tblBookings');
+        // only the required columns for quick view
+        const cols = ['customer_name','customer_email','service_name','status'];
+        renderTableHead(tbl, cols);
+
+        const tbody = tbl.querySelector('tbody');
+        // build rows as HTML for performance
+        const statusIconLabel = (status) => {
+          const st = String(status || '').toLowerCase();
+          if (st === 'confirmed') return '✅ 予約';
+          if (st === 'canceled' || st === 'cancelled' || st.indexOf('cancel') >= 0) return '❌ キャンセル';
+          if (st === 'freebusy') return '⏺️ 占有';
+          return escapeHtml(status || '');
+        };
+
+        const rowsArr = (rows || []);
+        if (rowsArr.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" class="muted">予約はありません</td></tr>';
+          return;
+        }
+
+        let html = '';
+        for (let i = 0; i < rowsArr.length; i++) {
+          const r = rowsArr[i];
+          const name = escapeHtml(r.customer_name || r.booking_name || '');
+          const email = escapeHtml(r.customer_email || '');
+          const svc = escapeHtml(r.service_name || '');
+          const st = statusIconLabel(r.status);
+          html += `<tr>` +
+                  `<td>${name}</td>` +
+                  `<td>${email}</td>` +
+                  `<td>${svc}</td>` +
+                  `<td>${st}</td>` +
+                  `</tr>`;
+        }
+        tbody.innerHTML = html;
+      }
+
+      // Load bookings for modal (filter by ymd)
+      function loadModalBookingsForDate(ymd) {
+        const limit = 500;
+        google.script.run
+          .withSuccessHandler((rows) => {
+            try { renderModalBookings(rows || [], ymd); } catch (e) { console.warn('modal bookings render failed', e); }
+          })
+          .withFailureHandler((err) => {
+            const el = $('modalBookings'); if (el) { el.innerHTML = '<div class="muted">予約の取得に失敗しました</div>'; }
+            console.warn('modal bookings fetch failed', err);
+          })
+          .adminListBookings(limit);
+      }
+
+      function renderModalBookings(rows, ymd) {
+        const el = $('modalBookings'); if (!el) return;
+        const filtered = (rows || []).filter(r => String(r.start_iso || '').slice(0,10) === String(ymd));
+        if (!filtered || filtered.length === 0) {
+          el.innerHTML = '<div class="muted">当日の予約はありません。</div>';
+          return;
+        }
+        const tbl = document.createElement('table');
+        const thead = document.createElement('thead');
+        const trh = document.createElement('tr');
+        ['時間','氏名','メール','ステータス'].forEach(h => { const th = document.createElement('th'); th.textContent = h; trh.appendChild(th); });
+        thead.appendChild(trh); tbl.appendChild(thead);
+        const tbody = document.createElement('tbody');
+        filtered.forEach(r => {
+          const tr = document.createElement('tr');
+          const t1 = document.createElement('td'); t1.textContent = String(r.start_iso || '') + ' → ' + String(r.end_iso || ''); tr.appendChild(t1);
+          const t2 = document.createElement('td'); t2.textContent = String(r.customer_name || r.booking_name || ''); tr.appendChild(t2);
+          const t3 = document.createElement('td'); t3.textContent = String(r.customer_email || ''); tr.appendChild(t3);
+          const t4 = document.createElement('td'); t4.textContent = String(r.status || ''); tr.appendChild(t4);
+          tbody.appendChild(tr);
+        });
+        tbl.appendChild(tbody);
+        el.innerHTML = ''; el.appendChild(tbl);
+      }
+
+      // Load Events for modal day and render with inline service assignment
+      function loadModalEventsForDate(ymd) {
+        const startIso = ymd + 'T00:00';
+        const endIso = ymd + 'T23:59';
+        google.script.run
+          .withSuccessHandler((res) => {
+            try { if (!res || !res.ok) { renderModalEvents([], ymd); return; } renderModalEvents(res.events || [], ymd); } catch (e) { console.warn('modal events render failed', e); }
+          })
+          .withFailureHandler((err) => { const el = $('modalEvents'); if (el) el.innerHTML = '<div class="muted">Events取得に失敗しました</div>'; console.warn('modal events fetch failed', err); })
+          .adminListEventsInRange(startIso, endIso);
+      }
+
+      // Render list of unique course titles from events and wire click handlers
+      function renderCourseList(events) {
+        const root = $('courseList');
+        if (!root) return;
+        const cleanTitle = (t) => {
+          if (!t) return '';
+          // Handle various separators: em-dash, full-width dash, hyphen-minus, etc. surrounded by space or not
+          const parts = String(t).split(/ [—－―ー-] /);
+          if (parts.length > 1) return parts.slice(1).join(' — ').trim();
+          // Fallback if no space-surrounded separator, try without spaces for common dashes
+          const parts2 = String(t).split(/[—－―]/);
+          return parts2.length > 1 ? parts2.slice(1).join(' — ').trim() : t;
+        };
+        const setNames = new Set();
+        (events || []).forEach(ev => {
+          const t = cleanTitle(String(ev.title || '').trim());
+          if (t) setNames.add(t);
+        });
+        // fallback: also scan bookings for titles if no events
+        if (setNames.size === 0 && Array.isArray(bookingsCache)) {
+          bookingsCache.forEach(b => {
+             const t = cleanTitle(String(b.service_name || b.title || '').trim());
+             if (t) setNames.add(t);
+          });
+        }
+        if (setNames.size === 0) { root.innerHTML = '<div class="muted">講座は見つかりませんでした</div>'; return; }
+        const arr = Array.from(setNames).sort();
+        root.innerHTML = '';
+        arr.forEach(name => {
+          const related = (lastAdminEvents || []).filter(ev => cleanTitle(String(ev.title || '').trim()) === String(name).trim());
+          // filter to upcoming events only for course list purposes (do not modify calendar rendering)
+          const now = new Date();
+          const todayStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+          const futureRelated = (related || []).filter(ev => {
+            try {
+              const s = String(ev.start_iso || '');
+              if (!s) return false;
+              const ymd = s.slice(0,10);
+              if (ymd < todayStr) return false;
+              if (ymd === todayStr) {
+                const d = new Date(s);
+                return !isNaN(d.getTime()) && d.getTime() >= now.getTime();
+              }
+              return true;
+            } catch (e) { return false; }
+          });
+          // If no upcoming events for this course, skip showing it in admin course list
+          if (!futureRelated || futureRelated.length === 0) return;
+          // compute available slots count
+          const availableCount = futureRelated.reduce((acc, ev) => {
+            try {
+              const st = String(ev.status || '').trim();
+              if (st && st !== 'available' && st !== 'confirmed') return acc;
+              if (st === 'confirmed') {
+                if (typeof ev.remaining === 'number') return acc + (ev.remaining > 0 ? 1 : 0);
+                return acc;
+              }
+              if (typeof ev.remaining === 'number') return acc + (ev.remaining > 0 ? 1 : 0);
+              const cap = ev.capacity;
+              if (cap === undefined || cap === null || String(cap).trim() === '') return acc + 1;
+              const n = Number(cap);
+              return acc + (!isNaN(n) && n > 0 ? 1 : 0);
+            } catch (e) { return acc; }
+          }, 0);
+
+          // compute bookings count (from events booking_id and bookingsCache matches)
+          let bookingsCount = 0;
+          const bookingsList = [];
+          // event-based bookings (only future events)
+          futureRelated.forEach(ev => {
+            if (ev.booking_id) {
+              bookingsCount += 1;
+              bookingsList.push({ source: 'event', ev });
+            }
+          });
+          // bookingsCache matches
+          if (Array.isArray(bookingsCache)) {
+            bookingsCache.forEach(b => {
+              const svc = cleanTitle(String(b.service_name || b.title || '').trim());
+              if (svc && svc === String(name).trim()) {
+                bookingsCount += 1;
+                bookingsList.push({ source: 'sheet', b });
+              }
+            });
+          }
+
+          const item = document.createElement('div');
+          item.className = 'timeline-item';
+          item.style.marginBottom = '8px';
+          // header row
+          const header = document.createElement('div');
+          header.style.display = 'flex'; header.style.justifyContent = 'space-between'; header.style.alignItems = 'center';
+          // left column: thumbnail + title + compact times + description
+          const leftCol = document.createElement('div'); leftCol.className = 'course-row';
+          const thumb = document.createElement('img');
+          const meta = courseMetaMap.get(name) || {};
+          if (meta.thumbnail_url) {
+            thumb.src = meta.thumbnail_url;
+          }
+          thumb.alt = 'thumbnail';
+          thumb.className = 'course-thumb';
+          const metaCol = document.createElement('div'); metaCol.className = 'course-meta';
+          const title = document.createElement('div'); title.textContent = name; title.style.fontWeight = '700';
+          const timesDiv = document.createElement('div'); timesDiv.className = 'course-times';
+          // build compact upcoming times: take next 3 events sorted by start
+          const times = (futureRelated || []).slice().sort((a,b)=> String(a.start_iso||'').localeCompare(String(b.start_iso||''))).slice(0,3).map(ev => {
+            const s = String(ev.start_iso||'');
+            const datePart = s.length >= 10 ? s.slice(0,10) : '';
+            const timeText = s.length >= 16 ? s.slice(11,16) : (s.slice(11)||'');
+            let rem = '';
+            if (typeof ev.remaining === 'number') rem = `（残席:${ev.remaining}）`;
+            else if (ev.capacity !== undefined && ev.capacity !== null && String(ev.capacity).trim() !== '') rem = `（定員:${ev.capacity}）`;
+            // include date + time; title is redundant with header so omit here to keep it compact
+            return `${datePart} ${timeText}${rem}`.trim();
+          });
+          timesDiv.textContent = times.join(' / ');
+          const desc = document.createElement('div'); desc.className = 'course-desc'; desc.textContent = String(meta.description || '').trim();
+          metaCol.appendChild(title); metaCol.appendChild(timesDiv); if (desc.textContent) metaCol.appendChild(desc);
+          leftCol.appendChild(thumb); leftCol.appendChild(metaCol);
+          const badges = document.createElement('div'); badges.style.display = 'flex'; badges.style.gap = '8px';
+          const availBadge = document.createElement('span'); availBadge.className = 'badge ok'; availBadge.textContent = `空き: ${availableCount}`;
+          const bookBadge = document.createElement('span'); bookBadge.className = 'badge ng'; bookBadge.textContent = `予約: ${bookingsCount}`;
+          const editBtn = document.createElement('button'); editBtn.className = 'secondary'; editBtn.textContent = '編集';
+          editBtn.onclick = () => openCourseEdit(name);
+          badges.appendChild(availBadge); badges.appendChild(bookBadge); badges.appendChild(editBtn);
+          header.appendChild(leftCol); header.appendChild(badges);
+          item.appendChild(header);
+
+          // inline detail area (hidden) — show bookings (reservation info)
+          const detail = document.createElement('div'); detail.style.display = 'none'; detail.style.marginTop = '8px';
+          if (bookingsList.length > 0) {
+            const tbl = document.createElement('table'); tbl.style.width = '100%'; tbl.style.borderCollapse = 'collapse';
+            const thead = document.createElement('thead'); const trh = document.createElement('tr');
+            ['日時','氏名','メール','ステータス','備考'].forEach(h => { const th = document.createElement('th'); th.textContent = h; th.style.textAlign = 'left'; th.style.padding = '6px'; trh.appendChild(th); });
+            thead.appendChild(trh); tbl.appendChild(thead);
+            const tbody = document.createElement('tbody');
+            bookingsList.forEach(it => {
+              const tr = document.createElement('tr');
+              const dt = document.createElement('td');
+              const nameTd = document.createElement('td');
+              const emailTd = document.createElement('td');
+              const stTd = document.createElement('td');
+              const noteTd = document.createElement('td');
+
+              if (it.source === 'event') {
+                const ev = it.ev;
+                dt.textContent = `${String(ev.start_iso||'').replace('T',' ')} → ${String(ev.end_iso||'').replace('T',' ')}`;
+                // display customer name, falling back to booking_name/title/booking_id
+                nameTd.textContent = String(ev.customer_name || ev.booking_name || ev.title || ev.booking_id || '');
+                // display customer email if present on event row
+                emailTd.textContent = String(ev.customer_email || ev.customerEmail || ev.email || '');
+                stTd.textContent = String(ev.status || '');
+                // For備考: prefer explicit booking/answers fields used for 熊野くじ
+                let note = '';
+                const pickFromObj = (o, keys) => {
+                  if (!o || typeof o !== 'object') return null;
+                  for (const k of keys) {
+                    if (k in o && o[k] != null && String(o[k] || '').trim() !== '') return o[k];
+                  }
+                  return null;
+                };
+                // common candidate keys that might contain kumano data
+                const preferredKeys = ['kumano', 'kumano_text', 'kumano_note', 'kumano_message', 'free_text', 'text', 'note', 'memo', 'customer_message', 'booking_note'];
+                const data = ev.answers_json || ev.description || ev.answers || '';
+                if (data && typeof data === 'string' && data.trim().startsWith('{')) {
+                  try {
+                    const a = JSON.parse(data);
+                    const v = pickFromObj(a, preferredKeys);
+                    if (v != null) note = (typeof v === 'string') ? v : JSON.stringify(v);
+                    else note = data;
+                  } catch (e) {
+                    note = data;
+                  }
+                } else if (ev.answers && typeof ev.answers === 'object') {
+                  const v = pickFromObj(ev.answers, preferredKeys);
+                  if (v != null) note = (typeof v === 'string') ? v : JSON.stringify(v);
+                  else note = JSON.stringify(ev.answers);
+                } else if (ev.note || ev.customer_message || ev.booking_note) {
+                  note = String(ev.note || ev.customer_message || ev.booking_note || '');
+                } else if (data && !data.includes(' — ') && data.length < 500) {
+                   // if it's not JSON but seems like a short description/note
+                   note = data;
+                } else {
+                  note = '';
+                }
+                noteTd.textContent = note || '';
+              } else {
+                const b = it.b;
+                dt.textContent = `${String(b.start_iso||'').replace('T',' ')} → ${String(b.end_iso||'').replace('T',' ')}`;
+                nameTd.textContent = String(b.customer_name || b.booking_name || '');
+                emailTd.textContent = String(b.customer_email || b.email || '');
+                stTd.textContent = String(b.status || '');
+                // For sheet-based bookings, show the Bookings sheet `answers_json` content (prefer free_text)
+                let note = '';
+                if (b.answers_json) {
+                  try {
+                    const a = (typeof b.answers_json === 'string') ? JSON.parse(b.answers_json) : b.answers_json;
+                    if (a && typeof a === 'object') {
+                      note = a.free_text || a.text || a.note || a.memo || JSON.stringify(a);
+                    } else {
+                      note = String(b.answers_json);
+                    }
+                  } catch (e) {
+                    note = String(b.answers_json || '');
+                  }
+                } else if (b.answers && typeof b.answers === 'object') {
+                  note = b.answers.free_text || b.answers.text || JSON.stringify(b.answers);
+                }
+                // Do not fall back to course description here; leave empty if no answers provided
+                noteTd.textContent = note || '';
+              }
+
+              dt.style.padding = nameTd.style.padding = emailTd.style.padding = stTd.style.padding = noteTd.style.padding = '6px';
+              tr.appendChild(dt); tr.appendChild(nameTd); tr.appendChild(emailTd); tr.appendChild(stTd); tr.appendChild(noteTd);
+              tbody.appendChild(tr);
+            });
+            tbl.appendChild(tbody); detail.appendChild(tbl);
+          } else {
+            const no = document.createElement('div'); no.className = 'muted'; no.textContent = 'この講座の予約はありません。'; detail.appendChild(no);
+          }
+
+          // toggle button to show/hide bookings detail
+          const btn = document.createElement('button'); btn.className = 'secondary'; btn.textContent = '予約者を表示 / 非表示'; btn.style.marginTop = '8px';
+          btn.onclick = () => { detail.style.display = (detail.style.display === 'none') ? '' : 'none'; };
+          item.appendChild(btn);
+          item.appendChild(detail);
+
+          root.appendChild(item);
+        });
+        const rf = $('btnRefreshCourseList'); if (rf) rf.onclick = () => { try { loadCalendar(calYear, calMonth); } catch(e){} };
+      }
+
+      function showCourseDetail(name) {
+        try {
+          const modal = $('courseDetailModal');
+          const body = $('courseDetailBody');
+          const title = $('courseDetailTitle');
+          if (!modal || !body || !title) return;
+          title.textContent = `講座: ${name}`;
+          const related = (lastAdminEvents || []).filter(ev => String(ev.title || '').trim() === String(name).trim()).sort((a,b) => String(a.start_iso||'').localeCompare(String(b.start_iso||'')));
+          if (!related || related.length === 0) {
+            body.innerHTML = '<div class="muted">この講座のイベントは見つかりませんでした。</div>';
+          } else {
+            let html = '<table style="width:100%;border-collapse:collapse"><thead><tr><th>日時</th><th>ステータス</th><th>備考</th></tr></thead><tbody>';
+            related.forEach(ev => {
+              const dt = `${String(ev.start_iso||'').replace('T',' ')} → ${String(ev.end_iso||'').replace('T',' ')}`;
+              html += `<tr><td style="padding:8px">${escapeHtml(dt)}</td><td style="padding:8px">${escapeHtml(ev.status||'')}</td><td style="padding:8px">${escapeHtml(ev.description||ev.title||'')}</td></tr>`;
+            });
+            html += '</tbody></table>';
+            body.innerHTML = html;
+          }
+          modal.style.display = '';
+          modal.classList.add('event-modal');
+        } catch (e) { console.warn('showCourseDetail failed', e); }
+      }
+
+      $('btnCloseCourseDetail')?.addEventListener('click', (e) => { e.preventDefault(); const m = $('courseDetailModal'); if (m) { m.style.display='none'; m.classList.remove('event-modal'); } });
+
+      function openCourseEdit(name) {
+        const modal = $('courseEditModal');
+        if (!modal) return;
+        currentCourseEditName = String(name || '').trim();
+        const meta = courseMetaMap.get(currentCourseEditName) || {};
+        $('courseEditName').value = currentCourseEditName;
+        $('courseEditDesc').value = String(meta.description || '');
+        const preview = $('courseEditThumbPreview');
+        if (preview) {
+          preview.innerHTML = meta.thumbnail_url ? `<img src="${meta.thumbnail_url}" class="course-thumb-large" />` : '<div class="muted">画像なし</div>';
+        }
+        if ($('courseEditThumb')) $('courseEditThumb').value = '';
+        modal.style.display = '';
+      }
+
+      $('btnCloseCourseEdit')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const m = $('courseEditModal');
+        if (m) m.style.display = 'none';
+      });
+
+      $('courseEditThumb')?.addEventListener('change', (e) => {
+        const f = e.target.files && e.target.files[0];
+        const preview = $('courseEditThumbPreview');
+        if (!preview) return;
+        if (!f) { preview.innerHTML = '<div class="muted">画像なし</div>'; return; }
+        // resize and preview
+        resizeImageFileToDataUrl(f, 640, 640, 0.75, (err, dataUrl) => {
+          if (err) { preview.innerHTML = '<div class="muted">画像プレビューに失敗しました</div>'; return; }
+          preview.innerHTML = `<img src="${dataUrl}" class="course-thumb-large" />`;
+          // store resized preview result on input element for later submission
+          preview.dataset._dataurl = dataUrl;
+        });
+      });
+
+      // preview for eventCreator thumbnail
+      $('c_thumbnail')?.addEventListener('change', (e) => {
+        const f = e.target.files && e.target.files[0];
+        const preview = $('c_thumb_preview');
+        if (!preview) return;
+        if (!f) { preview.innerHTML = '<div class="muted">画像なし</div>'; return; }
+        resizeImageFileToDataUrl(f, 640, 640, 0.75, (err, dataUrl) => {
+          if (err) { preview.innerHTML = '<div class="muted">画像プレビューに失敗しました</div>'; return; }
+          preview.innerHTML = `<img src="${dataUrl}" style="width:120px;height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--line)" />`;
+          preview.dataset._dataurl = dataUrl;
+        });
+      });
+
+      // when user types a title in the eventCreator, auto-fill course info if exists
+      $('c_title')?.addEventListener('input', (e) => {
+        try {
+          const v = String(e.target.value || '').trim();
+          if (!v) return;
+          if (courseMetaMap && courseMetaMap.has(v)) {
+            const m = courseMetaMap.get(v) || {};
+            if ($('c_description')) $('c_description').value = String(m.description || '');
+            const pv = $('c_thumb_preview'); if (pv) pv.innerHTML = m.thumbnail_url ? `<img src="${m.thumbnail_url}" style="width:120px;height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--line)" />` : '<div class="muted">画像なし</div>';
+          }
+        } catch (e) { /* ignore */ }
+      });
+
+      $('btnRemoveThumb')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!currentCourseEditName) return;
+        const btn = $('btnRemoveThumb'); setLoading(btn, true);
+        google.script.run
+          .withSuccessHandler((res) => {
+            setLoading(btn, false);
+            if (!res || !res.ok) { showMsg('画像削除に失敗しました', false); return; }
+            // update cache
+            courseMetaMap.set(currentCourseEditName, res.course || { course_name: currentCourseEditName });
+            renderCourseList(lastAdminEvents || []);
+            const preview = $('courseEditThumbPreview');
+            if (preview) preview.innerHTML = '<div class="muted">画像なし</div>';
+          })
+          .withFailureHandler((err) => { setLoading(btn, false); showMsg('画像削除に失敗: ' + (err?.message || err), false); })
+          .adminUpsertCourseMeta({ course_name: currentCourseEditName, remove_thumbnail: true, description: $('courseEditDesc').value });
+      });
+
+      $('btnSaveCourseEdit')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!currentCourseEditName) return;
+        const btn = $('btnSaveCourseEdit'); setLoading(btn, true);
+        const desc = $('courseEditDesc').value || '';
+        const file = $('courseEditThumb')?.files && $('courseEditThumb').files[0];
+        const send = (payload) => {
+          google.script.run
+            .withSuccessHandler((res) => {
+              setLoading(btn, false);
+              if (!res || !res.ok) { showMsg('保存に失敗しました', false); return; }
+              courseMetaMap.set(currentCourseEditName, res.course || { course_name: currentCourseEditName, description: desc });
+              renderCourseList(lastAdminEvents || []);
+              const m = $('courseEditModal'); if (m) m.style.display = 'none';
+            })
+            .withFailureHandler((err) => { setLoading(btn, false); showMsg('保存に失敗: ' + (err?.message || err), false); })
+            .adminUpsertCourseMeta(payload);
+        };
+
+        if (file) {
+          const preview = $('courseEditThumbPreview');
+          const existing = preview && preview.dataset && preview.dataset._dataurl;
+          if (existing) {
+            send({ course_name: currentCourseEditName, description: desc, thumbnail_base64: existing, thumbnail_filename: file.name, thumbnail_mime: file.type });
+          } else {
+            resizeImageFileToDataUrl(file, 640, 640, 0.75, (err, dataUrl) => {
+              if (err) { setLoading(btn, false); showMsg('画像処理に失敗しました', false); return; }
+              send({ course_name: currentCourseEditName, description: desc, thumbnail_base64: dataUrl, thumbnail_filename: file.name, thumbnail_mime: file.type });
+            });
+          }
+        } else {
+          send({ course_name: currentCourseEditName, description: desc });
+        }
+      });
+
+      function renderModalEvents(rows, ymd) {
+        const el = $('modalEvents'); if (!el) return;
+        if (!rows || rows.length === 0) { el.innerHTML = '<div class="muted">当日の Events はありません。</div>'; return; }
+        const tbl = document.createElement('table');
+        const thead = document.createElement('thead'); const trh = document.createElement('tr');
+        ['時間','タイトル','操作'].forEach(h => { const th = document.createElement('th'); th.textContent = h; trh.appendChild(th); });
+        thead.appendChild(trh); tbl.appendChild(thead);
+        const tbody = document.createElement('tbody');
+        rows.forEach(ev => {
+          const tr = document.createElement('tr');
+          const t1 = document.createElement('td'); t1.textContent = String(ev.start_iso || '') + ' → ' + String(ev.end_iso || ''); tr.appendChild(t1);
+          const t2 = document.createElement('td'); t2.textContent = String(ev.title || ''); tr.appendChild(t2);
+          const tAct = document.createElement('td');
+          tAct.textContent = '';
+          tr.appendChild(tAct);
+          tbody.appendChild(tr);
+        });
+        tbl.appendChild(tbody); el.innerHTML = ''; el.appendChild(tbl);
+      }
+
+      function loadEvents() {
+        const btn = $('btnLoadEvents');
+        if (btn) setLoading(btn, true);
+
+        const limit = 200; // default limit
+
+        google.script.run
+          .withSuccessHandler((rows) => {
+            renderEventsTable(rows || []);
+            // update course list when events are explicitly refreshed
+            try { renderCourseList(rows || []); } catch (e) { console.warn('renderCourseList failed', e); }
+            if (btn) setLoading(btn, false);
+          })
+          .withFailureHandler((err) => {
+            showMsg('Events取得失敗: ' + (err?.message || err), false);
+            if (btn) setLoading(btn, false);
+          })
+          .adminListEvents(limit);
+      }
+
+      // Calendar: month navigation and rendering
+      let calYear = (new Date()).getFullYear();
+      let calMonth = (new Date()).getMonth(); // 0-based
+      let lastAdminEventsSig = '';
+      let lastAdminEventsCount = 0;
+      let lastAdminRenderAt = 0;
+      let lastAdminEvents = [];
+      const ADMIN_AUTO_REFRESH_MS = 20000;
+
+      function pad(n){ return (n<10? '0':'') + n; }
+
+      function startOfMonthYMD(y,m){ return `${y}-${pad(m+1)}-01`; }
+      function endOfMonthYMD(y,m){ const d = new Date(y,m+1,0); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+
+      function buildAdminEventsSignature(events) {
+        try {
+          const arr = (events || []).map(ev => {
+            return [
+              String(ev.id || ''),
+              String(ev.start_iso || ''),
+              String(ev.end_iso || ''),
+              String(ev.status || ''),
+              String(ev.booking_id || ''),
+              String(ev.title || '')
+            ].join('|');
+          }).sort();
+          return arr.join('||');
+        } catch (_) {
+          return '' + Date.now();
+        }
+      }
+
+      function loadCalendar(year, month, opts = {}) {
+        calYear = year; calMonth = month;
+        const startDate = startOfMonthYMD(year, month);
+        const endDate = endOfMonthYMD(year, month);
+        const startIso = startDate + 'T00:00';
+        const endIso = endDate + 'T23:59';
+        $('calLabel').textContent = `${year}年 ${month+1}月`;
+        if ($('cal_range_start')) $('cal_range_start').value = startDate;
+        if ($('cal_range_end')) $('cal_range_end').value = endDate;
+        google.script.run
+          .withSuccessHandler((res) => {
+            if (!res || !res.ok) { showMsg('Events取得失敗', false); return; }
+            const evs = (res && res.events) ? res.events : [];
+            lastAdminEvents = evs;
+            const sig = buildAdminEventsSignature(evs);
+            // Always render calendar so that months with 0 events still show the calendar grid
+            renderCalendar(evs, year, month);
+            // populate course list from events
+            renderCourseList(evs);
+            lastAdminEventsSig = sig;
+            lastAdminEventsCount = evs.length;
+            lastAdminRenderAt = Date.now();
+          })
+          .withFailureHandler((err) => { showMsg('Events取得失敗: ' + (err?.message || err), false); })
+          .adminListEventsInRange(startIso, endIso);
+      }
+
+      function loadGoogleCalendarRange(startDate, endDate) {
+        const startIso = `${startDate}T00:00`;
+        const endIso = `${endDate}T23:59`;
+        google.script.run
+          .withSuccessHandler((res) => {
+            if (!res || !res.ok) { showMsg('Googleカレンダー取得失敗', false); return; }
+            const evs = (res && res.events) ? res.events : [];
+            showMsg(`Googleカレンダー取得: ${evs.length} 件`, true);
+            renderCalendar(evs, calYear, calMonth);
+          })
+          .withFailureHandler((err) => { showMsg('Googleカレンダー取得失敗: ' + (err?.message || err), false); })
+          .adminGetCalendar(startIso, endIso);
+      }
+
+      function renderCalendar(events, year, month) {
+        const grid = $('calendarGrid');
+        grid.innerHTML = '';
+        const start = new Date(year, month, 1);
+        // week start Monday (ISO)
+        const dayOfWeek = (d) => { const u = d.getDay(); return u===0?7:u; } // Mon=1..Sun=7
+        const firstCell = new Date(start.getTime());
+        // move to Monday of that week
+        const dow = dayOfWeek(firstCell);
+        firstCell.setDate(firstCell.getDate() - (dow - 1));
+
+        // build 6 weeks x 7 days
+        const tbl = document.createElement('table');
+        tbl.style.width = '100%';
+        const thead = document.createElement('thead');
+        const trh = document.createElement('tr');
+        ['月','火','水','木','金','土','日'].forEach(h => { const th = document.createElement('th'); th.textContent = h; trh.appendChild(th); });
+        thead.appendChild(trh);
+        tbl.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        let cur = new Date(firstCell.getTime());
+        for (let week=0; week<6; week++) {
+          const tr = document.createElement('tr');
+          for (let d=0; d<7; d++) {
+            const td = document.createElement('td');
+            td.style.verticalAlign = 'top';
+            td.style.padding = '6px';
+            td.style.minHeight = '80px';
+            td.style.width = (100/7) + '%';
+            const dayNum = document.createElement('div');
+            dayNum.textContent = cur.getDate();
+            dayNum.style.fontWeight = '700';
+            dayNum.style.marginBottom = '6px';
+            td.appendChild(dayNum);
+
+            const ymd = `${cur.getFullYear()}-${pad(cur.getMonth()+1)}-${pad(cur.getDate())}`;
+            const dayEvents = events.filter(ev => (String(ev.start_iso || '').slice(0,10) === ymd));
+            if (dayEvents.length > 0) {
+              const ul = document.createElement('div');
+              dayEvents.slice(0,4).forEach(ev => {
+                const div = document.createElement('div');
+                // show time and a concise title (do NOT include customer name)
+                const time = String(ev.start_iso || '').slice(11);
+                const isCanceled = ev.status && String(ev.status).toLowerCase().indexOf('cancel') >= 0;
+                const baseTitle = String(ev.title || '');
+                // remove leading customer name if present in title (e.g. "森　美和 — 講座名")
+                let displayTitle = baseTitle;
+                try {
+                  const cname = String(ev.customer_name || '').trim();
+                  if (cname && displayTitle.indexOf(cname + ' — ') === 0) {
+                    displayTitle = displayTitle.slice((cname + ' — ').length).trim();
+                  }
+                } catch (_) {}
+                const titleText = displayTitle;
+                // render time + clickable title parts (split by ' — ')
+                const parts = String(titleText || '').split(' — ').map(s => s.trim()).filter(Boolean);
+                const timeSpan = document.createElement('span');
+                timeSpan.textContent = time + ' ';
+                timeSpan.style.fontWeight = '700';
+                div.appendChild(timeSpan);
+                parts.forEach((p, i) => {
+                  const span = document.createElement('span');
+                  span.textContent = p;
+                  span.style.cursor = 'pointer';
+                  span.style.textDecoration = 'underline';
+                  span.style.marginRight = '6px';
+                  // Clicking the title text should show the course information (講座情報),
+                  // even if a booking exists. Booking details are shown in the course list below.
+                  span.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    try {
+                      const courseName = String(displayTitle || p || '').trim();
+                      openCourseInfoModal(ev, courseName);
+                    } catch (err) { console.warn('openCourseInfoModal failed', err); }
+                  });
+                  div.appendChild(span);
+                  if (i < parts.length - 1) {
+                    const sep = document.createElement('span'); sep.textContent = ' — '; sep.style.color = 'var(--muted)'; div.appendChild(sep);
+                  }
+                });
+                div.style.fontSize = '12px';
+                div.style.overflow = 'hidden';
+                div.style.whiteSpace = 'nowrap';
+                div.style.textOverflow = 'ellipsis';
+                div.style.marginBottom = '6px';
+
+                // visual badge for status
+                if (ev.status && ev.status.toLowerCase().indexOf('cancel') >= 0) {
+                  div.style.color = 'var(--muted)';
+                  div.style.opacity = '0.7';
+                } else if (ev.source === 'booking' || ev.booking_id) {
+                  div.style.borderLeft = '4px solid rgba(34,197,94,0.14)';
+                  div.style.paddingLeft = '6px';
+                  div.style.background = 'rgba(34,197,94,0.04)';
+                  div.style.borderRadius = '6px';
+                } else {
+                  div.style.borderLeft = '4px solid rgba(59,130,246,0.08)';
+                  div.style.paddingLeft = '6px';
+                  div.style.borderRadius = '6px';
+                }
+
+                // tooltip with details (only show course title and time; do not expose customer info)
+                div.title = `${displayTitle || ''}\n${time || ''}`;
+
+                // 既存イベントのクリックは講座情報の表示にする（予約詳細は講座一覧側で管理）
+                div.onclick = (e) => {
+                  e.stopPropagation();
+                    try {
+                    const courseName = String(displayTitle || ev.title || '').trim();
+                    openCourseInfoModal(ev, courseName);
+                  } catch (err) { console.warn('openCourseInfoModal failed', err); }
+                };
+                td.appendChild(div);
+              });
+              if (dayEvents.length > 4) {
+                const more = document.createElement('div'); more.textContent = `+ ${dayEvents.length-4} 件`; more.style.fontSize='12px'; more.style.color='var(--muted)'; td.appendChild(more);
+              }
+            }
+
+            // click -> open modal event creator (calendar-focused UX)
+            td.style.cursor = 'pointer';
+            td.addEventListener('click', () => {
+              openEventModal(ymd);
+            });
+
+            // mark if not current month
+            if (cur.getMonth() !== month) td.style.opacity = '0.45';
+
+            tr.appendChild(td);
+            cur.setDate(cur.getDate() + 1);
+          }
+          tbody.appendChild(tr);
+        }
+        tbl.appendChild(tbody);
+        grid.appendChild(tbl);
+      }
+
+      $('calPrev').addEventListener('click', () => {
+        const m = calMonth - 1;
+        if (m < 0) { loadCalendar(calYear - 1, 11); }
+        else { loadCalendar(calYear, m); }
+      });
+      $('calNext').addEventListener('click', () => {
+        const m = calMonth + 1;
+        if (m > 11) { loadCalendar(calYear + 1, 0); }
+        else { loadCalendar(calYear, m); }
+      });
+      $('calToday').addEventListener('click', () => { const now = new Date(); loadCalendar(now.getFullYear(), now.getMonth()); });
+
+      // initial calendar load
+      setTimeout(() => { const now=new Date(); loadCalendar(now.getFullYear(), now.getMonth()); }, 200);
+      // lightweight auto-refresh for realtime updates
+      setInterval(() => { try { loadCalendar(calYear, calMonth, { silent: true }); } catch (e) {} }, ADMIN_AUTO_REFRESH_MS);
+
+      // modal control for eventCreator
+      function openEventModal(ymd) {
+        // create backdrop if not exists
+        let bd = document.getElementById('modalBackdrop');
+        if (!bd) {
+          bd = document.createElement('div'); bd.id = 'modalBackdrop'; bd.className = 'modal-backdrop';
+          bd.addEventListener('click', closeEventModal);
+          document.body.appendChild(bd);
+        }
+        // style eventCreator as modal
+        const modal = $('eventCreator');
+        modal.classList.add('event-modal');
+        // prefill date/time
+        $('c_start_date').value = ymd;
+        if (!$('c_start_time').value) $('c_start_time').value = '09:00';
+        // clear any previous service id field
+        // service_id removed
+        // clear title only if empty
+        if (!$('c_title').value) $('c_title').value = '';
+        // If the title matches existing course meta, prefill description and thumbnail preview
+        try {
+          const t = String($('c_title').value || '').trim();
+          if (t && courseMetaMap && courseMetaMap.has(t)) {
+            const m = courseMetaMap.get(t) || {};
+            if ($('c_description')) $('c_description').value = String(m.description || '');
+            const pv = $('c_thumb_preview'); if (pv) {
+              pv.innerHTML = m.thumbnail_url ? `<img src="${m.thumbnail_url}" style="width:120px;height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--line)" />` : '<div class="muted">画像なし</div>';
+            }
+          }
+        } catch (e) { console.warn('prefill course meta failed', e); }
+        bd.style.display = '';
+        modal.style.display = '';
+        // focus title
+        $('c_title').focus();
+        // load bookings and events for that day into modal
+        try { loadModalBookingsForDate(ymd); loadModalEventsForDate(ymd); } catch (e) { console.warn('loadModal data failed', e); }
+      }
+
+      function closeEventModal() {
+        const bd = document.getElementById('modalBackdrop'); if (bd) bd.style.display = 'none';
+        const modal = $('eventCreator'); if (modal) {
+          modal.style.display = 'none'; modal.classList.remove('event-modal');
+        }
+      }
+
+      // Detail modal handlers
+      function openDetailModal(ev) {
+        try {
+          let bd = document.getElementById('modalBackdrop');
+          if (!bd) {
+            bd = document.createElement('div'); bd.id = 'modalBackdrop'; bd.className = 'modal-backdrop';
+            bd.addEventListener('click', closeDetailModal);
+            document.body.appendChild(bd);
+          }
+          const modal = $('detailModal');
+          if (!modal) return;
+          // populate fields (if booking_id present but no customer_name, fetch full booking)
+          function applyBookingToModal(b) {
+            const title = (b && b.title) ? b.title : (ev.title || '詳細');
+            $('detail_title').textContent = title;
+            
+            const cname = (b && (b.customer_name || b.booking_name)) ? (b.customer_name || b.booking_name) : (ev.customer_name || '');
+            if ($('detail_customer_row')) $('detail_customer_row').style.display = cname ? '' : 'none';
+            $('detail_customer').textContent = cname || '';
+            
+            const emailEl = $('detail_email');
+            const email = (b && b.customer_email) ? b.customer_email : (ev.customer_email || '');
+            if ($('detail_email_row')) $('detail_email_row').style.display = email ? '' : 'none';
+            if (email) { emailEl.textContent = email; emailEl.href = 'mailto:' + email; } else { emailEl.textContent = ''; emailEl.href = '#'; }
+            
+            const startStr = (b && b.start_iso) ? b.start_iso : (ev.start_iso || '');
+            const endStr = (b && b.end_iso) ? b.end_iso : (ev.end_iso || '');
+            if ($('detail_datetime')) {
+                $('detail_datetime').textContent = `${String(startStr).replace('T',' ')} ～ ${String(endStr).replace('T',' ')}`;
+            }
+            
+            // For detail view, usually capacity info is less important but let's hide it if no ev.capacity
+            if ($('detail_capacity_row')) {
+                if (ev.capacity) {
+                    $('detail_capacity_row').style.display = '';
+                    $('detail_capacity').textContent = `定員: ${ev.capacity} / 残席: ${ev.remaining !== undefined ? ev.remaining : '-'}`;
+                } else {
+                    $('detail_capacity_row').style.display = 'none';
+                }
+            }
+
+            // For booked events, prefer the booking's free-text answers (requirements/requests)
+            function pickFromObj(o, keys) { if (!o || typeof o !== 'object') return null; for (const k of keys) { if (k in o && o[k] != null && String(o[k] || '').trim() !== '') return o[k]; } return null; }
+            let desc = '';
+            if (b) {
+              const preferredKeys = ['free_text','text','note','memo','customer_message','booking_note','kumano','kumano_text','kumano_note'];
+              if (b.answers && typeof b.answers === 'object') {
+                const v = pickFromObj(b.answers, preferredKeys);
+                if (v != null) desc = (typeof v === 'string') ? v : JSON.stringify(v);
+                else desc = JSON.stringify(b.answers);
+              } else if (b.answers_json) {
+                try { const parsed = (typeof b.answers_json === 'string') ? JSON.parse(b.answers_json) : b.answers_json; const v = pickFromObj(parsed, preferredKeys); if (v != null) desc = (typeof v === 'string') ? v : JSON.stringify(v); else desc = typeof b.answers_json === 'string' ? b.answers_json : JSON.stringify(b.answers_json); } catch (_) { desc = String(b.answers_json || ''); }
+              } else if (b.free_text || b.note || b.memo) {
+                desc = String(b.free_text || b.note || b.memo || '');
+              } else {
+                desc = '';
+              }
+            } else {
+              desc = (ev.description || '');
+            }
+            $('detail_desc').textContent = desc || '';
+          }
+
+          if ((!ev.customer_name || String(ev.customer_name).trim() === '') && ev.booking_id) {
+            // fetch booking from server
+            applyBookingToModal(null);
+            google.script.run
+              .withSuccessHandler((b) => { try { if (b) applyBookingToModal(b); } catch (e) { console.warn('apply booking failed', e); } })
+              .withFailureHandler((err) => { console.warn('adminGetBookingById failed', err); })
+              .adminGetBookingById(ev.booking_id);
+          } else {
+            applyBookingToModal(null);
+          }
+          bd.style.display = '';
+          modal.style.display = '';
+          modal.classList.add('event-modal');
+        } catch (e) { console.warn('openDetailModal failed', e); }
+      }
+
+        // open modal for a specific name inside the title; try to fetch booking by name+start
+        function openDetailModalForName(ev, name) {
+          try {
+            if (!name) return openDetailModal(ev);
+            const start = ev.start_iso || '';
+            google.script.run
+              .withSuccessHandler((b) => {
+                try {
+                  if (b) {
+                    // booking object returned from server
+                    openDetailModal(b);
+                  } else {
+                    // fallback: show modal with provided name
+                    openDetailModal(Object.assign({}, ev, { customer_name: name }));
+                  }
+                } catch (e) { console.warn('openDetailModalForName handler failed', e); }
+              })
+              .withFailureHandler((err) => { console.warn('adminGetBookingByNameAndStart failed', err); openDetailModal(Object.assign({}, ev, { customer_name: name })); })
+              .adminGetBookingByNameAndStart(name, start);
+          } catch (e) { console.warn('openDetailModalForName failed', e); openDetailModal(ev); }
+        }
+
+      // Show course information modal (講座情報) for a given course name
+      function openCourseInfoModal(ev, inputName) {
+        try {
+          const courseName = inputName || (ev ? ev.title : '');
+          if (!courseName) return;
+          let bd = document.getElementById('modalBackdrop');
+          if (!bd) {
+            bd = document.createElement('div'); bd.id = 'modalBackdrop'; bd.className = 'modal-backdrop';
+            bd.addEventListener('click', closeDetailModal);
+            document.body.appendChild(bd);
+          }
+          const modal = $('detailModal');
+          if (!modal) return;
+          const meta = (courseMetaMap && courseMetaMap.get) ? (courseMetaMap.get(courseName) || {}) : {};
+          
+          $('detail_title').textContent = courseName;
+          
+          // Hide customer/email for general course info
+          if ($('detail_customer_row')) $('detail_customer_row').style.display = 'none';
+          if ($('detail_email_row')) $('detail_email_row').style.display = 'none';
+          
+          // Set Implementation Date/Time
+          if ($('detail_datetime')) {
+            const start = ev ? String(ev.start_iso || '').replace('T', ' ') : '';
+            const end = ev ? String(ev.end_iso || '').replace('T', ' ') : '';
+            $('detail_datetime').textContent = start && end ? `${start} ～ ${end}` : (start || '');
+          }
+          
+          // Set Capacity info
+          if ($('detail_capacity_row')) {
+            $('detail_capacity_row').style.display = '';
+            const cap = ev ? (ev.capacity || '-') : '-';
+            const rem = ev ? (ev.remaining !== undefined ? ev.remaining : '-') : '-';
+            $('detail_capacity').textContent = `定員: ${cap} / 残席: ${rem}`;
+          }
+
+          const descEl = $('detail_desc'); if (descEl) {
+            descEl.innerHTML = '';
+            if (meta.thumbnail_url) {
+              const img = document.createElement('img'); img.src = meta.thumbnail_url; img.style.width = '100%'; img.style.maxHeight = '200px'; img.style.objectFit = 'cover'; img.style.borderRadius = '8px'; img.style.display = 'block'; img.style.marginBottom = '8px'; descEl.appendChild(img);
+            }
+            const d = document.createElement('div'); d.style.whiteSpace = 'pre-wrap'; d.style.fontSize = '14px'; d.style.color = 'var(--text)'; d.textContent = String(meta.description || ''); descEl.appendChild(d);
+          }
+          bd.style.display = '';
+          modal.style.display = '';
+          modal.classList.add('event-modal');
+        } catch (e) { console.warn('openCourseInfoModal failed', e); }
+      }
+
+      function closeDetailModal() {
+        const bd = document.getElementById('modalBackdrop'); if (bd) bd.style.display = 'none';
+        const modal = $('detailModal'); if (modal) { modal.style.display = 'none'; modal.classList.remove('event-modal'); }
+      }
+
+      $('btnCloseDetail')?.addEventListener('click', (e) => { e.preventDefault(); closeDetailModal(); });
+
+      // close button in modal
+      $('btnCloseCreator')?.addEventListener('click', (e)=>{ e.preventDefault(); closeEventModal(); });
+
+      function renderEventsTable(rows) {
+        const tbl = $('tblEvents');
+        const cols = ['status','source','event_id','title','start_iso','end_iso','capacity','booking_id','updated_at','actions'];
+        renderTableHead(tbl, cols);
+
+        const tbody = tbl.querySelector('tbody');
+        tbody.innerHTML = '';
+
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.setAttribute('data-event-id', String(r.event_id || ''));
+
+          const st = String(r.status || '');
+          const badge = document.createElement('span');
+          badge.className = 'badge ' + (st === 'canceled' ? 'ng' : 'ok');
+          badge.textContent = st;
+
+          const tdStatus = document.createElement('td');
+          tdStatus.appendChild(badge);
+          tr.appendChild(tdStatus);
+
+          // Render cells with simple per-column handling
+            const colKeys = ['source','event_id','title','start_iso','end_iso','capacity','booking_id','updated_at'];
+            for (const key of colKeys) {
+              const td = document.createElement('td');
+              const val = r[key];
+              td.textContent = String(val ?? '');
+              tr.appendChild(td);
+            }
+
+          // actions: 削除ボタン
+          const tdAct = document.createElement('td');
+          const btnDel = document.createElement('button');
+          btnDel.className = 'danger';
+          btnDel.textContent = '削除';
+          btnDel.onclick = (ev) => {
+            ev.stopPropagation();
+            if (!confirm(`event_id=${r.event_id} を削除しますか？`)) return;
+            setLoading(btnDel, true);
+            google.script.run
+              .withSuccessHandler((res) => {
+                setLoading(btnDel, false);
+                if (!res || !res.ok) { showMsg('削除失敗: ' + (res?.error || 'unknown'), false); return; }
+                showMsg('削除しました。', true);
+                loadEvents();
+              })
+              .withFailureHandler((err) => { setLoading(btnDel, false); showMsg('削除失敗: ' + (err?.message || err), false); })
+              .adminDeleteEvent(r.event_id);
+          };
+          tdAct.appendChild(btnDel);
+          tr.appendChild(tdAct);
+
+          // 行クリックで簡易編集（タイトル・ステータス）
+          tr.onclick = () => {
+            const newTitle = prompt('タイトルを編集', r.title || '');
+            if (newTitle === null) return; // cancel
+            const newStatus = prompt('status を編集 (例: confirmed / canceled / freebusy)', r.status || '');
+            if (newStatus === null) return;
+            const upd = Object.assign({}, r, { title: String(newTitle), status: String(newStatus) });
+            const btn = document.createElement('button');
+            setLoading(btn, true);
+            google.script.run
+              .withSuccessHandler((res) => {
+                setLoading(btn, false);
+                if (!res || !res.ok) { showMsg('更新失敗', false); return; }
+                showMsg('更新しました。', true);
+                loadEvents();
+              })
+              .withFailureHandler((err) => { setLoading(btn, false); showMsg('更新失敗: ' + (err?.message || err), false); })
+              .adminUpsertEvent(upd);
+          };
+
+          tbody.appendChild(tr);
+        });
+      }
+
+      // --- Buttons wiring ---
+      $('btnReload')?.addEventListener('click', () => location.reload());
+
+      $('btnEnsure')?.addEventListener('click', () => {
+        clearMsg();
+        const btn = $('btnEnsure');
+        setLoading(btn, true);
+        google.script.run
+          .withSuccessHandler((res) => {
+            setLoading(btn, false);
+            if (!res || !res.ok) { showMsg('整備失敗', false); return; }
+            showMsg('Sheets/ヘッダを整備しました。', true);
+            boot();
+          })
+          .withFailureHandler((err) => {
+            setLoading(btn, false);
+            showMsg('整備失敗: ' + (err?.message || err), false);
+          })
+          .adminEnsureSheets();
+      });
+
+      $('btnBind')?.addEventListener('click', () => {
+        clearMsg();
+        const id = $('bindId').value.trim();
+        if (!id) { showMsg('Spreadsheet ID を入力してください', false); return; }
+        const btn = $('btnBind');
+        setLoading(btn, true);
+
+        google.script.run
+          .withSuccessHandler((res) => {
+            setLoading(btn, false);
+            if (!res || !res.ok) {
+              showMsg('紐付け失敗', false);
+              return;
+            }
+            showMsg(`切り替えました。\n${res.spreadsheet_url}`, true);
+            boot();
+          })
+          .withFailureHandler((err) => {
+            setLoading(btn, false);
+            showMsg('紐付け失敗: ' + (err?.message || err), false);
+          })
+          .adminBindSpreadsheetById(id);
+      });
+
+      $('btnCreateSs')?.addEventListener('click', () => {
+        clearMsg();
+        const name = $('newSsName').value.trim() || '予約管理システム';
+        const btn = $('btnCreateSs');
+        setLoading(btn, true);
+
+        google.script.run
+          .withSuccessHandler((res) => {
+            setLoading(btn, false);
+            if (!res || !res.ok) { showMsg('作成失敗', false); return; }
+            showMsg(`新規作成して紐付けました。\n${res.spreadsheet_url}`, true);
+            boot();
+          })
+          .withFailureHandler((err) => {
+            setLoading(btn, false);
+            showMsg('作成失敗: ' + (err?.message || err), false);
+          })
+          .adminCreateAndBindSpreadsheet(name);
+      });
+
+      // open public booking page
+      $('btnOpenPublic')?.addEventListener('click', () => {
+        clearMsg();
+        const btn = $('btnOpenPublic'); setLoading(btn, true);
+        if (publicUrlCache) {
+          setLoading(btn, false);
+          navigateToPublic(publicUrlCache);
+          return;
+        }
+        google.script.run
+          .withSuccessHandler((url) => {
+            setLoading(btn, false);
+            publicUrlCache = String(url || '').trim();
+            navigateToPublic(publicUrlCache);
+          })
+          .withFailureHandler((err) => { setLoading(btn, false); alert('公開URL取得に失敗しました: ' + (err?.message || err)); })
+          .getPublicUrl();
+      });
+
+      $('btnSaveCfg')?.addEventListener('click', () => {
+        clearMsg();
+        const btn = $('btnSaveCfg');
+        setLoading(btn, true);
+
+        const next = {
+          CALENDAR_ID: $('CALENDAR_ID').value.trim(),
+          EVENT_SYNC_DAYS: $('EVENT_SYNC_DAYS').value.trim(),
+          HORIZON_DAYS: $('HORIZON_DAYS').value.trim(),
+          MIN_LEAD_MIN: $('MIN_LEAD_MIN').value.trim(),
+          NOTIFY_OWNER_EMAIL: $('NOTIFY_OWNER_EMAIL').value.trim(),
+        };
+
+        google.script.run
+          .withSuccessHandler((res) => {
+            setLoading(btn, false);
+            if (!res || !res.ok) { showMsg('保存失敗', false); return; }
+            showMsg('保存しました。', true);
+            boot();
+          })
+          .withFailureHandler((err) => {
+            setLoading(btn, false);
+            showMsg('保存失敗: ' + (err?.message || err), false);
+          })
+          .adminUpdateConfig(next);
+      });
+
+      $('publicLink')?.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        if (publicUrlCache) {
+          navigateToPublic(publicUrlCache);
+          return;
+        }
+        loadPublicUrl();
+        if (publicUrlCache) navigateToPublic(publicUrlCache);
+      });
+
+      $('btnSyncCalToSheet')?.addEventListener('click', () => {
+        clearMsg();
+        const btn = $('btnSyncCalToSheet');
+        setLoading(btn, true);
+        const calId = $('appSheetSelect')?.value || undefined;
+
+        google.script.run
+          .withSuccessHandler((res) => {
+            setLoading(btn, false);
+            if (!res || !res.ok) { showMsg('同期失敗', false); return; }
+            showMsg(`Calendar→Sheet 取り込み完了。count=${res.count}`, true);
+            loadEvents();
+            try { loadCalendar(calYear, calMonth); } catch(e) {}
+          })
+          .withFailureHandler((err) => {
+            setLoading(btn, false);
+            showMsg('同期失敗: ' + (err?.message || err), false);
+          })
+          .adminSyncEventsFromCalendar(calId);
+      });
+
+      $('btnLoadBookings')?.addEventListener('click', loadBookings);
+      $('btnLoadEvents')?.addEventListener('click', loadEvents);
+      $('btnNormalizeDates')?.addEventListener('click', () => {
+        const btn = $('btnNormalizeDates'); setLoading(btn, true);
+        google.script.run
+          .withSuccessHandler((res) => { setLoading(btn, false); if (!res || !res.ok) { showMsg('日時正規化に失敗しました', false); return; } showMsg('日時正規化完了: ' + JSON.stringify(res.updated), true); })
+          .withFailureHandler((err) => { setLoading(btn, false); showMsg('日時正規化に失敗しました: ' + (err?.message || err), false); })
+          .adminNormalizeDateFormats();
+      });
+
+      // Calendar selection: populate and handlers
+      $('btnSyncSheetToCal')?.addEventListener('click', () => {
+        clearMsg();
+        const btn = $('btnSyncSheetToCal'); setLoading(btn, true);
+        const calId = $('appSheetSelect')?.value || undefined;
+        google.script.run
+          .withSuccessHandler((res) => { setLoading(btn, false); if (!res || !res.ok) { showMsg('同期失敗', false); return; } showMsg(`Sheet→Calendar 書き出し完了 created=${res.created} updated=${res.updated}`, true); loadEvents(); })
+          .withFailureHandler((err) => { setLoading(btn, false); showMsg('同期失敗: ' + (err?.message || err), false); })
+          .adminExportEventsToAppCalendar(calId);
+      });
+
+      // Note: Calendar→Sheet sync is handled by adminSyncEventsFromCalendar (uses configured CALENDAR_ID)
+
+      function refreshSheetList() {
+        // show loading placeholder
+        const sel = $('appSheetSelect');
+        if (sel) {
+          sel.innerHTML = '';
+          const o = document.createElement('option'); o.value = ''; o.textContent = 'カレンダーを取得中…'; sel.appendChild(o);
+        }
+
+        // rename kept for compatibility: this refreshes available calendars
+        google.script.run
+          .withSuccessHandler((cals) => {
+            const sel2 = $('appSheetSelect');
+            if (!sel2) return;
+            sel2.innerHTML = '';
+            const list = (cals || []);
+            if (list.length === 0) {
+              // no calendars returned from API -> try to fallback to stored app calendar id
+              google.script.run.withSuccessHandler((curId) => {
+                if (curId) {
+                  sel2.innerHTML = '';
+                  const o2 = document.createElement('option'); o2.value = curId; o2.textContent = `${curId} (設定済み)`; sel2.appendChild(o2);
+                } else {
+                  const o = document.createElement('option'); o.value = ''; o.textContent = 'カレンダーが見つかりません'; sel2.appendChild(o);
+                }
+                try { loadCalendar(calYear, calMonth); } catch (e) {}
+              }).adminGetAppCalendarId();
+            } else {
+              list.forEach(n => {
+                const o = document.createElement('option'); o.value = n.id; o.textContent = `${n.name} (${n.id})`; sel2.appendChild(o);
+              });
+            }
+
+            // prefer CALENDAR_ID (booking calendar) if set; otherwise fallback to APP_CALENDAR_ID
+            const curBooking = $('CALENDAR_ID')?.value;
+            if (curBooking) {
+              const optb = sel2.querySelector(`option[value=\"${curBooking}\"]`);
+              if (optb) {
+                sel2.value = curBooking;
+                try { loadCalendar(calYear, calMonth); } catch (e) {}
+                return;
+              }
+            }
+
+            // fallback: use previously set app calendar id
+            google.script.run.withSuccessHandler((cur) => {
+                if (cur) {
+                  const opt = sel2.querySelector(`option[value=\"${cur}\"]`);
+                  if (opt) sel2.value = cur;
+                }
+                // after refreshing calendar list and setting current selection, load calendar view
+                try { loadCalendar(calYear, calMonth); } catch (e) {}
+              }).adminGetAppCalendarId();
+          })
+          .withFailureHandler((err) => {
+            const sel2 = $('appSheetSelect');
+            if (sel2) {
+              sel2.innerHTML = '';
+              const o = document.createElement('option'); o.value = ''; o.textContent = 'カレンダー取得失敗'; sel2.appendChild(o);
+            }
+            // attempt to show previously saved app calendar id as fallback
+            google.script.run.withSuccessHandler((cur) => {
+              if (cur) {
+                const sel3 = $('appSheetSelect');
+                if (sel3) {
+                  sel3.innerHTML = '';
+                  const o = document.createElement('option'); o.value = cur; o.textContent = `${cur} (設定済み)`; sel3.appendChild(o);
+                }
+              }
+            }).adminGetAppCalendarId();
+            showMsg('カレンダー一覧取得失敗: ' + (err?.message || err) + '\n- スクリプトのカレンダー権限を確認してください。', false);
+          })
+          .adminListCalendars();
+      }
+
+      $('btnSetAppSheet')?.addEventListener('click', () => {
+        const id = $('appSheetSelect')?.value;
+        if (!id) { showMsg('カレンダーを選択してください', false); return; }
+        const btn = $('btnSetAppSheet'); setLoading(btn, true);
+        // 1) set as app calendar (for Events export)
+        google.script.run
+          .withSuccessHandler((res) => {
+            if (!res || !res.ok) { setLoading(btn, false); showMsg('出力カレンダーの設定に失敗しました', false); return; }
+            // 2) also save as booking calendar (CALENDAR_ID)
+            google.script.run
+              .withSuccessHandler((res2) => {
+                setLoading(btn, false);
+                if (!res2 || !res2.ok) { showMsg('出力カレンダーは設定されましたが、予約カレンダーの保存に失敗しました', false); return; }
+                showMsg(`カレンダーを設定しました（出力 & 予約）: ${id}`, true);
+                if ($('CALENDAR_ID')) $('CALENDAR_ID').value = id;
+                try { loadCalendar(calYear, calMonth); loadEvents(); } catch (e) {}
+              })
+              .withFailureHandler((err2) => { setLoading(btn, false); showMsg('予約カレンダー保存失敗: ' + (err2?.message || err2), false); })
+              .adminUpdateConfig({ CALENDAR_ID: id });
+          })
+          .withFailureHandler((err) => { setLoading(btn, false); showMsg('出力カレンダーの設定に失敗しました: ' + (err?.message || err), false); })
+          .adminSetAppCalendarId(id);
+      });
+
+      // Event creator wiring (event creation via pattern removed — use 空き枠追加ボタンのみ)
+
+      // モーダル内からイベント（空き枠）を追加するハンドラ（Events を直接作成）
+      $('btnAddAvailabilityFromModal')?.addEventListener('click', () => {
+        clearMsg();
+        const date = $('c_start_date')?.value;
+        const st = $('c_start_time')?.value;
+        let dur = Number($('c_duration')?.value || 0);
+        if (!date || !st) { showMsg('開始日と開始時刻を入力してください', false); return; }
+        if (!dur || dur <= 0) { showMsg('所要分を正しく指定してください', false); return; }
+
+        // Create single event directly (simple UX)
+        const startIso = date + 'T' + st;
+        const payload = {
+          title: $('c_title')?.value || '',
+          start_iso: startIso,
+          duration_min: dur,
+          status: 'available',
+          source: 'manual',
+          capacity: Number($('c_capacity')?.value || 0),
+          description: $('c_description')?.value || ''
+        };
+
+        const btn = $('btnAddAvailabilityFromModal'); setLoading(btn, true);
+
+        // If thumbnail file selected and user asked to save it as course meta, upload it first
+        const thumbFile = $('c_thumbnail')?.files && $('c_thumbnail').files[0];
+        // Auto-save behavior: save course meta if image selected or description provided
+        const descProvided = String($('c_description')?.value || '').trim() !== '';
+        const saveThumb = !!thumbFile || descProvided;
+
+        const finalizeCreate = () => {
+          google.script.run.withSuccessHandler((res) => {
+            setLoading(btn, false);
+            if (!res || !res.ok) { showMsg('追加失敗: ' + (res?.error || 'unknown'), false); return; }
+            showMsg('イベントを追加しました。', true);
+            closeEventModal();
+            loadEvents();
+            try { loadCalendar(calYear, calMonth); } catch(e) {}
+          }).withFailureHandler((err) => { setLoading(btn, false); showMsg('追加失敗: ' + (err?.message || err), false); }).adminCreateEvent(payload);
+        };
+
+        if (saveThumb) {
+          const title = String($('c_title')?.value || '').trim();
+          if (!title) {
+            setLoading(btn, false);
+            showMsg('講座名を入力してください（講座情報を保存する場合）', false);
+            return;
+          }
+          const desc = $('c_description')?.value || '';
+          if (thumbFile) {
+            const pv = $('c_thumb_preview');
+            const existing = pv && pv.dataset && pv.dataset._dataurl;
+            const doUpload = (dataUrl) => {
+              google.script.run
+                .withSuccessHandler((res) => {
+                  if (!res || !res.ok) { console.warn('thumbnail save failed', res); }
+                  try { courseMetaMap.set(title, res && res.course ? res.course : { course_name: title, description: desc, thumbnail_url: (res && res.course && res.course.thumbnail_url) || '' }); } catch(e){}
+                  finalizeCreate();
+                })
+                .withFailureHandler((err) => { console.warn('adminUpsertCourseMeta failed', err); finalizeCreate(); })
+                .adminUpsertCourseMeta({ course_name: title, description: desc, thumbnail_base64: dataUrl, thumbnail_filename: thumbFile.name, thumbnail_mime: thumbFile.type });
+            };
+            if (existing) { doUpload(existing); }
+            else {
+              resizeImageFileToDataUrl(thumbFile, 640, 640, 0.75, (err, dataUrl) => {
+                if (err) { console.warn('image resize failed', err); finalizeCreate(); return; }
+                doUpload(dataUrl);
+              });
+            }
+          } else {
+            // save description only
+            google.script.run
+              .withSuccessHandler((res) => {
+                try { courseMetaMap.set(title, res && res.course ? res.course : { course_name: title, description: desc }); } catch(e){}
+                finalizeCreate();
+              })
+              .withFailureHandler((err) => { console.warn('adminUpsertCourseMeta failed', err); finalizeCreate(); })
+              .adminUpsertCourseMeta({ course_name: title, description: desc });
+          }
+        } else {
+          // no course meta save required; create event immediately
+          finalizeCreate();
+        }
+      });
+
+      // service selectors removed: Admin uses Events-only UI
+
+      // --- ユーザー管理 & セットアップURL ---
+      function loadUsersInfo() {
+        google.script.run.withSuccessHandler((url) => {
+          if ($('setupUrl')) $('setupUrl').value = url || '';
+        }).withFailureHandler(() => {}).getSetupUrl();
+
+        google.script.run.withSuccessHandler((res) => {
+          const el = $('userList');
+          if (!el) return;
+          if (!res || !res.ok || !res.users || res.users.length === 0) {
+            el.textContent = 'まだ登録ユーザーはいません。セットアップURLを共有してください。';
+            return;
+          }
+          let html = '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="text-align:left;border-bottom:1px solid #e2e8f0"><th style="padding:6px 8px">メール</th><th style="padding:6px 8px">SS ID</th><th style="padding:6px 8px">登録日</th></tr></thead><tbody>';
+          res.users.forEach(u => {
+            const d = u.created_at ? new Date(u.created_at).toLocaleDateString('ja-JP') : '-';
+            html += '<tr style="border-bottom:1px solid #f1f5f9"><td style="padding:6px 8px">' + u.email + '</td><td style="padding:6px 8px;font-family:monospace;font-size:12px">' + (u.spreadsheet_id || '').substring(0, 12) + '…</td><td style="padding:6px 8px">' + d + '</td></tr>';
+          });
+          html += '</tbody></table>';
+          el.innerHTML = html;
+        }).withFailureHandler((err) => {
+          const el = $('userList');
+          if (el) el.textContent = '取得失敗: ' + (err?.message || err);
+        }).adminListUsers();
+      }
+      loadUsersInfo();
+
+      $('btnCopySetupUrl')?.addEventListener('click', () => {
+        const url = $('setupUrl')?.value || '';
+        if (url) {
+          navigator.clipboard?.writeText(url);
+          $('btnCopySetupUrl').textContent = 'コピー済み';
+          setTimeout(() => { $('btnCopySetupUrl').textContent = 'コピー'; }, 1500);
+        }
+      });
+      // --- /ユーザー管理 ---
+
+        $('btnClearCreator')?.addEventListener('click', () => {
+        $('c_title').value = '';
+        $('c_start_date').value = '';
+        $('c_start_time').value = '';
+        $('c_duration').value = 60;
+          $('c_description').value = '';
+        clearMsg();
+      });
+
+      // btnUpsertAvailability handler removed: Admin operates on Events-only now.
+
+      // btnClearAvailability handler removed: Availabilities UI removed.
+
+
+
+      // Service form handlers removed (Services UI hidden)
+
+      try { boot(); } catch(e) { console.error('boot() failed:', e); try { showMsg('管理画面の初期化に失敗しました: ' + (e.message || e), false); } catch(_) {} }
+
+      // ══════════ テナントプロフィール JS ══════════
+      tpLoadProfile();
+    });
+
+    // --- Tenant Profile State ---
+    var _tpMenus = [];
+    var _tpTags = [];
+
+    function toggleProfilePanel() {
+      var p = document.getElementById('profilePanel');
+      var btn = document.getElementById('btnToggleProfile');
+      if (p.style.display === 'none') { p.style.display = ''; btn.textContent = '▲ 閉じる'; }
+      else { p.style.display = 'none'; btn.textContent = '▼ 開く'; }
+    }
+
+    function tpLoadProfile() {
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (!res || !res.ok) return;
+          var p = res.profile || {};
+          tpSet('tp_name', p.name);
+          tpSet('tp_slug', p.slug);
+          tpSet('tp_category', p.category);
+          tpSet('tp_catch_copy', p.catch_copy);
+          tpSet('tp_description', p.description);
+          tpSet('tp_photo_url', p.photo_url);
+          tpSet('tp_address', p.address);
+          tpSet('tp_phone', p.phone);
+          tpSet('tp_business_hours', p.business_hours);
+          tpSet('tp_closed_days', p.closed_days);
+          var cb = document.getElementById('tp_is_public');
+          if (cb) cb.checked = (p.is_public !== 'false' && p.is_public !== '0');
+          tpPreviewPhoto();
+
+          _tpTags = [];
+          var raw = String(p.tags || '').trim();
+          if (raw) _tpTags = raw.split(',').map(function(t){return t.trim();}).filter(function(t){return t;});
+          tpRenderTags();
+
+          _tpMenus = [];
+          try { var mj = String(p.menus_json || '').trim(); if (mj) _tpMenus = JSON.parse(mj); } catch(_) {}
+          tpRenderMenus();
+
+          if (res.portal) { tpSet('tp_portal_api_url', res.portal.api_url); }
+        })
+        .withFailureHandler(function() {})
+        .adminGetTenantProfile();
+    }
+
+    function tpCollect() {
+      return {
+        name: tpGet('tp_name'),
+        slug: tpGet('tp_slug'),
+        category: tpGet('tp_category'),
+        catch_copy: tpGet('tp_catch_copy'),
+        description: tpGet('tp_description'),
+        photo_url: tpGet('tp_photo_url'),
+        address: tpGet('tp_address'),
+        phone: tpGet('tp_phone'),
+        business_hours: tpGet('tp_business_hours'),
+        closed_days: tpGet('tp_closed_days'),
+        tags: _tpTags.join(','),
+        menus_json: JSON.stringify(_tpMenus),
+        is_public: document.getElementById('tp_is_public').checked ? 'true' : 'false',
+      };
+    }
+
+    function tpSaveProfile() {
+      var data = tpCollect();
+      if (!data.name) { tpShowStatus('err', '店舗名は必須です。'); return; }
+      var btn = document.getElementById('btnTpSave');
+      btn.disabled = true; btn.textContent = '保存中…';
+      tpShowStatus('info', '保存中…');
+
+      // ポータル連携設定も同時保存
+      var apiUrl = tpGet('tp_portal_api_url');
+      var secret = tpGet('tp_portal_admin_secret');
+      if (apiUrl || secret) {
+        google.script.run.adminSavePortalSettings({ portal_api_url: apiUrl, portal_admin_secret: secret });
+      }
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          btn.disabled = false; btn.textContent = '💾 保存';
+          if (res && res.ok) tpShowStatus('ok', '✅ プロフィールを保存しました。');
+          else tpShowStatus('err', '保存失敗: ' + (res && res.error ? res.error : '不明'));
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false; btn.textContent = '💾 保存';
+          tpShowStatus('err', 'エラー: ' + (err && err.message ? err.message : err));
+        })
+        .adminSaveTenantProfile(data);
+    }
+
+    function tpRegisterToPortal() {
+      var data = tpCollect();
+      if (!data.name) { tpShowStatus('err', '店舗名を入力してください。'); return; }
+      var btn = document.getElementById('btnTpRegister');
+      btn.disabled = true; btn.textContent = '登録中…';
+      tpShowStatus('info', 'プロフィール保存 & ポータル登録中…');
+
+      // ポータル連携設定も同時保存
+      var apiUrl = tpGet('tp_portal_api_url');
+      var secret = tpGet('tp_portal_admin_secret');
+      if (apiUrl || secret) {
+        google.script.run.adminSavePortalSettings({ portal_api_url: apiUrl, portal_admin_secret: secret });
+      }
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          btn.disabled = false; btn.textContent = '📡 ポータルに登録';
+          if (!res || !res.ok) { tpShowStatus('err', '失敗: ' + (res && res.error ? res.error : '不明')); return; }
+          var pr = res.portal_result || {};
+          if (pr.skipped) tpShowStatus('warn', '⚠️ ' + (pr.reason || 'ポータル連携設定が未完了です。'));
+          else if (pr.ok) tpShowStatus('ok', '✅ ポータル登録完了！店舗ページに反映されます。');
+          else tpShowStatus('err', 'ポータル登録失敗: ' + (pr.error || '不明'));
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false; btn.textContent = '📡 ポータルに登録';
+          tpShowStatus('err', 'エラー: ' + (err && err.message ? err.message : err));
+        })
+        .adminSaveAndRegisterToPortal(data);
+    }
+
+    // --- Photo preview ---
+    function tpPreviewPhoto() {
+      var url = tpGet('tp_photo_url');
+      var el = document.getElementById('tpPhotoPreview');
+      if (url && url.match(/^https?:\/\/.+/)) {
+        el.innerHTML = '<img src="' + tpEsc(url) + '" style="max-width:180px; max-height:120px; border-radius:8px; border:1px solid #e2e8f0; object-fit:cover;" onerror="this.style.display=\'none\'" />';
+      } else { el.innerHTML = ''; }
+    }
+
+    // --- Menus ---
+    function tpRenderMenus() {
+      var el = document.getElementById('tpMenuList');
+      if (_tpMenus.length === 0) { el.innerHTML = '<div style="color:#94a3b8; font-size:12px;">メニューなし</div>'; return; }
+      var h = '';
+      _tpMenus.forEach(function(m, i) {
+        h += '<div style="display:flex; gap:6px; align-items:center; margin-bottom:6px; padding:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">' +
+          '<input placeholder="メニュー名" value="' + tpEscAttr(m.name||'') + '" style="flex:2;" onchange="_tpMenus['+i+'].name=this.value" />' +
+          '<input placeholder="価格" value="' + tpEscAttr(m.price||'') + '" style="flex:1;" onchange="_tpMenus['+i+'].price=this.value" />' +
+          '<button class="danger" style="padding:4px 8px; font-size:11px;" onclick="_tpMenus.splice('+i+',1);tpRenderMenus();">✕</button>' +
+          '</div>';
+      });
+      el.innerHTML = h;
+    }
+    function tpAddMenu() { _tpMenus.push({name:'',price:'',description:''}); tpRenderMenus(); }
+
+    // --- Tags ---
+    function tpRenderTags() {
+      var el = document.getElementById('tpTagDisplay');
+      if (_tpTags.length === 0) { el.innerHTML = ''; return; }
+      el.innerHTML = _tpTags.map(function(t,i) {
+        return '<span style="display:inline-flex; align-items:center; gap:3px; background:#eff6ff; color:#1d4ed8; padding:3px 8px; border-radius:99px; font-size:12px; font-weight:500;">' +
+          tpEsc(t) + '<button style="background:none;border:none;color:#93c5fd;cursor:pointer;font-size:14px;" onclick="_tpTags.splice('+i+',1);tpRenderTags();">×</button></span>';
+      }).join('');
+    }
+    function tpAddTag() {
+      var inp = document.getElementById('tpTagInput');
+      var val = (inp.value || '').trim();
+      if (val) { val.split(',').forEach(function(t){t=t.trim();if(t&&_tpTags.indexOf(t)===-1)_tpTags.push(t);}); inp.value=''; tpRenderTags(); }
+    }
+
+    // --- Helpers ---
+    function tpShowStatus(type, msg) {
+      var el = document.getElementById('tpStatus');
+      if (!el) return;
+      var cls = type==='ok'?'ok':type==='err'?'ng':type==='warn'?'toast':'toast';
+      var bgMap = {ok:'#ecfdf5',err:'#fef2f2',warn:'#fffbeb',info:'#eff6ff'};
+      var cMap = {ok:'#064e3b',err:'#7f1d1d',warn:'#92400e',info:'#1e40af'};
+      el.innerHTML = '<div style="padding:10px 14px; border-radius:6px; font-size:13px; background:' + (bgMap[type]||'#f8fafc') + '; color:' + (cMap[type]||'#333') + '; margin-top:8px;">' + msg + '</div>';
+    }
+    function tpGet(id) { var el = document.getElementById(id); return el ? (el.value||'').trim() : ''; }
+    function tpSet(id, v) { var el = document.getElementById(id); if (el) el.value = v || ''; }
+    function tpEsc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function tpEscAttr(s) { return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    </script>
+  </body>
+</html>

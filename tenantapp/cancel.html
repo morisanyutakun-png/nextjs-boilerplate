@@ -1,0 +1,444 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>キャンセル手続き</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text: #334155;
+        --text-head: #1e293b;
+        --muted: #94a3b8;
+        --line: #e2e8f0;
+        --danger: #ef4444;
+        --danger-hover: #dc2626;
+        --ok: #10b981;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --radius: 12px;
+      }
+      body { 
+        font-family: 'Noto Sans JP', ui-sans-serif, system-ui, -apple-system, sans-serif;
+        margin: 0; padding: 40px 20px; 
+        color: var(--text); background: var(--bg);
+        line-height: 1.6;
+      }
+      .card { 
+        max-width: 680px; margin: 0 auto; 
+        padding: 32px; border-radius: 16px; 
+        background: var(--card-bg); 
+        border: 1px solid var(--line); 
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      h2 { 
+        margin: 0 0 12px; font-size: 24px; color: var(--text-head); text-align: center;
+      }
+      p.muted {
+        text-align: center; margin-bottom: 24px; font-size: 14px; color: var(--muted);
+      }
+
+      /* Status Chip */
+      .status-chip { 
+        display: flex; align-items: center; justify-content: center;
+        padding: 12px 20px; border-radius: 8px; 
+        border: 1px solid var(--line); font-size: 14px; font-weight: 700;
+        margin: 0 auto 24px; max-width: fit-content;
+        background: #f1f5f9; color: var(--muted);
+      }
+      .status-chip.ok { color: #064e3b; border-color: #a7f3d0; background: #ecfdf5; }
+      .status-chip.ng { color: #7f1d1d; border-color: #fecaca; background: #fef2f2; }
+
+      /* Details Grid */
+      .detail-grid { 
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+        gap: 20px; margin-top: 24px; padding: 20px;
+        background: #f8fafc; border-radius: var(--radius); border: 1px solid var(--line);
+      }
+      .detail-grid div { display: flex; flex-direction: column; }
+      .detail-grid dt { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; font-weight: 700; }
+      .detail-grid dd { margin: 0; font-size: 15px; font-weight: 600; color: var(--text-head); word-break: break-all; }
+      
+      .answers-label { margin-top: 24px; font-size: 14px; font-weight: 700; color: var(--text-head); }
+      .answers { 
+        margin-top: 8px; padding: 16px; 
+        border-radius: var(--radius); border: 1px solid var(--line); 
+        background: #fff; min-height: 60px; 
+        line-height: 1.6; font-size: 14px; white-space: pre-wrap; 
+        color: var(--text);
+      }
+
+      /* Buttons & Inputs */
+      button.primary { 
+        display: block; width: 100%; maxWidth: 320px; margin: 32px auto 0;
+        border: none; border-radius: 12px; padding: 16px; 
+        font-size: 16px; font-weight: 700; 
+        transition: all .2s ease; 
+        background: var(--danger);
+        color: #fff; cursor: pointer; 
+        box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+      }
+      button.primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; background: var(--muted); }
+      button.primary:not(:disabled):hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.4); 
+        background: var(--danger-hover);
+      }
+
+      .button { 
+        display: inline-block; padding: 10px 20px; background: #fff;
+        border-radius: 8px; border: 1px solid var(--line); 
+        text-decoration: none; color: var(--text); font-weight: 600; font-size: 14px;
+        transition: all .2s;
+      }
+      .button:hover { border-color: var(--muted); color: var(--text-head); background: #f8fafc; }
+      
+      /* Toast */
+      .toast { 
+        margin-top: 20px; border-left: 4px solid var(--line);
+        border-radius: 4px; padding: 16px; 
+        background: #fff; font-size: 14px; color: var(--text-head); 
+        box-shadow: var(--shadow);
+      }
+      .toast.ok { border-left-color: var(--ok); background: #ecfdf5; color: #064e3b; }
+      .toast.ng { border-left-color: var(--danger); background: #fef2f2; color: #7f1d1d; }
+
+      pre { font-size: 12px; background: #0f172a; color: #f1f5f9; padding: 12px; border-radius: 8px; overflow: auto; margin-top: 20px; }
+      
+      #links { text-align: center; margin-top: 24px; }
+      
+      input[type="email"] {
+        width: 100%; border: 1px solid var(--line); border-radius: 8px;
+        padding: 12px; font-size: 14px; transition: border-color .2s;
+      }
+      input[type="email"]:focus { outline: none; border-color: var(--ok); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+      
+    </style>
+  </head>
+  <body>
+    <!--INJECT_PRELOAD-->
+    <div class="card">
+      <h2 id="title">キャンセル手続き</h2>
+      <p class="muted">以下の予約内容を確認し、問題なければ「キャンセルする」を押してください。キーワードを再現することで、予約状況とキャンセルボタンを表示します。</p>
+      <div id="statusBanner" class="status-chip muted">予約情報を取得しています。少々お待ちください。</div>
+      <dl class="detail-grid">
+        <div>
+          <dt>予約ID</dt>
+          <dd id="detail_booking_id">—</dd>
+        </div>
+        <div>
+          <dt>サービス</dt>
+          <dd id="detail_service">—</dd>
+        </div>
+        <div>
+          <dt>顧客名</dt>
+          <dd id="detail_customer">—</dd>
+        </div>
+        <div>
+          <dt>メール</dt>
+          <dd id="detail_email">—</dd>
+        </div>
+        <div>
+          <dt>開始</dt>
+          <dd id="detail_start">—</dd>
+        </div>
+        <div>
+          <dt>終了</dt>
+          <dd id="detail_end">—</dd>
+        </div>
+        <div>
+          <dt>ステータス</dt>
+          <dd id="detail_status">—</dd>
+        </div>
+      </dl>
+      <div class="answers-label">ご要望・備考</div>
+      <div id="detail_answers" class="answers">なし</div>
+      <div id="emailQuery" style="margin-top:12px; display:none">
+        <label class="muted">登録メールアドレスで照会してトークンを取得</label>
+        <div style="display:flex; gap:8px; margin-top:6px;">
+          <input id="q_email" type="email" placeholder="メールアドレスを入力" style="flex:1; padding:10px 12px; border-radius:8px; border:1px solid #e2e8f0;" />
+          <button id="btnQuery" class="button">照会する</button>
+        </div>
+      </div>
+      <button id="btnCancel" class="primary" disabled>この予約をキャンセルする</button>
+      <div id="msg" class="toast" style="display:none"></div>
+      <div id="links" style="margin-top:12px"></div>
+    </div>
+
+    <script>
+        const qs = (name) => new URLSearchParams(location.search).get(name);
+
+      // Prefer server-injected preload when available (doGet injects window.PRELOADED)
+      const pre = (typeof window !== 'undefined' && window.PRELOADED) ? window.PRELOADED : null;
+      let token = pre && pre.token ? String(pre.token) : qs('token');
+      let bookingIdParam = (pre && pre.bid) ? String(pre.bid) : qs('bid');
+
+      // Robust extraction: if token/bid still missing, try to extract from encoded nested URL, fragment, or anywhere in href
+      function extractFromHref() {
+        try {
+          const href = String(location.href || '');
+          // 1) fragment like #token=...&bid=...
+          if (!token && href.indexOf('#') >= 0) {
+            const frag = href.split('#').slice(1).join('#');
+            const params = new URLSearchParams(frag);
+            if (params.get('token')) token = params.get('token');
+            if (params.get('bid')) bookingIdParam = bookingIdParam || params.get('bid');
+          }
+          // 2) nested encoded url parameter: url=https%3A%2F%2F...%3Ftoken%3D... or redirect=%2Fexec%3Ftoken%3D...
+          if ((!token || !bookingIdParam) && href.indexOf('=') >= 0) {
+            const kv = href.split('?').slice(1).join('?');
+            const pairs = kv.split('&');
+            for (const p of pairs) {
+              const [k,v] = p.split('=');
+              if (!v) continue;
+              try {
+                const dec = decodeURIComponent(v);
+                if (dec.indexOf('token=') >= 0 || dec.indexOf('bid=') >= 0) {
+                  const q = new URLSearchParams(dec.split('?').slice(1).join('?'));
+                  if (!token && q.get('token')) token = q.get('token');
+                  if (!bookingIdParam && q.get('bid')) bookingIdParam = q.get('bid');
+                }
+              } catch (e) { /* ignore */ }
+            }
+          }
+          // 3) fallback: search anywhere for UUID-like token and b_ booking id pattern
+          if (!token) {
+            const uuidRe = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+            const m = href.match(uuidRe);
+            if (m) token = m[0];
+          }
+          if (!bookingIdParam) {
+            const bidRe = /b_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+            const mb = href.match(bidRe);
+            if (mb) bookingIdParam = mb[0];
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+      if (!token || !bookingIdParam) extractFromHref();
+      const btnCancel = document.getElementById('btnCancel');
+      const detailFields = {
+        booking_id: document.getElementById('detail_booking_id'),
+        service: document.getElementById('detail_service'),
+        customer: document.getElementById('detail_customer'),
+        email: document.getElementById('detail_email'),
+        start: document.getElementById('detail_start'),
+        end: document.getElementById('detail_end'),
+        status: document.getElementById('detail_status')
+      };
+      const detailAnswers = document.getElementById('detail_answers');
+      const msgBox = document.getElementById('msg');
+      const statusBanner = document.getElementById('statusBanner');
+      const links = document.getElementById('links');
+      const card = document.querySelector('.card');
+      const homeUrl = location.origin + location.pathname.replace(/[^/]*$/, '') + '?';
+
+      function initLinks() {
+        if (!links) return;
+        links.innerHTML = '';
+        const home = document.createElement('a');
+        home.href = homeUrl;
+        home.className = 'button';
+        home.textContent = '予約ページへ戻る';
+        links.appendChild(home);
+      }
+      initLinks();
+
+      function formatIso(iso) {
+        if (!iso) return '';
+        const normalized = typeof iso === 'string' ? iso.replace(/\s+/g, 'T') : iso;
+        const date = new Date(normalized);
+        if (isNaN(date.getTime())) return iso;
+        return date.toLocaleString('ja-JP', { hour12: false });
+      }
+
+      function setStatusChip(status) {
+        const normalized = (status || '').toLowerCase();
+        const isCanceled = ['canceled', 'cancelled', 'キャンセル済み', 'キャンセル'].includes(normalized);
+        if (statusBanner) {
+          statusBanner.className = 'status-chip';
+          statusBanner.classList.add(isCanceled ? 'ng' : 'ok');
+          statusBanner.textContent = status ? `現在の予約状況：${status}` : '現在の予約状況：不明';
+        }
+        if (detailFields.status) {
+          detailFields.status.textContent = status || '未設定';
+        }
+        return isCanceled;
+      }
+
+      function renderAnswers(raw) {
+        if (!detailAnswers) return;
+        if (!raw || String(raw).trim() === '') {
+          detailAnswers.textContent = 'なし';
+          return;
+        }
+        try {
+          const parsed = JSON.parse(raw);
+          if (typeof parsed === 'object' && parsed !== null) {
+            const lines = Object.entries(parsed).map(([k, v]) => `${k}: ${v}`);
+            detailAnswers.textContent = lines.length ? lines.join('\n') : JSON.stringify(parsed);
+            return;
+          }
+          detailAnswers.textContent = String(parsed);
+        } catch (e) {
+          detailAnswers.textContent = String(raw);
+        }
+      }
+
+      function configureCancelButton(enabled, label) {
+        if (!btnCancel) return;
+        btnCancel.disabled = !enabled;
+        btnCancel.textContent = label || (enabled ? 'この予約をキャンセルする' : 'キャンセル済み');
+      }
+
+      function showMessage(text, ok = true) {
+        if (!msgBox) return;
+        msgBox.style.display = 'block';
+        msgBox.textContent = text;
+        msgBox.className = 'toast ' + (ok ? 'ok' : 'ng');
+      }
+
+      function clearMessage() {
+        if (!msgBox) return;
+        msgBox.style.display = 'none';
+        msgBox.textContent = '';
+        msgBox.className = 'toast';
+      }
+
+      function appendDebug(debug) {
+        if (!debug || !card) return;
+        const pre = document.createElement('pre');
+        pre.textContent = JSON.stringify(debug, null, 2);
+        card.appendChild(pre);
+      }
+
+      function populateDetails(booking) {
+        detailFields.booking_id.textContent = booking.booking_id || '—';
+        detailFields.service.textContent = booking.service_name || booking.service || '—';
+        detailFields.customer.textContent = booking.customer_name || '—';
+        detailFields.email.textContent = booking.customer_email || '—';
+        detailFields.start.textContent = formatIso(booking.start_iso) || '—';
+        detailFields.end.textContent = formatIso(booking.end_iso) || '—';
+        renderAnswers(booking.answers_json || booking.answers || '');
+        const canceled = setStatusChip(booking.status);
+        configureCancelButton(!canceled);
+      }
+
+      function prefillFromQuery() {
+        // Only prefill minimal identifier (booking_id) from query for privacy.
+        if (bookingIdParam) {
+          const pre = { booking_id: bookingIdParam, status: '読み込み中' };
+          populateDetails(pre);
+          if (statusBanner) {
+            statusBanner.textContent = '予約情報を取得中…（リンクの識別子で照会します）';
+            statusBanner.className = 'status-chip';
+          }
+          // If no token present, show email query UI so user can prove ownership
+          if (!token) {
+            const emailQuery = document.getElementById('emailQuery');
+            if (emailQuery) emailQuery.style.display = 'block';
+          }
+        }
+      }
+
+      const qEmail = document.getElementById('q_email');
+      const btnQuery = document.getElementById('btnQuery');
+      if (btnQuery) {
+        btnQuery.addEventListener('click', () => {
+          if (!bookingIdParam) { showMessage('照会する予約IDがありません', false); return; }
+          const em = qEmail ? String(qEmail.value || '').trim() : '';
+          if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { showMessage('有効なメールアドレスを入力してください', false); return; }
+          showMessage('照会中…少々お待ちください。', true);
+          btnQuery.disabled = true;
+          google.script.run
+            .withSuccessHandler((res) => {
+              btnQuery.disabled = false;
+              if (res && res.ok && res.cancel_token) {
+                token = String(res.cancel_token || '').trim();
+                clearMessage();
+                loadBooking();
+              } else {
+                showMessage(res?.error || '照会に失敗しました', false);
+              }
+            })
+            .withFailureHandler((err) => {
+              btnQuery.disabled = false;
+              showMessage('照会に失敗しました。通信エラー', false);
+              appendDebug(err);
+            })
+            .publicGetCancelTokenByBookingId(bookingIdParam, em);
+        });
+      }
+
+      function handleSummary(res) {
+        if (!res || !res.ok) {
+          const reason = res?.error || '予約を取得できませんでした。';
+          showMessage(reason, false);
+          appendDebug(res?.debug);
+          configureCancelButton(false, 'キャンセルできません');
+          return;
+        }
+        clearMessage();
+        const booking = res.booking || {};
+        if (!token && booking.cancel_token) token = String(booking.cancel_token || '').trim();
+        populateDetails(booking);
+      }
+
+      function loadBooking() {
+        configureCancelButton(false, 'キャンセル準備中');
+        if (!token && !bookingIdParam) {
+          showMessage('キャンセルリンクが不正です。', false);
+          setStatusChip('トークン不明');
+          return;
+        }
+        if (statusBanner) statusBanner.textContent = '予約情報を取得中…';
+        google.script.run
+          .withSuccessHandler(handleSummary)
+          .withFailureHandler((err) => {
+            showMessage('予約情報の取得に失敗しました。', false);
+            appendDebug(err);
+            setStatusChip('取得エラー');
+            configureCancelButton(false, 'キャンセルできません');
+          })
+          .publicGetBookingSummaryByToken(token, bookingIdParam);
+      }
+
+      btnCancel?.addEventListener('click', () => {
+        if (!token) {
+          showMessage('キャンセル用トークンが取得できませんでした。', false);
+          configureCancelButton(false, 'キャンセルできません');
+          return;
+        }
+        configureCancelButton(false, 'キャンセル中…');
+        clearMessage();
+        google.script.run
+          .withSuccessHandler((res) => {
+            if (res && res.ok) {
+              showMessage('キャンセルが完了しました。ご利用ありがとうございました。', true);
+              setStatusChip('canceled');
+              configureCancelButton(false, 'キャンセル済み');
+            } else {
+              const reason = res?.error || 'キャンセルに失敗しました。';
+              showMessage(reason, false);
+              appendDebug(res?.debug);
+              configureCancelButton(true);
+            }
+          })
+          .withFailureHandler((err) => {
+            showMessage('通信に失敗しました。再度お試しください。', false);
+            appendDebug(err);
+            configureCancelButton(true);
+          })
+          .publicCancelByToken(token);
+      });
+
+  prefillFromQuery();
+  loadBooking();
+    </script>
+  </body>
+</html>

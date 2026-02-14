@@ -156,3 +156,14 @@ CREATE INDEX idx_tenants_is_public ON tenants (is_public);
 ## 📄 ライセンス
 
 MIT
+
+
+
+
+
+
+
+
+
+
+gitにpush必要なし。tenantapp排除してからpushね。

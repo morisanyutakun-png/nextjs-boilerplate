@@ -1,0 +1,1207 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>予約ページ</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        /* HotPepper-like Modern Pink & Clean White */
+        --bg: #f8f9fa;
+        --panel: #ffffff;
+        --text: #333333;
+        --text-head: #111111;
+        --muted: #757575;
+        --line: #eeeeee;
+        --accent: #ff0066; /* HotPepper Pink */
+        --accent-hover: #e6005c;
+        --accent-light: #fff0f5;
+        --accent-2: #00b894; /* Success Green */
+        --warn: #ff9f43;
+        --danger: #ff4757;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+        --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
+        --radius: 12px;
+        --radius-sm: 8px;
+      }
+      * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+      body {
+        margin: 0;
+        font-family: 'Noto Sans JP', sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        padding-bottom: 60px;
+      }
+      .wrap { max-width: 1000px; margin: 0 auto; padding: 20px; }
+      
+      /* Header */
+      .topbar { 
+        display: flex; align-items: center; justify-content: space-between; gap: 16px;
+        margin-bottom: 24px; padding: 16px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand { 
+        font-weight: 800; font-size: 22px; color: var(--text-head); 
+        letter-spacing: -0.5px;
+      }
+      .brand span { color: var(--accent); }
+
+      /* Stepper */
+      .stepper { 
+        display: flex; justify-content: space-between; 
+        margin-bottom: 30px; background: #fff; padding: 15px; border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+      }
+      .step {
+        flex: 1; text-align: center; font-size: 12px; font-weight: 700; color: var(--muted);
+        position: relative;
+      }
+      .step.active { color: var(--accent); }
+      .step-num {
+        display: block; width: 24px; height: 24px; margin: 0 auto 5px;
+        border-radius: 50%; background: #eee; line-height: 24px; font-size: 12px;
+      }
+      .step.active .step-num { background: var(--accent); color: #fff; }
+
+      /* Tabs/Filters */
+      .filter-bar {
+        margin-bottom: 20px; display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;
+        scrollbar-width: none;
+      }
+      .filter-bar::-webkit-scrollbar { display: none; }
+      .filter-item {
+        white-space: nowrap; padding: 8px 16px; background: #fff; border: 1px solid var(--line);
+        border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+      }
+      .filter-item.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+      /* Grid */
+      .grid { display: grid; gap: 24px; grid-template-columns: 1fr 340px; align-items: start; }
+      @media (max-width: 900px) {
+        .grid { grid-template-columns: 1fr; }
+        .sidebar { order: 1; } /* モバイルで下に配置 */
+      }
+
+      /* Card Style */
+      .card {
+        background: #fff; border-radius: var(--radius); padding: 24px;
+        box-shadow: var(--shadow-sm); border: 1px solid var(--line); margin-bottom: 24px;
+      }
+      .card h2 { 
+        margin: 0 0 20px; font-size: 18px; font-weight: 800; color: var(--text-head);
+        display: flex; align-items: center; gap: 8px;
+      }
+      .card h2::before {
+        content: ""; width: 4px; height: 18px; background: var(--accent); border-radius: 2px;
+      }
+
+      /* Timeline / Course Card (HotPepper Style) */
+      .timeline-wrap { display: flex; flex-direction: column; gap: 16px; }
+      .timeline-item {
+        background: #fff; border-radius: var(--radius); overflow: hidden;
+        border: 1px solid var(--line); transition: all 0.3s ease;
+        cursor: pointer; position: relative;
+      }
+      .timeline-item:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--accent); }
+      .timeline-item.active { border: 2px solid var(--accent); background: var(--accent-light); }
+      
+      .hp-card { display: flex; height: 100%; }
+      .hp-left { width: 140px; flex-shrink: 0; position: relative; }
+      .timeline-thumb { width: 140px; height: 100%; object-fit: cover; }
+      
+      .hp-right { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; }
+      .hp-title { font-size: 17px; font-weight: 800; color: var(--text-head); line-height: 1.4; }
+      .hp-sub { font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      
+      .hp-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+      .hp-badge { 
+        font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
+        background: var(--accent-light); color: var(--accent);
+      }
+      .hp-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+      .hp-chip { 
+        font-size: 11px; padding: 4px 8px; background: #fdfdfd; border: 1px solid var(--line); 
+        border-radius: 4px; color: var(--text);
+      }
+      .hp-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+      .hp-cta-wrap { margin-top: 10px; display: flex; gap: 10px; }
+      .hp-cta {
+        flex: 1; padding: 10px; border-radius: var(--radius-sm); border: none;
+        font-size: 14px; font-weight: 700; cursor: pointer; text-align: center;
+        transition: all 0.2s;
+      }
+      .hp-cta.primary { background: var(--accent); color: #fff; }
+      .hp-cta.primary:hover { background: var(--accent-hover); }
+      .hp-cta.secondary { background: #fff; color: var(--accent); border: 1px solid var(--accent); }
+
+      /* Calendar Modern UI */
+      .calendar-container { background: #fff; border-radius: var(--radius); padding: 5px; }
+      .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+      .cal-nav h3 { font-size: 16px; font-weight: 800; margin: 0; }
+      .cal-nav button { 
+        background: none; border: 1px solid var(--line); padding: 5px 12px; 
+        border-radius: 6px; cursor: pointer; font-size: 13px;
+      }
+
+      #calendarGrid table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+      #calendarGrid th { font-size: 11px; padding: 10px 0; color: var(--muted); text-align: center; }
+      #calendarGrid td { 
+        height: 70px; border: 1px solid #f0f0f0; vertical-align: top; padding: 4px; 
+        position: relative; cursor: pointer; transition: background 0.2s;
+      }
+      #calendarGrid td:hover { background: var(--accent-light); }
+      .day-num { font-size: 11px; font-weight: 700; color: #999; }
+      .cal-cell.is-today .day-num { color: var(--accent); }
+      .cal-cell.is-today { background: #fffaf0; }
+      
+      .status-mark {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+        border-radius: 50%; font-size: 18px; font-weight: 900;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      .status-mark:hover { transform: translate(-50%, -50%) scale(1.06); }
+
+      /* 強調: ○ を背景色つきのバッジにして視認性を上げる */
+      .mark-ok {
+        background: var(--accent-2);
+        color: #fff;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+      }
+      .mark-warn {
+        background: var(--warn);
+        color: #fff;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+      }
+
+      /* バツは現在の見た目とほぼ同じに保つ（薄めの色、背景なし） */
+      .mark-ng {
+        background: transparent;
+        color: #ccc;
+        box-shadow: none;
+      }
+
+      /* Slots */
+      .slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+      .slot-item {
+        border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px;
+        text-align: center; cursor: pointer; transition: all 0.2s; background: #fff;
+      }
+      .slot-item:hover { border-color: var(--accent); background: var(--accent-light); }
+      .slot-item.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+      .slot-item.selected .slot-time { color: #fff; }
+      .slot-time { font-size: 16px; font-weight: 800; display: block; }
+      .slot-status { font-size: 11px; margin-top: 4px; color: var(--muted); }
+      .slot-item.selected .slot-status { color: rgba(255,255,255,0.8); }
+
+      /* Form */
+      .form-group { margin-bottom: 20px; }
+      .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+      .form-control {
+        width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--line);
+        font-size: 14px; transition: border-color 0.2s;
+      }
+      .form-control:focus { border-color: var(--accent); outline: none; }
+
+      .btn-submit {
+        width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none;
+        border-radius: var(--radius); font-size: 16px; font-weight: 800; cursor: pointer;
+        box-shadow: 0 4px 12px rgba(255, 0, 102, 0.2); transition: all 0.2s;
+      }
+      .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+      .btn-submit:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+
+      /* Booking Summary */
+      .selection-summary {
+        background: var(--bg);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 20px;
+        border: 1px solid var(--line);
+        display: none;
+      }
+      .summary-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+      .summary-item:last-child { margin-bottom: 0; }
+      .summary-label { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+      .summary-value { 
+        color: var(--text-head); font-size: 15px; font-weight: 800; 
+        background: #fff; padding: 10px 12px; border-radius: var(--radius-sm);
+        border: 1px solid var(--line); border-left: 4px solid var(--accent);
+      }
+
+      /* Mobile Adjustments */
+      @media (max-width: 600px) {
+        .wrap { padding: 12px; }
+        .hp-left { width: 100px; }
+        .timeline-thumb { width: 100px; }
+        .hp-right { padding: 12px; }
+        .hp-title { font-size: 15px; }
+        .hp-sub { -webkit-line-clamp: 1; font-size: 12px; }
+        .hp-cta { padding: 8px; font-size: 13px; }
+        .grid { gap: 16px; }
+        .card { padding: 16px; margin-bottom: 16px; }
+        .slots-grid { grid-template-columns: 1fr 1fr; }
+        #calendarGrid td { height: 60px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand"><span>RESERVE</span> App</div>
+        <div class="pill" style="display:flex; gap:12px; align-items:center;">
+          <button id="setupLink" onclick="navigateToPage('setup')" style="font-size:12px; color:var(--accent); background:#fff; text-decoration:none; border:1px solid var(--accent); padding:5px 12px; border-radius:6px; font-weight:600; cursor:pointer;">⚙ セットアップ</button>
+          <button id="adminLink" onclick="navigateToPage('admin')" style="font-size:12px; color:var(--accent); background:#fff; text-decoration:none; border:1px solid var(--accent); padding:5px 12px; border-radius:6px; font-weight:600; cursor:pointer;">🔒 管理画面</button>
+        </div>
+      </div>
+
+      <div class="stepper">
+        <div class="step active" id="step1"><span class="step-num">1</span>講座</div>
+        <div class="step" id="step2"><span class="step-num">2</span>日程</div>
+        <div class="step" id="step3"><span class="step-num">3</span>入力</div>
+      </div>
+
+      <div class="grid">
+        <div class="main-content">
+          <div class="card">
+            <h2>実施中の講座一覧</h2>
+            <div id="courseTimeline" class="timeline-wrap">
+              <div class="muted">講座情報を読み込んでいます...</div>
+            </div>
+            <button class="hp-cta secondary" id="btnClearFilter" style="width:100%; margin-top:16px; display:none">全ての講座を表示</button>
+          </div>
+
+          <div class="card" id="calendarSection">
+            <h2>日程を選ぶ</h2>
+            <div class="cal-nav">
+              <div id="calLabel">2026年 2月</div>
+              <div class="btns">
+                <button id="calPrev">前月</button>
+                <button id="calToday">今月</button>
+                <button id="calNext">次月</button>
+              </div>
+            </div>
+            <div id="calendarGrid"></div>
+            <div style="margin-top:15px; display:flex; gap:15px; font-size:12px; color:var(--muted);">
+              <span><span class="mark-ok">○</span> 空きあり</span>
+              <span><span class="mark-warn">○</span> 残りわずか</span>
+              <span><span class="mark-ng">×</span> 満席/受付終了</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <div class="card" id="bookingSection">
+            <h2>予約内容</h2>
+            
+            <div id="selectionSummary" class="selection-summary">
+              <div class="summary-item">
+                <span class="summary-label">選択中の講座</span>
+                <span class="summary-value" id="summaryCourseName">-</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">予約日時</span>
+                <span class="summary-value" id="summaryDateTime">-</span>
+              </div>
+            </div>
+
+            <div id="selectedDateLabel" style="font-size:14px; font-weight:700; color:var(--accent); margin-bottom:15px; display:none"></div>
+            
+            <div id="slots" class="slots-grid" style="margin-bottom:20px">
+              <div class="muted" style="font-size:13px;">カレンダーから日付を選択してください。</div>
+            </div>
+
+            <div class="form-group">
+              <label>お名前</label>
+              <input id="name" class="form-control" placeholder="例）森 祐太" />
+            </div>
+
+            <div class="form-group">
+              <label>メールアドレス</label>
+              <input id="email" class="form-control" type="email" placeholder="example@gmail.com" />
+            </div>
+
+            <div class="form-group">
+              <label>ご質問・ご要望</label>
+              <textarea id="answers" class="form-control" style="height:80px" placeholder="自由にご記入ください。"></textarea>
+            </div>
+
+            <button id="btnCreate" class="btn-submit" disabled>予約を確定する</button>
+            <div id="msg" class="toast" style="display:none; margin-top:15px; font-size:13px; padding:12px; border-radius:8px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /**
+       * サーバーから注入される初期データ (Instant Load用)
+       * これにより、ページを開いた瞬間に講座やカレンダーを表示できます。
+       */
+      const INITIAL_DATA = null; /* __INJECT_INITIAL_DATA__ */
+
+      const $ = (id) => document.getElementById(id);
+
+      function updateSelectionSummary() {
+        const wrap = $('selectionSummary');
+        if (!wrap) return;
+        
+        const courseName = currentFilterCourse || (selectedSlot ? selectedSlot.label : '');
+        const ymd = lastSelectedYMD;
+        const time = selectedSlot ? String(selectedSlot.start_iso).slice(11, 16) : '';
+
+        if (!courseName && !ymd) {
+          wrap.style.display = 'none';
+          return;
+        }
+
+        wrap.style.display = 'block';
+        $('summaryCourseName').textContent = (courseName || '左の一覧から講座を選択してください').trim();
+        
+        let dtStr = ymd ? ymd : '';
+        if (time) dtStr += ' ' + time;
+        $('summaryDateTime').textContent = dtStr || 'カレンダーから日を選択してください';
+      }
+
+      function showMsg(text, ok) {
+        const box = $('msg');
+        if (!box) return;
+        box.style.display = 'block';
+        box.textContent = text;
+        box.style.background = ok ? 'var(--accent-light)' : '#fff0f0';
+        box.style.color = ok ? 'var(--accent)' : 'var(--danger)';
+        box.style.border = `1px solid ${ok ? 'var(--accent)' : 'var(--danger)'}`;
+      }
+      function clearMsg() {
+        const box = $('msg');
+        if (!box) return;
+        box.style.display = 'none';
+        box.textContent = '';
+      }
+
+      function setLoading(btn, loading) {
+        if (!btn) return;
+        btn.disabled = !!loading;
+        btn.dataset._old = btn.dataset._old || btn.textContent;
+        btn.textContent = loading ? '処理中...' : btn.dataset._old;
+      }
+
+  // services and selectedServiceId removed - UI operates directly from Events/Availabilities
+      let selectedSlot = null;
+
+      function renderServices() {
+        // noop: services UI removed. Keep this to preserve call sites.
+        const sel = $('serviceSelect');
+        if (sel) sel.style.display = 'none';
+      }
+
+      function renderSlots(slots) {
+        const root = $('slots');
+        root.innerHTML = '';
+        slots = dedupeSlots(slots || []);
+        if (!slots || slots.length === 0) {
+          root.innerHTML = '<div class="muted">選択された日の空き枠はありません。</div>';
+          return;
+        }
+
+        slots.forEach(s => {
+          const item = document.createElement('div');
+          item.className = 'slot-item';
+          if (selectedSlot && selectedSlot.start_iso === s.start_iso) item.classList.add('selected');
+          if (s.start_iso) item.dataset.startIso = String(s.start_iso);
+
+          const time = document.createElement('span');
+          time.className = 'slot-time';
+          time.textContent = String(s.start_iso).slice(11, 16);
+          
+          const status = document.createElement('div');
+          status.className = 'slot-status';
+          if (typeof s.remaining === 'number') {
+            status.textContent = s.remaining > 0 ? `残 ${s.remaining}` : '満席';
+          } else {
+            status.textContent = '受付中';
+          }
+
+          item.appendChild(time);
+          item.appendChild(status);
+
+          item.onclick = () => {
+            selectedSlot = s;
+            document.querySelectorAll('.slot-item').forEach(el => el.classList.remove('selected'));
+            item.classList.add('selected');
+            $('btnCreate').disabled = false;
+            $('step3').classList.add('active');
+            updateSelectionSummary();
+            clearMsg();
+          };
+          root.appendChild(item);
+        });
+      }
+
+      // dedupe slots by start_iso only (prefer slots with `remaining` defined)
+      // Use start_iso as the canonical key so slight label differences don't produce duplicates.
+      function dedupeSlots(slots) {
+        if (!slots || slots.length === 0) return [];
+        const map = new Map();
+        for (const s of slots) {
+          const key = String(s.start_iso || '');
+          if (!map.has(key)) {
+            map.set(key, Object.assign({}, s));
+          } else {
+            // merge: prefer remaining if present, prefer capacity if present
+            const cur = map.get(key);
+            if ((cur.remaining === null || cur.remaining === undefined) && (s.remaining !== null && s.remaining !== undefined)) cur.remaining = s.remaining;
+            if ((cur.capacity === undefined || cur.capacity === '') && (s.capacity !== undefined && s.capacity !== '')) cur.capacity = s.capacity;
+            // prefer a non-empty label if current label is empty
+            if ((!cur.label || String(cur.label).trim() === '') && (s.label && String(s.label).trim() !== '')) cur.label = s.label;
+            // keep other existing fields (service_id, end_iso) if missing
+            if ((!cur.end_iso || String(cur.end_iso).trim() === '') && s.end_iso) cur.end_iso = s.end_iso;
+            map.set(key, cur);
+          }
+        }
+        return Array.from(map.values()).sort((a,b) => String(a.start_iso||'').localeCompare(String(b.start_iso||'')));
+      }
+      
+      // Try to select a slot DOM element by its start_iso; retry a few times if DOM not yet rendered
+      function selectSlotByStartIso(startIso, attempts = 0) {
+        if (!startIso) return;
+        const sel = document.querySelector(`#slots .slot[data-start-iso="${String(startIso)}"]`);
+        if (sel) {
+          try { sel.click(); sel.scrollIntoView({behavior:'smooth', block:'center'}); } catch(e) { console.warn('selectSlot click failed', e); }
+          return;
+        }
+        if (attempts >= 10) return;
+        setTimeout(() => selectSlotByStartIso(startIso, attempts + 1), 150);
+      }
+
+
+      // ページ遷移用のURL取得キャッシュ
+      let _cachedAdminUrl = '';
+      let _cachedSetupUrl = '';
+
+      /**
+       * GAS iframe sandboxの中で正しくページ遷移するための関数。
+       * google.script.run でサーバー側から正しいデプロイURLを取得し、
+       * top.window.location.href で遷移する。
+       */
+      function navigateToPage(page) {
+        console.log('[navigateToPage] Navigating to:', page);
+        
+        // キャッシュ済みのURLがあればすぐに遷移
+        if (page === 'admin' && _cachedAdminUrl) {
+          console.log('[navigateToPage] Using cached admin URL:', _cachedAdminUrl);
+          window.top.location.href = _cachedAdminUrl;
+          return;
+        }
+        if (page === 'setup' && _cachedSetupUrl) {
+          console.log('[navigateToPage] Using cached setup URL:', _cachedSetupUrl);
+          window.top.location.href = _cachedSetupUrl;
+          return;
+        }
+
+        // サーバーからURLを取得
+        var serverFn = (page === 'admin') ? 'getAdminUrl' : 'getSetupUrl';
+        var paramName = (page === 'admin') ? 'admin' : 'setup';
+        
+        try {
+          google.script.run
+            .withSuccessHandler(function(url) {
+              var finalUrl = String(url || '').trim();
+              if (finalUrl && finalUrl.indexOf('userCodeAppPanel') >= 0) {
+                finalUrl = finalUrl.replace('/userCodeAppPanel', '/exec');
+              }
+              if (!finalUrl) {
+                // フォールバック: ScriptApp.getService().getUrl() が空のとき
+                // 現在のURLからexec URLを構築
+                try {
+                  var currentUrl = window.top.location.href;
+                  if (currentUrl.indexOf('/exec') >= 0) {
+                    finalUrl = currentUrl.split('?')[0] + '?' + paramName + '=1';
+                  } else if (currentUrl.indexOf('/dev') >= 0) {
+                    finalUrl = currentUrl.split('?')[0] + '?' + paramName + '=1';
+                  }
+                } catch(e) { console.warn('URL derivation failed', e); }
+              }
+              if (!finalUrl) {
+                alert('遷移先のURLを取得できませんでした。デプロイURLが設定されているか確認してください。');
+                return;
+              }
+              // キャッシュに保存
+              if (page === 'admin') _cachedAdminUrl = finalUrl;
+              else _cachedSetupUrl = finalUrl;
+              console.log('[navigateToPage] Navigating to:', finalUrl);
+              window.top.location.href = finalUrl;
+            })
+            .withFailureHandler(function(err) {
+              console.warn('[navigateToPage] Server call failed:', err);
+              // フォールバック: top.location.hrefから構築
+              try {
+                var currentUrl = window.top.location.href;
+                var base = currentUrl.split('?')[0];
+                var fallbackUrl = base + '?' + paramName + '=1';
+                console.log('[navigateToPage] Fallback URL:', fallbackUrl);
+                window.top.location.href = fallbackUrl;
+              } catch (e2) {
+                alert('ページ遷移に失敗しました: ' + (err && err.message ? err.message : err));
+              }
+            })
+            [serverFn]();
+        } catch (e) {
+          console.warn('[navigateToPage] google.script.run error:', e);
+          alert('ページ遷移に失敗しました。');
+        }
+      }
+
+      // boot時にURLを事前にキャッシュする
+      function preloadNavigationUrls() {
+        // INITIAL_DATAから先行取得
+        if (typeof INITIAL_DATA !== 'undefined' && INITIAL_DATA) {
+          if (INITIAL_DATA.adminUrl) {
+            _cachedAdminUrl = String(INITIAL_DATA.adminUrl).replace('/userCodeAppPanel', '/exec');
+          }
+          if (INITIAL_DATA.setupUrl) {
+            _cachedSetupUrl = String(INITIAL_DATA.setupUrl).replace('/userCodeAppPanel', '/exec');
+          }
+          if (_cachedAdminUrl && _cachedSetupUrl) return; // すでに取得済みなら終了
+        }
+
+        try {
+          google.script.run.withSuccessHandler(function(url) {
+            _cachedAdminUrl = String(url || '').trim();
+            if (_cachedAdminUrl.indexOf('userCodeAppPanel') >= 0) _cachedAdminUrl = _cachedAdminUrl.replace('/userCodeAppPanel', '/exec');
+          }).withFailureHandler(function(){}).getAdminUrl();
+        } catch(e) {}
+        try {
+          google.script.run.withSuccessHandler(function(url) {
+            _cachedSetupUrl = String(url || '').trim();
+            if (_cachedSetupUrl.indexOf('userCodeAppPanel') >= 0) _cachedSetupUrl = _cachedSetupUrl.replace('/userCodeAppPanel', '/exec');
+          }).withFailureHandler(function(){}).getSetupUrl();
+        } catch(e) {}
+      }
+
+      // デバッグ用: 診断情報を取得してコンソールに表示
+      function showDiagnostics() {
+        console.log('🔍 診断情報を取得中...');
+        if (!window.google || !window.google.script || !window.google.script.run) {
+          console.error('❌ google.script.run が利用できません。GAS Web アプリとして実行されていない可能性があります。');
+          return;
+        }
+        google.script.run
+          .withSuccessHandler((info) => {
+            console.log('📊 診断結果:', info);
+            console.log('  保存された管理者: ' + info.stored_admin);
+            console.log('  アクティブユーザー: ' + info.active_user);
+            console.log('  実行ユーザー: ' + info.effective_user);
+            console.log('  isExecutor判定: ' + info.isExecutor_result);
+            alert('診断結果 (詳細はコンソール参照):\n\n' +
+              '保存された管理者: ' + info.stored_admin + '\n' +
+              'アクティブユーザー: ' + info.active_user + '\n' +
+              '実行ユーザー: ' + info.effective_user + '\n' +
+              'isExecutor判定: ' + info.isExecutor_result + '\n\n' +
+              (info.isExecutor_result ? '✅ ボタンが表示されるはずです' : '❌ 権限がないためボタンは非表示'));
+          })
+          .withFailureHandler((err) => {
+            console.error('❌ 診断情報取得失敗:', err);
+            alert('診断情報取得に失敗: ' + (err?.message || err) + '\n\n関数 getDiagnosticInfo が存在するか確認してください。');
+          })
+          .getDiagnosticInfo();
+      }
+
+      function boot() {
+        console.log('🚀 予約ページ起動中...');
+        
+        // 1. ナビゲーションURLを事前キャッシュ (バックグラウンド)
+        preloadNavigationUrls();
+
+        // 2. 初期データ (INITIAL_DATA) があれば即座に展開してレンダリング
+        if (typeof INITIAL_DATA !== 'undefined' && INITIAL_DATA) {
+          console.log('📦 初期データを適用中 (Instant Load)...');
+          
+          if (INITIAL_DATA.courses) {
+            courseMetaMap = new Map();
+            INITIAL_DATA.courses.forEach(c => { if (c && c.course_name) courseMetaMap.set(String(c.course_name), c); });
+          }
+          
+          if (INITIAL_DATA.slots) {
+            availableSlots = INITIAL_DATA.slots;
+            slotsFetchedAt = Date.now();
+          }
+          
+          if (INITIAL_DATA.events) {
+            const bNow = new Date();
+            const curKey = `${bNow.getFullYear()}-${bNow.getMonth()+1}`;
+            const nextDate = new Date(bNow.getFullYear(), bNow.getMonth() + 1, 1);
+            const nextKey = `${nextDate.getFullYear()}-${nextDate.getMonth()+1}`;
+            
+            const curEvents = INITIAL_DATA.events.filter(e => {
+              const d = e.start_iso ? new Date(e.start_iso) : null;
+              return d && d.getFullYear() === bNow.getFullYear() && d.getMonth() === bNow.getMonth();
+            });
+            const nextEvents = INITIAL_DATA.events.filter(e => {
+              const d = e.start_iso ? new Date(e.start_iso) : null;
+              return d && d.getFullYear() === nextDate.getFullYear() && d.getMonth() === nextDate.getMonth();
+            });
+            
+            eventsCache.set(curKey, { ts: Date.now(), events: curEvents });
+            eventsCache.set(nextKey, { ts: Date.now(), events: nextEvents });
+            
+            calendarEvents = curEvents;
+          }
+
+          const bNow2 = new Date();
+          calYear = bNow2.getFullYear();
+          calMonth = bNow2.getMonth();
+          
+          $('calLabel').textContent = `${calYear}年 ${calMonth+1}月`;
+          renderCourseTimeline(availableSlots, calendarEvents);
+          renderCalendar(availableSlots, calendarEvents, calYear, calMonth);
+          lastCalendarLoadAt = Date.now();
+        }
+
+        // 3. イベントリスナーおよびオリジナルのメタデータ取得ロジック
+        if (!INITIAL_DATA || !INITIAL_DATA.courses) {
+          loadCourseMeta(() => { try { renderCourseTimeline(availableSlots, calendarEvents); } catch (e) {} });
+        }
+        
+        $('btnRefreshCal')?.addEventListener('click', () => { try { loadCalendar(calYear, calMonth, { force: true }); } catch(e) { console.warn(e); } });
+        window.addEventListener('focus', () => {
+          try {
+            const n = Date.now();
+            if (!lastCalendarLoadAt || (n - lastCalendarLoadAt) > 60 * 1000) {
+              loadCalendar(calYear, calMonth, { force: true });
+            }
+          } catch(e) { console.warn(e); }
+        });
+
+        // 4. 初期ロード処理
+        if (!INITIAL_DATA) {
+          const n = new Date();
+          renderCalendar([], [], n.getFullYear(), n.getMonth());
+          setTimeout(() => { loadCalendar(n.getFullYear(), n.getMonth()); }, 0);
+        } else {
+          setTimeout(() => { loadCalendar(calYear, calMonth, { silent: true }); }, 5000);
+        }
+      }
+
+      // loadSetupUrl / loadAdminUrl は navigateToPage + preloadNavigationUrls に統合済み
+
+      let availableSlots = [];
+      let calendarEvents = []; // events from the configured calendar (for display)
+      let calYear = (new Date()).getFullYear();
+      let calMonth = (new Date()).getMonth(); // 0-based
+      let slotsFetchedAt = 0;
+      let lastCalendarLoadAt = 0;
+      let lastPublicSig = '';
+      let lastSelectedYMD = '';
+      let lastSlotsByDate = new Map();
+      let lastEventsByDate = new Map();
+      let currentFilterCourse = null; // null or string (course title)
+      let courseMetaMap = new Map();
+      const SLOTS_TTL_MS = 60 * 1000;
+      const EVENTS_TTL_MS = 60 * 1000;
+      const AUTO_REFRESH_MS = 20000;
+      const eventsCache = new Map(); // key: YYYY-M, value: { ts, events }
+
+      function pad(n){ return (n<10? '0':'') + n; }
+      function startOfMonthYMD(y,m){ return `${y}-${pad(m+1)}-01`; }
+      function endOfMonthYMD(y,m){ const d = new Date(y,m+1,0); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+
+      function buildPublicSignature(slots, events) {
+        try {
+          const a = (slots || []).map(s => [String(s.start_iso||''), String(s.end_iso||''), String(s.remaining||''), String(s.capacity||''), String(s.label||'')].join('|')).sort();
+          const b = (events || []).map(e => [String(e.id||''), String(e.start_iso||''), String(e.end_iso||''), String(e.status||''), String(e.remaining||''), String(e.title||'')].join('|')).sort();
+          return a.join('||') + '###' + b.join('||');
+        } catch (_) { return '' + Date.now(); }
+      }
+
+      function loadAvailableSlots(cb, opts = {}) {
+        const force = !!opts.force || !!opts.noCache;
+        const silent = !!opts.silent;
+        const now = Date.now();
+        if (!force && availableSlots.length > 0 && (now - slotsFetchedAt) < SLOTS_TTL_MS) {
+          if (cb) cb();
+          return;
+        }
+        // Always request slots; if no service selected, server will return all available slots
+        google.script.run
+          .withSuccessHandler((slots) => {
+            availableSlots = slots || [];
+            slotsFetchedAt = Date.now();
+            if (cb) cb();
+          })
+          .withFailureHandler((err) => {
+            availableSlots = [];
+            if (!silent) showMsg('空き枠取得に失敗: ' + (err?.message || err), false);
+            if (cb) cb();
+          })
+          .getAvailableSlots(null, { noCache: !!opts.noCache });
+      }
+
+      function loadCourseMeta(cb) {
+        // すでにデータがある場合はそれを使う
+        if (courseMetaMap && courseMetaMap.size > 0) {
+          if (cb) cb();
+          return;
+        }
+        try {
+          google.script.run
+            .withSuccessHandler((list) => {
+              courseMetaMap = new Map();
+              (list || []).forEach(c => { if (c && c.course_name) courseMetaMap.set(String(c.course_name), c); });
+              if (cb) cb();
+            })
+            .withFailureHandler(() => { if (cb) cb(); })
+            .publicListCourses();
+        } catch (e) { if (cb) cb(); }
+      }
+
+      function loadCalendar(year, month, opts = {}) {
+        calYear = year; calMonth = month;
+        $('calLabel').textContent = `${year}年 ${month+1}月`;
+        // load availability slots and calendar events in parallel, then render
+        let pending = 2;
+        const done = () => {
+          pending -= 1;
+          if (pending <= 0) {
+            const sig = buildPublicSignature(availableSlots, calendarEvents);
+            if (sig !== lastPublicSig) {
+              renderCalendar(availableSlots, calendarEvents, year, month);
+              lastPublicSig = sig;
+            }
+            // Always update timeline independently of calendar sig changes (or include in sig)
+            renderCourseTimeline(availableSlots, calendarEvents);
+
+            lastCalendarLoadAt = Date.now();
+            if (lastSelectedYMD) {
+              try { showSlotsForDay(lastSelectedYMD); } catch (e) {}
+            }
+          }
+        };
+        loadAvailableSlots(done, opts);
+        loadCalendarEvents(year, month, done, opts);
+      }
+
+      function loadCalendarEvents(year, month, cb, opts = {}) {
+        const force = !!opts.force || !!opts.noCache;
+        const key = `${year}-${month+1}`;
+        const now = Date.now();
+        const cached = eventsCache.get(key);
+        if (!force && cached && (now - cached.ts) < EVENTS_TTL_MS) {
+          calendarEvents = cached.events || [];
+          if (cb) cb();
+          return;
+        }
+        calendarEvents = [];
+        const startIso = startOfMonthYMD(year, month) + 'T00:00';
+        const endIso = endOfMonthYMD(year, month) + 'T23:59';
+        google.script.run
+          .withSuccessHandler((res) => {
+            if (res && res.ok) {
+              calendarEvents = res.events || [];
+              eventsCache.set(key, { ts: Date.now(), events: calendarEvents });
+            }
+            if (cb) cb();
+          })
+          .withFailureHandler((err) => { console.warn('events fetch failed', err); if (cb) cb(); })
+          .publicListAppEvents(startIso, endIso, { noCache: !!opts.noCache });
+      }
+
+      // Deduplicate course names from slots/events and render timeline
+      function renderCourseTimeline(slots, events) {
+        const root = $('courseTimeline');
+        if (!root) return;
+        const names = new Set();
+        (slots || []).forEach(s => {
+          if (s.label && s.label.trim()) names.add(s.label.trim());
+        });
+        (events || []).forEach(e => {
+          if (e.title && e.title.trim()) names.add(e.title.trim());
+        });
+        
+        if (names.size === 0) {
+          root.innerHTML = '<div class="muted" style="padding:20px;text-align:center;">現在、申し込み可能な講座はありません。</div>';
+          return;
+        }
+
+        const sorted = Array.from(names).sort();
+        root.innerHTML = '';
+        sorted.forEach(name => {
+          const meta = courseMetaMap.get(name) || {};
+          const rawRelated = (slots || []).concat(events || []).filter(i => {
+            const lab = i.label || i.title || '';
+            return String(lab).trim() === String(name).trim();
+          });
+          const allRelated = dedupeSlots(rawRelated || []).sort((a,b)=> String(a.start_iso||'').localeCompare(String(b.start_iso||'')));
+          
+          const now = new Date();
+          const futureRelated = (allRelated || []).filter(s => {
+            try {
+              if (!s.start_iso) return false;
+              const d = new Date(String(s.start_iso));
+              return !isNaN(d.getTime()) && d >= now;
+            } catch (e) { return false; }
+          });
+          
+          const relatedTimes = (futureRelated || []).slice(0,5);
+          if (!relatedTimes || relatedTimes.length === 0) return;
+
+          const card = document.createElement('div');
+          card.className = 'timeline-item' + (currentFilterCourse === name ? ' active' : '');
+          
+          let remSum = relatedTimes.reduce((acc, s) => { 
+            if (typeof s.remaining === 'number') return acc + s.remaining; 
+            if (s.capacity) return acc + Number(s.capacity||0); 
+            return acc + 1; // assume at least 1 if no capacity info
+          }, 0);
+
+          const hp = document.createElement('div'); hp.className = 'hp-card';
+          
+          const left = document.createElement('div'); left.className = 'hp-left';
+          const thumb = document.createElement('img'); thumb.className = 'timeline-thumb';
+          thumb.alt = name;
+          thumb.src = meta.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400&auto=format&fit=crop'; // Default placeholder
+          left.appendChild(thumb);
+          
+          const badge = document.createElement('div');
+          badge.className = 'hp-badge';
+          badge.style.position = 'absolute'; badge.style.top = '8px'; badge.style.left = '8px';
+          badge.style.background = 'rgba(255,0,102,0.9)'; badge.style.color = '#fff';
+          badge.textContent = remSum > 0 ? `残り ${remSum}` : '空きあり';
+          left.appendChild(badge);
+
+          const right = document.createElement('div'); right.className = 'hp-right';
+          const title = document.createElement('div'); title.className = 'hp-title'; title.textContent = name;
+          const sub = document.createElement('div'); sub.className = 'hp-sub'; sub.textContent = meta.description || '講座の詳細については、お問い合わせください。';
+
+          const chips = document.createElement('div'); chips.className = 'hp-chips';
+          relatedTimes.forEach(ev => {
+            const dateStr = String(ev.start_iso || '');
+            if (!dateStr) return;
+            const d = new Date(dateStr);
+            const chip = document.createElement('div'); chip.className = 'hp-chip';
+            chip.textContent = `${d.getMonth()+1}/${d.getDate()} ${String(ev.start_iso).slice(11,16)}`;
+            chips.appendChild(chip);
+          });
+
+          const ctaRow = document.createElement('div'); ctaRow.className = 'hp-cta-wrap';
+          const btnCal = document.createElement('button'); btnCal.className = 'hp-cta secondary'; btnCal.textContent = '日程を確認';
+          const btnBook = document.createElement('button'); btnBook.className = 'hp-cta primary'; btnBook.textContent = '今すぐ予約';
+          
+          ctaRow.appendChild(btnCal); ctaRow.appendChild(btnBook);
+          
+          right.appendChild(title);
+          right.appendChild(sub);
+          right.appendChild(chips);
+          right.appendChild(ctaRow);
+          
+          hp.appendChild(left);
+          hp.appendChild(right);
+          card.appendChild(hp);
+          
+          // Interactions
+          const selectCourse = () => {
+            currentFilterCourse = (currentFilterCourse === name) ? null : name;
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            if (currentFilterCourse) {
+               $('step2').classList.add('active');
+               $('btnClearFilter').style.display = 'block';
+               $('calendarSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+               $('step1').classList.add('active');
+               $('btnClearFilter').style.display = 'none';
+            }
+            renderCalendar(availableSlots, calendarEvents, calYear, calMonth);
+            renderCourseTimeline(availableSlots, calendarEvents);
+            updateSelectionSummary();
+            if (lastSelectedYMD) showSlotsForDay(lastSelectedYMD);
+          };
+
+          card.onclick = (e) => { if(!e.target.closest('button')) selectCourse(); };
+          btnCal.onclick = (e) => { e.stopPropagation(); selectCourse(); };
+          btnBook.onclick = (e) => {
+            e.stopPropagation();
+            currentFilterCourse = name;
+            const first = relatedTimes[0];
+            if (first && first.start_iso) {
+              const ymd = String(first.start_iso).slice(0,10);
+              const d = new Date(first.start_iso);
+              lastSelectedYMD = ymd;
+              loadCalendar(d.getFullYear(), d.getMonth());
+              selectSlotByStartIso(first.start_iso);
+              $('bookingSection').scrollIntoView({behavior:'smooth', block:'start'});
+              $('step3').classList.add('active');
+              updateSelectionSummary();
+            } else {
+              selectCourse();
+            }
+          };
+
+          root.appendChild(card);
+        });
+
+        // wire up clear button
+        $('btnClearFilter').onclick = () => {
+          currentFilterCourse = null;
+          $('btnClearFilter').style.display = 'none';
+          $('step1').classList.add('active');
+          $('step2').classList.remove('active');
+          $('step3').classList.remove('active');
+          renderCalendar(availableSlots, calendarEvents, calYear, calMonth);
+          renderCourseTimeline(availableSlots, calendarEvents);
+          updateSelectionSummary();
+          if (lastSelectedYMD) showSlotsForDay(lastSelectedYMD);
+        };
+      }
+
+      function renderCalendar(slots, events, year, month) {
+        const grid = $('calendarGrid');
+        grid.innerHTML = '';
+        const slotsByDate = new Map();
+        (slots || []).forEach(s => {
+          if (currentFilterCourse && s.label !== currentFilterCourse) return;
+          const key = String(s.start_iso || '').slice(0,10);
+          if (!key) return;
+          if (!slotsByDate.has(key)) slotsByDate.set(key, []);
+          slotsByDate.get(key).push(s);
+        });
+        const eventsByDate = new Map();
+        (events || []).forEach(ev => {
+          if (currentFilterCourse && ev.title !== currentFilterCourse) return;
+          const key = String(ev.start_iso || '').slice(0,10);
+          if (!key) return;
+          if (!eventsByDate.has(key)) eventsByDate.set(key, []);
+          eventsByDate.get(key).push(ev);
+        });
+        lastSlotsByDate = slotsByDate;
+        lastEventsByDate = eventsByDate;
+        
+        const start = new Date(year, month, 1);
+        const dayOfWeek = (d) => { const u = d.getDay(); return u===0?7:u; }
+        const firstCell = new Date(start.getTime());
+        const dow = dayOfWeek(firstCell);
+        firstCell.setDate(firstCell.getDate() - (dow - 1));
+
+        const tbl = document.createElement('table');
+        const thead = document.createElement('thead');
+        const trh = document.createElement('tr');
+        ['月','火','水','木','金','土','日'].forEach(h => { const th = document.createElement('th'); th.textContent = h; trh.appendChild(th); });
+        thead.appendChild(trh); tbl.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        let cur = new Date(firstCell.getTime());
+        const now = new Date();
+        const todayStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+        
+        for (let week=0; week<6; week++) {
+          const tr = document.createElement('tr');
+          for (let d=0; d<7; d++) {
+            const td = document.createElement('td');
+            td.classList.add('cal-cell');
+            const dayNum = document.createElement('div');
+            dayNum.textContent = cur.getDate();
+            dayNum.className = 'day-num';
+            td.appendChild(dayNum);
+
+            const ymd = `${cur.getFullYear()}-${pad(cur.getMonth()+1)}-${pad(cur.getDate())}`;
+            const isPast = ymd < todayStr;
+            const isCurrentMonth = cur.getMonth() === month;
+            if (ymd === todayStr) td.classList.add('is-today');
+
+            const daySlots = slotsByDate.get(ymd) || [];
+            const dayEvents = eventsByDate.get(ymd) || [];
+            let combined = dedupeSlots([].concat(daySlots).concat(dayEvents));
+            
+            if (isPast) {
+              combined = [];
+            } else if (ymd === todayStr) {
+              combined = combined.filter(s => s.start_iso && new Date(s.start_iso) >= now);
+            }
+
+            if (isCurrentMonth) {
+              const mark = document.createElement('div');
+              mark.className = 'status-mark';
+              const remaining = combined.reduce((acc, s) => acc + (typeof s.remaining === 'number' ? s.remaining : 1), 0);
+              
+              if (combined.length === 0) {
+                mark.textContent = '×'; mark.classList.add('mark-ng');
+              } else if (remaining >= 3) {
+                mark.textContent = '○'; mark.classList.add('mark-ok');
+              } else {
+                mark.textContent = '○'; mark.classList.add('mark-warn');
+              }
+              td.appendChild(mark);
+
+              td.onclick = () => {
+                if (isPast) return;
+                lastSelectedYMD = ymd;
+                $('step2').classList.add('active');
+                showSlotsForDay(ymd);
+                $('bookingSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+              };
+            } else {
+              td.style.opacity = '0.3';
+              td.style.cursor = 'default';
+            }
+
+            tr.appendChild(td);
+            cur.setDate(cur.getDate() + 1);
+          }
+          tbody.appendChild(tr);
+        }
+        tbl.appendChild(tbody);
+        grid.appendChild(tbl);
+      }
+
+      function showSlotsForDay(ymd) {
+        try {
+          const now = new Date();
+          const todayStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+          if (ymd < todayStr) {
+            $('slots').innerHTML = '<div class="muted">過去の日付は予約できません。</div>';
+            $('btnCreate').disabled = true;
+            return;
+          }
+        } catch (e) {}
+
+        const root = $('slots');
+        root.innerHTML = '<div class="muted">空き枠を確認中...</div>';
+
+        const fromAvailable = lastSlotsByDate.get(ymd) || [];
+        const fromCalendar = (lastEventsByDate.get(ymd) || []).filter(ev => {
+          const st = String(ev.status || '').trim();
+          if (st && st !== 'available' && st !== 'confirmed') return false;
+          if (st === 'confirmed' && typeof ev.remaining === 'number') return ev.remaining > 0;
+          return true;
+        }).map(e => ({ start_iso: e.start_iso, end_iso: e.end_iso, label: e.title || '空き枠', capacity: e.capacity || '', remaining: e.remaining }));
+
+        let combined = dedupeSlots(fromAvailable.concat(fromCalendar));
+        
+        // Filter by current course if applicable
+        if (currentFilterCourse) {
+          combined = combined.filter(c => c.label === currentFilterCourse);
+        }
+
+        // Filter past times for today
+        const nowTS = Date.now();
+        combined = combined.filter(s => new Date(s.start_iso).getTime() > nowTS);
+
+        if (!combined || combined.length === 0) {
+          root.innerHTML = '<div class="muted">この日の空き枠はありません。</div>';
+          $('btnCreate').disabled = true;
+          return;
+        }
+
+        const titleEl = $('selectedDateLabel');
+        if (titleEl) {
+          titleEl.style.display = 'block';
+          titleEl.textContent = `${ymd} の空き枠`;
+        }
+
+        updateSelectionSummary();
+        renderSlots(combined);
+        
+        // Auto-select if only one slot
+        if (combined.length === 1) {
+          selectedSlot = combined[0];
+          $('btnCreate').disabled = false;
+          $('step3').classList.add('active');
+          const first = document.querySelector('.slot-item');
+          if (first) first.classList.add('selected');
+          updateSelectionSummary();
+        }
+      }
+
+      $('calPrev').addEventListener('click', () => {
+        const m = calMonth - 1;
+        if (m < 0) { loadCalendar(calYear - 1, 11); }
+        else { loadCalendar(calYear, m); }
+      });
+      $('calNext').addEventListener('click', () => {
+        const m = calMonth + 1;
+        if (m > 11) { loadCalendar(calYear + 1, 0); }
+        else { loadCalendar(calYear, m); }
+      });
+      $('calToday').addEventListener('click', () => { const now = new Date(); loadCalendar(now.getFullYear(), now.getMonth()); });
+
+      // lightweight auto-refresh for realtime reflection from Sheets
+      setInterval(() => { try { loadCalendar(calYear, calMonth, { silent: true, noCache: true }); } catch (e) {} }, AUTO_REFRESH_MS);
+
+      // initial calendar load once services are available
+      // boot() will call loadCalendar after fetching services
+
+      const btnReload = $('btnReload');
+      if (btnReload) btnReload.addEventListener('click', () => location.reload());
+
+      const btnClearEl = $('btnClear');
+      if (btnClearEl) {
+        btnClearEl.addEventListener('click', () => {
+          selectedSlot = null;
+          if ($('name')) $('name').value = '';
+          if ($('email')) $('email').value = '';
+          if ($('answers')) $('answers').value = '';
+          if ($('btnCreate')) $('btnCreate').disabled = true;
+          clearMsg();
+        });
+      }
+
+      $('btnCreate').addEventListener('click', () => {
+        clearMsg();
+        if (!selectedSlot) {
+          showMsg('枠が未選択です。', false);
+          return;
+        }
+
+        const payload = {
+          start_iso: selectedSlot.start_iso,
+          customer_name: $('name').value,
+          customer_email: $('email').value,
+          answers: {
+            free_text: $('answers').value
+          }
+        };
+
+        const btn = $('btnCreate');
+        setLoading(btn, true);
+
+        google.script.run
+          .withSuccessHandler((res) => {
+            setLoading(btn, false);
+            if (!res || !res.ok) {
+              showMsg('予約失敗: ' + (res?.error || 'unknown'), false);
+              return;
+            }
+            const txt = [
+              '予約が確定しました。',
+              `予約ID: ${res.booking_id}`,
+              '',
+              'キャンセルURL:',
+              res.cancel_url
+            ].join('\n');
+            showMsg(txt, true);
+            $('btnCreate').disabled = true;
+            try { loadCalendar(calYear, calMonth, { force: true }); } catch (e) { console.warn('calendar refresh failed', e); }
+          })
+          .withFailureHandler((err) => {
+            setLoading(btn, false);
+            showMsg('予約処理に失敗: ' + (err?.message || err), false);
+          })
+          .createBooking(payload);
+      });
+
+      boot();
+    </script>
+
+    <script>
+    // Setup Overlay Removed
+    </script>
+  </body>
+</html>

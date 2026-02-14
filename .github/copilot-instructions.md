@@ -1,7 +1,12 @@
 - This is a Next.js 14+ App Router project with TypeScript and Tailwind CSS.
-- The app is a **portal site** — it displays tenant info (photos, descriptions, menus) fetched from Supabase and provides a booking button that links to the tenant's GAS Web App. No data mutation happens here.
+- The app is a **portal site** — it displays tenant info (photos, descriptions, menus) fetched from Supabase and provides a booking button that links to the tenant's GAS Web App. No data mutation happens here (read-only).
 - Data source: Supabase `tenants` table. Falls back to local data in `src/lib/tenantRegistry.ts` when env vars are not set.
 - Supabase client is in `src/lib/supabase.ts`. Env vars: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
+- Admin API for tenant registration: `POST /api/admin/tenants` (upsert), `PUT /api/admin/tenants` (partial update). Protected by `x-admin-secret` header matching env var `ADMIN_SHARED_SECRET`.
+- The tenant app (GAS, in `tenantapp/`) calls the Admin API on deploy to auto-register itself.
+- Tenant profile data (photo, description, menus, tags, address, hours, etc.) is stored in the GAS spreadsheet's `TenantProfile` sheet (Key-Value format) and sent to the portal on registration.
+- GAS custom menu: 📋 テナントプロフィール編集 → opens TenantProfile sheet. 📡 ポータルサイトに登録 → sends full profile to portal Admin API.
+- Supabase migration: `supabase/migrations/001_create_tenants.sql` — table schema with RLS policies.
 - Keep `getTenantBySlug()` and `listPublicTenants()` async signatures stable.
 - URL validation logic is in `src/lib/urlGuard.ts`. Only `https` and allowed hosts (`script.google.com`, `script.googleusercontent.com`) are permitted.
 - Never accept user-supplied URLs for redirection (open-redirect prevention).
