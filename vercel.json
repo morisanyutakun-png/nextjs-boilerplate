@@ -22,11 +22,5 @@
         }
       ]
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/admin/upload-image",
-      "destination": "/api/admin/upload-image"
-    }
   ]
 }
