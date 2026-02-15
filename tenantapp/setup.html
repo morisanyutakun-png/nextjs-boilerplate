@@ -195,7 +195,10 @@
       <div class="form-group">
         <label>画像を選択してアップロード</label>
         <div class="hint">ポータルのカード画像になります（JPEG, PNG, GIF, WebP対応、最大3MB）</div>
-        <input type="file" class="form-input" id="pf_photo_file" accept="image/jpeg,image/png,image/gif,image/webp" onchange="handleImageSelect(event)">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <input type="file" class="form-input" id="pf_photo_file" accept="image/jpeg,image/png,image/gif,image/webp" onchange="handleImageSelect(event)" style="flex:1">
+          <button type="button" onclick="testUploadEndpoint()" class="btn" style="background:#6366f1;white-space:nowrap;padding:8px 12px;font-size:.82rem">接続テスト</button>
+        </div>
         <div id="uploadStatus" style="margin-top:6px;font-size:.82rem"></div>
         <div class="photo-preview" id="photoPreview"></div>
         <input type="hidden" id="pf_photo_url">
@@ -626,6 +629,36 @@ function uploadImageToPortal(base64Data) {
       showUploadStatus('err', 'エラー: ' + errMsg(err));
     })
     .adminUploadImage({ endpoint: endpoint, imageData: base64Data });
+}
+
+function testUploadEndpoint() {
+  var portalApiUrl = getVal('portal_api_url');
+  if (!portalApiUrl) {
+    showUploadStatus('err', 'ポータルAPIのURLが設定されていません（Step 1で設定してください）');
+    return;
+  }
+
+  var endpoint = portalApiUrl.replace(/\/+$/, '') + '/api/admin/upload-image';
+  showUploadStatus('info', '<span class="spinner"></span> 接続テスト中: ' + endpoint);
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || !res.ok) {
+        var errDetail = res && res.error ? res.error : 'Unknown error';
+        showUploadStatus('err', '&#x2717; 接続失敗: ' + errDetail);
+        return;
+      }
+      var testRes = res.result || {};
+      if (testRes.message) {
+        showUploadStatus('ok', '&#x2713; 接続成功: ' + testRes.message);
+      } else {
+        showUploadStatus('ok', '&#x2713; エンドポイントが応答しました');
+      }
+    })
+    .withFailureHandler(function(err) {
+      showUploadStatus('err', '&#x2717; エラー: ' + errMsg(err));
+    })
+    .adminTestEndpoint({ endpoint: endpoint });
 }
 
 function showUploadStatus(type, msg) {

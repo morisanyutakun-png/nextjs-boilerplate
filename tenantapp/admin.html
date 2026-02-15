@@ -440,7 +440,10 @@
           <div>
             <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">メイン画像をアップロード</label>
             <div style="font-size:11px; color:#64748b; margin-bottom:4px;">JPEG, PNG, GIF, WebP対応（最大3MB）</div>
-            <input type="file" id="tp_photo_file" accept="image/jpeg,image/png,image/gif,image/webp" style="width:100%; padding:6px; font-size:13px;" onchange="tpHandleImageSelect(event)" />
+            <div style="display:flex; gap:6px; align-items:center;">
+              <input type="file" id="tp_photo_file" accept="image/jpeg,image/png,image/gif,image/webp" style="flex:1; padding:6px; font-size:13px;" onchange="tpHandleImageSelect(event)" />
+              <button type="button" onclick="tpTestUploadEndpoint()" style="background:#6366f1; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; white-space:nowrap; font-size:11px;">接続テスト</button>
+            </div>
             <div id="tpUploadStatus" style="margin-top:4px; font-size:12px;"></div>
             <div id="tpPhotoPreview" style="margin-top:6px;"></div>
             <input type="hidden" id="tp_photo_url" />
@@ -2464,6 +2467,44 @@
               tpShowUploadStatus('err', 'エラー: ' + (err && err.message ? err.message : String(err)));
             })
             .adminUploadImage({ endpoint: endpoint, imageData: base64Data });
+        })
+        .withFailureHandler(function(err) {
+          tpShowUploadStatus('err', 'エラー: ' + (err && err.message ? err.message : String(err)));
+        })
+        .adminGetTenantProfile();
+    }
+
+    function tpTestUploadEndpoint() {
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (!res) return;
+          var portalApiUrl = res.portal_api_url;
+          if (!portalApiUrl) {
+            tpShowUploadStatus('err', 'ポータルAPIのURLが設定されていません');
+            return;
+          }
+
+          var endpoint = portalApiUrl.replace(/\/+$/, '') + '/api/admin/upload-image';
+          tpShowUploadStatus('info', '接続テスト中: ' + endpoint);
+
+          google.script.run
+            .withSuccessHandler(function(testRes) {
+              if (!testRes || !testRes.ok) {
+                var errDetail = testRes && testRes.error ? testRes.error : 'Unknown error';
+                tpShowUploadStatus('err', '✗ 接続失敗: ' + errDetail);
+                return;
+              }
+              var result = testRes.result || {};
+              if (result.message) {
+                tpShowUploadStatus('ok', '✓ 接続成功: ' + result.message);
+              } else {
+                tpShowUploadStatus('ok', '✓ エンドポイントが応答しました');
+              }
+            })
+            .withFailureHandler(function(err) {
+              tpShowUploadStatus('err', '✗ エラー: ' + (err && err.message ? err.message : String(err)));
+            })
+            .adminTestEndpoint({ endpoint: endpoint });
         })
         .withFailureHandler(function(err) {
           tpShowUploadStatus('err', 'エラー: ' + (err && err.message ? err.message : String(err)));

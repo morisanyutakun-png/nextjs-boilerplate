@@ -6062,3 +6062,59 @@ function adminUploadImage(data) {
     return { ok: false, error: (e && e.message) ? e.message : String(e) };
   }
 }
+
+/**
+ * 画像アップロードエンドポイントの接続テスト（診断用）
+ * GETリクエストを送ってエンドポイントが存在するか確認
+ * @param {Object} data - { endpoint }
+ * @return {Object} { ok, result }
+ */
+function adminTestEndpoint(data) {
+  try {
+    var endpoint = String(data.endpoint || '').trim();
+
+    console.log('[adminTestEndpoint] Testing endpoint: ' + endpoint);
+
+    if (!endpoint) return { ok: false, error: 'エンドポイントが指定されていません' };
+
+    var resp = UrlFetchApp.fetch(endpoint, {
+      method: 'get',
+      muteHttpExceptions: true,
+    });
+
+    var code = resp.getResponseCode();
+    var body = resp.getContentText();
+
+    console.log('[adminTestEndpoint] Response code: ' + code);
+    console.log('[adminTestEndpoint] Response body: ' + body);
+
+    if (code >= 200 && code < 300) {
+      try {
+        var result = JSON.parse(body);
+        return { ok: true, result: result };
+      } catch (_) {
+        return { ok: true, result: { message: 'エンドポイントが応答しました (HTTP ' + code + ')' } };
+      }
+    } else if (code === 404) {
+      return { ok: false, error: 'エンドポイントが見つかりません (404) - Vercelにデプロイされているか確認してください' };
+    } else if (code === 405) {
+      return { ok: false, error: 'エンドポイントは存在しますが、GETメソッドが許可されていません (405) - これは正常です。POSTリクエストは動作する可能性があります' };
+    } else if (code === 401) {
+      return { ok: false, error: '認証エラー (401) - ADMIN_SHARED_SECRETが設定されているか確認してください' };
+    } else if (code === 503) {
+      return { ok: false, error: 'サービス利用不可 (503) - Supabaseが設定されているか確認してください' };
+    } else {
+      var errDetail = 'テスト失敗 (HTTP ' + code + ')';
+      try {
+        var errJson = JSON.parse(body);
+        if (errJson.error) errDetail += ': ' + errJson.error;
+      } catch (_) {
+        errDetail += ': ' + body.substring(0, 200);
+      }
+      return { ok: false, error: errDetail };
+    }
+  } catch (e) {
+    console.error('[adminTestEndpoint] error:', e);
+    return { ok: false, error: (e && e.message) ? e.message : String(e) };
+  }
+}
