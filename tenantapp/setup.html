@@ -130,8 +130,8 @@
       <hr class="divider">
       <div class="form-group">
         <label>ポータル API URL *</label>
-        <div class="hint">Vercel にデプロイしたポータルサイトの URL です（例: https://your-portal.vercel.app）</div>
-        <input type="url" class="form-input" id="portal_api_url" placeholder="https://your-portal.vercel.app">
+  <div class="hint">Vercel にデプロイしたポータルサイトの URL です（例: https://nextjsproto.vercel.app）</div>
+  <input type="url" class="form-input" id="portal_api_url" placeholder="https://nextjsproto.vercel.app">
       </div>
       <div class="form-group">
         <label>Admin Secret * <span class="tip" data-tip="Vercel の環境変数 ADMIN_SHARED_SECRET と同じ値を入力">?</span></label>
@@ -193,10 +193,12 @@
       <hr class="divider">
       <div style="font-weight:700;font-size:.92rem;margin-bottom:10px;color:#1e293b">&#x1F5BC; メイン画像</div>
       <div class="form-group">
-        <label>画像URL</label>
-        <div class="hint">httpsで始まる画像URL。ポータルのカード画像になります。</div>
-        <input type="url" class="form-input" id="pf_photo_url" placeholder="https://example.com/photo.jpg" oninput="previewPhoto()">
+        <label>画像を選択してアップロード</label>
+        <div class="hint">ポータルのカード画像になります（JPEG, PNG, GIF, WebP対応、最大5MB）</div>
+        <input type="file" class="form-input" id="pf_photo_file" accept="image/jpeg,image/png,image/gif,image/webp" onchange="handleImageSelect(event)">
+        <div id="uploadStatus" style="margin-top:6px;font-size:.82rem"></div>
         <div class="photo-preview" id="photoPreview"></div>
+        <input type="hidden" id="pf_photo_url">
       </div>
 
       <hr class="divider">
@@ -562,6 +564,75 @@ function previewPhoto() {
   if (url && url.match(/^https?:\/\/.+/)) {
     el.innerHTML = '<img src="' + escHtml(url) + '" onerror="this.style.display=\'none\'" alt="preview">';
   } else { el.innerHTML = ''; }
+}
+
+function handleImageSelect(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+
+  // ファイルサイズチェック（5MB）
+  var MAX_SIZE = 5 * 1024 * 1024;
+  if (file.size > MAX_SIZE) {
+    showUploadStatus('err', '画像サイズが大きすぎます（最大5MB）');
+    return;
+  }
+
+  // 画像タイプチェック
+  var validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  if (!validTypes.includes(file.type)) {
+    showUploadStatus('err', 'サポートされていない画像形式です');
+    return;
+  }
+
+  showUploadStatus('info', '<span class="spinner"></span> アップロード中...');
+
+  // FileをBase64に変換
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var base64Data = e.target.result;
+    uploadImageToPortal(base64Data);
+  };
+  reader.onerror = function() {
+    showUploadStatus('err', '画像の読み込みに失敗しました');
+  };
+  reader.readAsDataURL(file);
+}
+
+function uploadImageToPortal(base64Data) {
+  var portalApiUrl = getVal('portal_api_url');
+  if (!portalApiUrl) {
+    showUploadStatus('err', 'ポータルAPIのURLが設定されていません（Step 1で設定してください）');
+    return;
+  }
+
+  var endpoint = portalApiUrl.replace(/\/+$/, '') + '/api/admin/upload-image';
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || !res.ok) {
+        showUploadStatus('err', 'アップロードに失敗: ' + (res && res.error ? res.error : 'Unknown error'));
+        return;
+      }
+      var uploadRes = res.result || {};
+      if (uploadRes.ok && uploadRes.url) {
+        setVal('pf_photo_url', uploadRes.url);
+        previewPhoto();
+        showUploadStatus('ok', '&#x2713; アップロード成功');
+      } else {
+        showUploadStatus('err', 'アップロードに失敗: ' + (uploadRes.error || 'Unknown'));
+      }
+    })
+    .withFailureHandler(function(err) {
+      showUploadStatus('err', 'エラー: ' + errMsg(err));
+    })
+    .adminUploadImage({ endpoint: endpoint, imageData: base64Data });
+}
+
+function showUploadStatus(type, msg) {
+  var el = document.getElementById('uploadStatus');
+  if (!el) return;
+  var color = type === 'ok' ? '#16a34a' : type === 'err' ? '#ef4444' : '#2563eb';
+  el.innerHTML = '<span style="color:' + color + '">' + msg + '</span>';
 }
 
 function renderMenus() {

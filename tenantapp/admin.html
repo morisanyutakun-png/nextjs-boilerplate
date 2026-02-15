@@ -438,9 +438,12 @@
           <!-- 画像 -->
           <div style="font-weight:600; font-size:14px; margin:14px 0 8px; padding-top:10px; border-top:1px solid var(--line);">画像</div>
           <div>
-            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">メイン画像URL</label>
-            <input id="tp_photo_url" placeholder="https://..." style="width:100%;" oninput="tpPreviewPhoto()" />
+            <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">メイン画像をアップロード</label>
+            <div style="font-size:11px; color:#64748b; margin-bottom:4px;">JPEG, PNG, GIF, WebP対応（最大5MB）</div>
+            <input type="file" id="tp_photo_file" accept="image/jpeg,image/png,image/gif,image/webp" style="width:100%; padding:6px; font-size:13px;" onchange="tpHandleImageSelect(event)" />
+            <div id="tpUploadStatus" style="margin-top:4px; font-size:12px;"></div>
             <div id="tpPhotoPreview" style="margin-top:6px;"></div>
+            <input type="hidden" id="tp_photo_url" />
           </div>
 
           <!-- 店舗情報 -->
@@ -490,7 +493,7 @@
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
             <div>
               <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">ポータル API URL</label>
-              <input id="tp_portal_api_url" placeholder="https://your-portal.vercel.app" style="width:100%;" />
+              <input id="tp_portal_api_url" placeholder="https://nextjsproto.vercel.app" style="width:100%;" />
             </div>
             <div>
               <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">Admin Secret</label>
@@ -2396,6 +2399,83 @@
       if (url && url.match(/^https?:\/\/.+/)) {
         el.innerHTML = '<img src="' + tpEsc(url) + '" style="max-width:180px; max-height:120px; border-radius:8px; border:1px solid #e2e8f0; object-fit:cover;" onerror="this.style.display=\'none\'" />';
       } else { el.innerHTML = ''; }
+    }
+
+    function tpHandleImageSelect(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+
+      // ファイルサイズチェック（5MB）
+      var MAX_SIZE = 5 * 1024 * 1024;
+      if (file.size > MAX_SIZE) {
+        tpShowUploadStatus('err', '画像サイズが大きすぎます（最大5MB）');
+        return;
+      }
+
+      // 画像タイプチェック
+      var validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        tpShowUploadStatus('err', 'サポートされていない画像形式です');
+        return;
+      }
+
+      tpShowUploadStatus('info', '⏳ アップロード中...');
+
+      // FileをBase64に変換
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var base64Data = e.target.result;
+        tpUploadImageToPortal(base64Data);
+      };
+      reader.onerror = function() {
+        tpShowUploadStatus('err', '画像の読み込みに失敗しました');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function tpUploadImageToPortal(base64Data) {
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (!res) return;
+          var portalApiUrl = res.portal_api_url;
+          if (!portalApiUrl) {
+            tpShowUploadStatus('err', 'ポータルAPIのURLが設定されていません');
+            return;
+          }
+
+          var endpoint = portalApiUrl.replace(/\/+$/, '') + '/api/admin/upload-image';
+
+          google.script.run
+            .withSuccessHandler(function(uploadRes) {
+              if (!uploadRes || !uploadRes.ok) {
+                tpShowUploadStatus('err', 'アップロードに失敗: ' + (uploadRes && uploadRes.error ? uploadRes.error : 'Unknown error'));
+                return;
+              }
+              var result = uploadRes.result || {};
+              if (result.ok && result.url) {
+                tpSet('tp_photo_url', result.url);
+                tpPreviewPhoto();
+                tpShowUploadStatus('ok', '✓ アップロード成功');
+              } else {
+                tpShowUploadStatus('err', 'アップロードに失敗: ' + (result.error || 'Unknown'));
+              }
+            })
+            .withFailureHandler(function(err) {
+              tpShowUploadStatus('err', 'エラー: ' + (err && err.message ? err.message : String(err)));
+            })
+            .adminUploadImage({ endpoint: endpoint, imageData: base64Data });
+        })
+        .withFailureHandler(function(err) {
+          tpShowUploadStatus('err', 'エラー: ' + (err && err.message ? err.message : String(err)));
+        })
+        .adminGetTenantProfile();
+    }
+
+    function tpShowUploadStatus(type, msg) {
+      var el = document.getElementById('tpUploadStatus');
+      if (!el) return;
+      var color = type === 'ok' ? '#16a34a' : type === 'err' ? '#ef4444' : '#2563eb';
+      el.innerHTML = '<span style="color:' + color + '">' + msg + '</span>';
     }
 
     // --- Menus ---

@@ -13,6 +13,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
 // ---------------------------------------------------------------------------
+// CORS ヘッダー
+// ---------------------------------------------------------------------------
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, x-admin-secret",
+};
+
+// ---------------------------------------------------------------------------
+// OPTIONS ハンドラー（CORS プリフライト）
+// ---------------------------------------------------------------------------
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: CORS_HEADERS,
+  });
+}
+
+// ---------------------------------------------------------------------------
 // 認証ヘルパー
 // ---------------------------------------------------------------------------
 function authorize(request: NextRequest): boolean {
@@ -123,14 +142,14 @@ export async function POST(request: NextRequest) {
             ? "x-admin-secret header is missing from the request"
             : "x-admin-secret header value does not match ADMIN_SHARED_SECRET",
       },
-      { status: 401 },
+      { status: 401, headers: CORS_HEADERS },
     );
   }
 
   if (!supabase) {
     return NextResponse.json(
       { error: "Supabase が設定されていません（NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY を確認してください）" },
-      { status: 503 },
+      { status: 503, headers: CORS_HEADERS },
     );
   }
 
@@ -138,12 +157,12 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "JSON パースに失敗しました" }, { status: 400 });
+    return NextResponse.json({ error: "JSON パースに失敗しました" }, { status: 400, headers: CORS_HEADERS });
   }
 
   const v = validatePayload(body);
   if (!v.ok) {
-    return NextResponse.json({ error: v.reason }, { status: 422 });
+    return NextResponse.json({ error: v.reason }, { status: 422, headers: CORS_HEADERS });
   }
 
   const row = {
@@ -162,10 +181,10 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     console.error("[admin/tenants] upsert error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500, headers: CORS_HEADERS });
   }
 
-  return NextResponse.json({ ok: true, tenant: data }, { status: 201 });
+  return NextResponse.json({ ok: true, tenant: data }, { status: 201, headers: CORS_HEADERS });
 }
 
 // ---------------------------------------------------------------------------
@@ -173,13 +192,13 @@ export async function POST(request: NextRequest) {
 // ---------------------------------------------------------------------------
 export async function PUT(request: NextRequest) {
   if (!authorize(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: CORS_HEADERS });
   }
 
   if (!supabase) {
     return NextResponse.json(
       { error: "Supabase が設定されていません" },
-      { status: 503 },
+      { status: 503, headers: CORS_HEADERS },
     );
   }
 
@@ -187,24 +206,24 @@ export async function PUT(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "JSON パースに失敗しました" }, { status: 400 });
+    return NextResponse.json({ error: "JSON パースに失敗しました" }, { status: 400, headers: CORS_HEADERS });
   }
 
   if (!body || typeof body !== "object") {
-    return NextResponse.json({ error: "リクエストボディが空です" }, { status: 400 });
+    return NextResponse.json({ error: "リクエストボディが空です" }, { status: 400, headers: CORS_HEADERS });
   }
 
   const b = body as Record<string, unknown>;
   const slug = String(b.slug ?? "").trim();
   if (!slug) {
-    return NextResponse.json({ error: "slug は必須です" }, { status: 422 });
+    return NextResponse.json({ error: "slug は必須です" }, { status: 422, headers: CORS_HEADERS });
   }
 
   // slug 以外の値だけ更新対象にする
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { slug: _slug, ...updates } = b as Record<string, unknown>;
   if (Object.keys(updates).length === 0) {
-    return NextResponse.json({ error: "更新フィールドがありません" }, { status: 422 });
+    return NextResponse.json({ error: "更新フィールドがありません" }, { status: 422, headers: CORS_HEADERS });
   }
 
   // updated_at を自動付与
@@ -219,8 +238,8 @@ export async function PUT(request: NextRequest) {
 
   if (error) {
     console.error("[admin/tenants] update error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500, headers: CORS_HEADERS });
   }
 
-  return NextResponse.json({ ok: true, tenant: data });
+  return NextResponse.json({ ok: true, tenant: data }, { headers: CORS_HEADERS });
 }

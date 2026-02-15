@@ -50,7 +50,7 @@ const PROP_KEYS = {
   SETUP_DONE: 'SETUP_DONE',
   ADMIN_EXECUTOR_EMAIL: 'ADMIN_EXECUTOR_EMAIL',
   // ─── ポータル連携用 ───
-  PORTAL_API_URL: 'PORTAL_API_URL',           // ポータル Admin API のベース URL (例: https://your-portal.vercel.app)
+  PORTAL_API_URL: 'PORTAL_API_URL',           // ポータル Admin API のベース URL (例: https://nextjsproto.vercel.app)
   PORTAL_ADMIN_SECRET: 'PORTAL_ADMIN_SECRET', // ポータル側の ADMIN_SHARED_SECRET と同じ値
   TENANT_SLUG: 'TENANT_SLUG',                 // ポータル上のテナント識別子 (slug)
   TENANT_NAME: 'TENANT_NAME',                 // ポータル上の表示名
@@ -5991,4 +5991,65 @@ function inferTitleColumn_(vals, maxRows, exclude) {
     if (scores[c] > bestScore) { best = c; bestScore = scores[c]; }
   }
   return bestScore > 0 ? best : -1;
+}
+
+/**
+ * 画像をポータルにアップロードする。
+ * @param {Object} data { endpoint, imageData }
+ * @return {Object} { ok, result }
+ */
+function adminUploadImage(data) {
+  try {
+    var endpoint = String(data.endpoint || '').trim();
+    var imageData = String(data.imageData || '').trim();
+
+    if (!endpoint) return { ok: false, error: 'エンドポイントが指定されていません' };
+    if (!imageData) return { ok: false, error: '画像データが指定されていません' };
+
+    // 保存済みのシークレットを取得
+    var props = PropertiesService.getScriptProperties();
+    var secret = String(props.getProperty(PROP_KEYS.PORTAL_ADMIN_SECRET) || '').trim();
+
+    if (!secret) return { ok: false, error: 'Admin Secret が設定されていません（Step 1で設定してください）' };
+
+    var payload = {
+      image: imageData
+    };
+
+    var resp = UrlFetchApp.fetch(endpoint, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-secret': secret,
+      },
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true,
+    });
+
+    var code = resp.getResponseCode();
+    var body = resp.getContentText();
+
+    console.log('[adminUploadImage] response ' + code + ': ' + body.substring(0, 500));
+
+    if (code >= 200 && code < 300) {
+      try {
+        var result = JSON.parse(body);
+        return { ok: true, result: result };
+      } catch (_) {
+        return { ok: true, result: { ok: true } };
+      }
+    } else {
+      var errDetail = 'アップロード失敗 (' + code + ')';
+      try {
+        var errJson = JSON.parse(body);
+        if (errJson.error) errDetail += ': ' + errJson.error;
+      } catch (_) {
+        errDetail += ': ' + body.substring(0, 200);
+      }
+      return { ok: false, error: errDetail };
+    }
+  } catch (e) {
+    console.error('[adminUploadImage] error:', e);
+    return { ok: false, error: (e && e.message) ? e.message : String(e) };
+  }
 }
