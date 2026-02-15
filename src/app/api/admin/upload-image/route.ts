@@ -13,6 +13,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
+// Vercel の制限: Hobby プランは 4.5MB まで、Pro プランは無制限
+// Base64 エンコードで約33%増加するため、実質的な画像サイズは約3MBまで
+export const runtime = "nodejs";
+export const maxDuration = 30; // 最大30秒
+
 // ---------------------------------------------------------------------------
 // CORS ヘッダー
 // ---------------------------------------------------------------------------
@@ -26,10 +31,26 @@ const CORS_HEADERS = {
 // OPTIONS ハンドラー（CORS プリフライト）
 // ---------------------------------------------------------------------------
 export async function OPTIONS() {
+  console.log("[admin/upload-image] OPTIONS request received");
   return new NextResponse(null, {
     status: 204,
     headers: CORS_HEADERS,
   });
+}
+
+// ---------------------------------------------------------------------------
+// GET ハンドラー（デバッグ用）
+// ---------------------------------------------------------------------------
+export async function GET() {
+  console.log("[admin/upload-image] GET request received (debug endpoint)");
+  return NextResponse.json(
+    {
+      message: "Image upload endpoint is working",
+      methods: ["POST", "OPTIONS"],
+      cors: CORS_HEADERS,
+    },
+    { headers: CORS_HEADERS },
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -55,12 +76,18 @@ function authorize(request: NextRequest): boolean {
 // POST — 画像アップロード
 // ---------------------------------------------------------------------------
 export async function POST(request: NextRequest) {
+  console.log("[admin/upload-image] POST request received");
+  console.log("[admin/upload-image] Headers:", Object.fromEntries(request.headers.entries()));
+
   if (!authorize(request)) {
+    console.error("[admin/upload-image] Authorization failed");
     return NextResponse.json(
       { error: "Unauthorized" },
       { status: 401, headers: CORS_HEADERS },
     );
   }
+
+  console.log("[admin/upload-image] Authorization successful");
 
   if (!supabase) {
     return NextResponse.json(
@@ -123,11 +150,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // ファイルサイズチェック（5MB制限）
-  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+  // ファイルサイズチェック（3MB制限）
+  // Base64エンコードで約33%増加するため、デコード後のサイズで制限
+  // Vercel Hobby プランの制限（4.5MB）を考慮
+  const MAX_SIZE = 3 * 1024 * 1024; // 3MB
   if (buffer.length > MAX_SIZE) {
     return NextResponse.json(
-      { error: "画像サイズが大きすぎます（最大5MB）" },
+      { error: "画像サイズが大きすぎます（最大3MB）" },
       { status: 422, headers: CORS_HEADERS },
     );
   }

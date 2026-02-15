@@ -6003,6 +6003,9 @@ function adminUploadImage(data) {
     var endpoint = String(data.endpoint || '').trim();
     var imageData = String(data.imageData || '').trim();
 
+    console.log('[adminUploadImage] endpoint: ' + endpoint);
+    console.log('[adminUploadImage] imageData length: ' + imageData.length);
+
     if (!endpoint) return { ok: false, error: 'エンドポイントが指定されていません' };
     if (!imageData) return { ok: false, error: '画像データが指定されていません' };
 
@@ -6016,6 +6019,9 @@ function adminUploadImage(data) {
       image: imageData
     };
 
+    console.log('[adminUploadImage] Sending POST request to: ' + endpoint);
+    console.log('[adminUploadImage] Secret configured: ' + (secret.length > 0 ? 'Yes (' + secret.length + ' chars)' : 'No'));
+
     var resp = UrlFetchApp.fetch(endpoint, {
       method: 'post',
       headers: {
@@ -6028,8 +6034,11 @@ function adminUploadImage(data) {
 
     var code = resp.getResponseCode();
     var body = resp.getContentText();
+    var headers = resp.getAllHeaders();
 
-    console.log('[adminUploadImage] response ' + code + ': ' + body.substring(0, 500));
+    console.log('[adminUploadImage] Response code: ' + code);
+    console.log('[adminUploadImage] Response headers: ' + JSON.stringify(headers));
+    console.log('[adminUploadImage] Response body: ' + body.substring(0, 500));
 
     if (code >= 200 && code < 300) {
       try {

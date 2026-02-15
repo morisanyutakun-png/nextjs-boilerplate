@@ -439,7 +439,7 @@
           <div style="font-weight:600; font-size:14px; margin:14px 0 8px; padding-top:10px; border-top:1px solid var(--line);">画像</div>
           <div>
             <label style="font-size:12px; font-weight:600; display:block; margin-bottom:2px;">メイン画像をアップロード</label>
-            <div style="font-size:11px; color:#64748b; margin-bottom:4px;">JPEG, PNG, GIF, WebP対応（最大5MB）</div>
+            <div style="font-size:11px; color:#64748b; margin-bottom:4px;">JPEG, PNG, GIF, WebP対応（最大3MB）</div>
             <input type="file" id="tp_photo_file" accept="image/jpeg,image/png,image/gif,image/webp" style="width:100%; padding:6px; font-size:13px;" onchange="tpHandleImageSelect(event)" />
             <div id="tpUploadStatus" style="margin-top:4px; font-size:12px;"></div>
             <div id="tpPhotoPreview" style="margin-top:6px;"></div>
@@ -2405,10 +2405,10 @@
       var file = event.target.files[0];
       if (!file) return;
 
-      // ファイルサイズチェック（5MB）
-      var MAX_SIZE = 5 * 1024 * 1024;
+      // ファイルサイズチェック（3MB）
+      var MAX_SIZE = 3 * 1024 * 1024;
       if (file.size > MAX_SIZE) {
-        tpShowUploadStatus('err', '画像サイズが大きすぎます（最大5MB）');
+        tpShowUploadStatus('err', '画像サイズが大きすぎます（最大3MB）');
         return;
       }
 
