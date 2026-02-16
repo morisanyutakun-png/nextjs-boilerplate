@@ -50,7 +50,7 @@ const PROP_KEYS = {
   SETUP_DONE: 'SETUP_DONE',
   ADMIN_EXECUTOR_EMAIL: 'ADMIN_EXECUTOR_EMAIL',
   // ─── ポータル連携用 ───
-  PORTAL_API_URL: 'PORTAL_API_URL',           // ポータル Admin API のベース URL (例: https://nextjs-boilerplate-25q5.vercel.app)
+  PORTAL_API_URL: 'PORTAL_API_URL',           // ポータル Admin API のベース URL (例: https://nextjs-boilerplate-bay-chi-21.vercel.app)
   PORTAL_ADMIN_SECRET: 'PORTAL_ADMIN_SECRET', // ポータル側の ADMIN_SHARED_SECRET と同じ値
   TENANT_SLUG: 'TENANT_SLUG',                 // ポータル上のテナント識別子 (slug)
   TENANT_NAME: 'TENANT_NAME',                 // ポータル上の表示名
