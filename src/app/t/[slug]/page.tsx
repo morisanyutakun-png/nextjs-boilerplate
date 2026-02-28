@@ -104,40 +104,40 @@ export default async function TenantDetailPage({ params }: PageProps) {
         </nav>
       </ScrollReveal>
 
-      {/* ヒーロー写真 — モバイル最適化 */}
+      {/* ヒーロー写真 — Apple-style clean */}
       <ScrollReveal variant="scale">
-        <div className="group/hero relative mb-6 sm:mb-10 overflow-hidden rounded-2xl sm:rounded-3xl bg-stone-200 aspect-[4/3] sm:aspect-[16/7] shadow-xl shadow-stone-200/50">
+        <div className="group/hero relative mb-6 sm:mb-10 overflow-hidden rounded-2xl sm:rounded-3xl bg-stone-100 aspect-[4/3] sm:aspect-[16/7] shadow-lg shadow-stone-200/40">
           {tenant.photoUrl ? (
             <img
               src={tenant.photoUrl}
               alt={tenant.name}
-              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover/hero:scale-[1.03] group-active/hero:scale-[1.02]"
+              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover/hero:scale-[1.03]"
             />
           ) : (
-            <div className="flex h-full items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200">
+            <div className="flex h-full items-center justify-center bg-gradient-to-br from-stone-50 to-stone-100">
               <CameraIcon />
             </div>
           )}
           {/* グラデーションオーバーレイ */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8">
             <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/15 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-white/90 backdrop-blur-md animate-sway">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] sm:text-xs font-medium text-white/90 backdrop-blur-md">
                 {tenant.category}
               </span>
               {bookingAvailable && (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium text-emerald-300 backdrop-blur-md">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[11px] sm:text-xs font-medium text-emerald-300 backdrop-blur-md">
                   <span className="relative flex h-1.5 w-1.5">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
                   </span>
                   予約受付中
                 </span>
               )}
             </div>
-            <h1 className="text-[22px] sm:text-3xl lg:text-4xl font-bold text-white drop-shadow-lg tracking-tight">{tenant.name}</h1>
+            <h1 className="text-[22px] sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">{tenant.name}</h1>
             {tenant.catchCopy && (
-              <p className="mt-1.5 sm:mt-2 text-[13px] sm:text-base text-white/70 drop-shadow max-w-xl line-clamp-2">{tenant.catchCopy}</p>
+              <p className="mt-1.5 sm:mt-2 text-[13px] sm:text-base text-white/70 max-w-xl line-clamp-2 font-light">{tenant.catchCopy}</p>
             )}
           </div>
         </div>
@@ -150,7 +150,7 @@ export default async function TenantDetailPage({ params }: PageProps) {
             <a
               href={tenant.bookingUrl}
               rel="noopener noreferrer"
-              className="group btn-premium flex w-full items-center justify-center gap-2.5 py-4 text-[14px] font-bold animate-pulse-glow touch-target"
+              className="group flex w-full items-center justify-center gap-2.5 rounded-2xl bg-stone-900 py-4 text-[14px] font-semibold text-white transition-all duration-300 hover:bg-rose-600 active:scale-[0.98] touch-target"
             >
               <CalendarIcon className="h-4.5 w-4.5" />
               予約ページへ進む
@@ -172,14 +172,14 @@ export default async function TenantDetailPage({ params }: PageProps) {
           {/* 紹介文 */}
           {tenant.description && (
             <ScrollReveal variant="fadeUp" delay={100}>
-              <section className="card-premium p-5 sm:p-7 animate-breathe" style={{ "--breathe-duration": "6s" } as React.CSSProperties}>
-                <h2 className="mb-4 sm:mb-5 flex items-center gap-2.5 sm:gap-3 text-base sm:text-lg font-bold text-stone-900">
-                  <span className="icon-container h-8 w-8 sm:h-9 sm:w-9">
+              <section className="rounded-2xl bg-white p-5 sm:p-7 shadow-sm shadow-stone-200/60">
+                <h2 className="mb-4 flex items-center gap-2.5 text-[15px] sm:text-base font-semibold text-stone-900">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-50 text-rose-500">
                     <PenIcon />
                   </span>
                   お店の紹介
                 </h2>
-                <p className="whitespace-pre-line text-[14px] sm:text-[15px] leading-[1.8] sm:leading-[1.85] text-stone-600">{tenant.description}</p>
+                <p className="whitespace-pre-line text-[14px] sm:text-[15px] leading-[1.85] text-stone-500 font-light">{tenant.description}</p>
               </section>
             </ScrollReveal>
           )}
@@ -187,9 +187,9 @@ export default async function TenantDetailPage({ params }: PageProps) {
           {/* メニュー */}
           {tenant.menus && tenant.menus.length > 0 && (
             <ScrollReveal variant="fadeUp" delay={200}>
-              <section className="card-premium p-5 sm:p-7 animate-breathe" style={{ "--breathe-delay": "1s", "--breathe-duration": "6s" } as React.CSSProperties}>
-                <h2 className="mb-4 sm:mb-5 flex items-center gap-2.5 sm:gap-3 text-base sm:text-lg font-bold text-stone-900">
-                  <span className="icon-container h-8 w-8 sm:h-9 sm:w-9" style={{background: "linear-gradient(135deg, rgba(217,119,6,0.08), rgba(217,119,6,0.04))", color: "#b45309"}}>
+              <section className="rounded-2xl bg-white p-5 sm:p-7 shadow-sm shadow-stone-200/60">
+                <h2 className="mb-4 flex items-center gap-2.5 text-[15px] sm:text-base font-semibold text-stone-900">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
                     <MenuIcon />
                   </span>
                   メニュー概要
@@ -224,8 +224,7 @@ export default async function TenantDetailPage({ params }: PageProps) {
                 {tenant.tags.map((tag, i) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 sm:gap-1.5 rounded-full border border-stone-200 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-medium text-stone-600 shadow-sm transition-all duration-300 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 active:border-rose-200 active:bg-rose-50 active:text-rose-600 cursor-default animate-breathe"
-                    style={{ "--breathe-delay": `${i * 0.3}s`, "--breathe-duration": "5s" } as React.CSSProperties}
+                    className="inline-flex items-center gap-1 rounded-full bg-stone-50 px-3 py-1.5 text-[11px] sm:text-xs font-medium text-stone-500 transition-colors duration-200 hover:bg-rose-50 hover:text-rose-600"
                   >
                     <CheckBadgeIcon />
                     {tag}
@@ -240,7 +239,7 @@ export default async function TenantDetailPage({ params }: PageProps) {
         <aside className="space-y-5 sm:space-y-6">
           {/* 予約ボタン（CTA） — デスクトップ向け */}
           <ScrollReveal variant="slideLeft" delay={150}>
-            <div className="card-premium p-5 sm:p-7 text-center hidden lg:block animate-breathe" style={{ "--breathe-duration": "5s" } as React.CSSProperties}>
+            <div className="rounded-2xl bg-white p-5 sm:p-7 text-center hidden lg:block shadow-sm shadow-stone-200/60">
               <div className="mb-3 sm:mb-4 flex items-center justify-center gap-2">
                 <CalendarIcon className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-rose-500" />
                 <p className="text-[13px] sm:text-sm font-bold text-stone-700">Webで簡単予約</p>
@@ -249,7 +248,7 @@ export default async function TenantDetailPage({ params }: PageProps) {
                 <a
                   href={tenant.bookingUrl}
                   rel="noopener noreferrer"
-                  className="group btn-premium flex w-full items-center justify-center gap-2 py-3.5 sm:py-4 text-[13px] sm:text-sm animate-pulse-glow touch-target"
+                  className="group flex w-full items-center justify-center gap-2 rounded-xl bg-stone-900 py-3.5 text-[13px] sm:text-sm font-medium text-white transition-all duration-300 hover:bg-rose-600 active:scale-[0.98] touch-target"
                 >
                   <CalendarIcon className="h-4 w-4" />
                   予約ページへ進む
@@ -271,9 +270,9 @@ export default async function TenantDetailPage({ params }: PageProps) {
 
           {/* 店舗情報 */}
           <ScrollReveal variant="slideLeft" delay={250}>
-            <div className="card-premium p-5 sm:p-7 animate-breathe" style={{ "--breathe-delay": "2s", "--breathe-duration": "6s" } as React.CSSProperties}>
-              <h3 className="mb-4 sm:mb-5 flex items-center gap-2.5 sm:gap-3 text-[13px] sm:text-sm font-bold text-stone-900">
-                <span className="icon-container h-7 w-7 sm:h-8 sm:w-8" style={{background: "linear-gradient(135deg, rgba(37,99,235,0.08), rgba(37,99,235,0.04))", color: "#2563eb"}}>
+            <div className="rounded-2xl bg-white p-5 sm:p-7 shadow-sm shadow-stone-200/60">
+              <h3 className="mb-4 flex items-center gap-2.5 text-[13px] sm:text-sm font-semibold text-stone-900">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-500">
                   <MapPinIcon />
                 </span>
                 店舗情報
