@@ -26,70 +26,83 @@ interface Orb {
 
 function createOrbs(w: number, h: number): Orb[] {
   return [
-    // 大きなメインオーブ (rose/pink系) — より大きく、より流動的
+    // メインオーブ: ローズピンクの大きな光
     {
-      x: w * 0.7,
-      y: h * 0.3,
-      vx: 0.25,
-      vy: -0.18,
-      radius: Math.min(w, h) * 0.42,
+      x: w * 0.65,
+      y: h * 0.25,
+      vx: 0.35,
+      vy: -0.2,
+      radius: Math.min(w, h) * 0.5,
       hue: 340,
-      hueSpeed: 0.03,
-      saturation: 70,
-      lightness: 55,
-      alpha: 0.04,
+      hueSpeed: 0.025,
+      saturation: 75,
+      lightness: 65,
+      alpha: 0.14,
     },
-    // 中くらいオーブ (amber/warm系)
+    // ウォームアンバー: 暖かみのある光
     {
-      x: w * 0.2,
-      y: h * 0.7,
-      vx: -0.18,
-      vy: 0.22,
-      radius: Math.min(w, h) * 0.34,
-      hue: 35,
-      hueSpeed: -0.025,
-      saturation: 60,
-      lightness: 60,
-      alpha: 0.03,
+      x: w * 0.15,
+      y: h * 0.65,
+      vx: -0.22,
+      vy: 0.28,
+      radius: Math.min(w, h) * 0.4,
+      hue: 32,
+      hueSpeed: -0.02,
+      saturation: 70,
+      lightness: 70,
+      alpha: 0.1,
     },
-    // アクセントオーブ (violet系)
+    // バイオレット: 高級感のある紫
     {
       x: w * 0.5,
-      y: h * 0.15,
-      vx: 0.14,
-      vy: 0.16,
-      radius: Math.min(w, h) * 0.26,
-      hue: 280,
-      hueSpeed: 0.035,
-      saturation: 55,
-      lightness: 50,
-      alpha: 0.025,
+      y: h * 0.1,
+      vx: 0.18,
+      vy: 0.2,
+      radius: Math.min(w, h) * 0.32,
+      hue: 285,
+      hueSpeed: 0.03,
+      saturation: 60,
+      lightness: 60,
+      alpha: 0.08,
     },
-    // 追加オーブ (teal系)
+    // ティール: クールなアクセント
     {
       x: w * 0.85,
-      y: h * 0.8,
-      vx: -0.2,
+      y: h * 0.78,
+      vx: -0.25,
+      vy: -0.15,
+      radius: Math.min(w, h) * 0.28,
+      hue: 175,
+      hueSpeed: 0.02,
+      saturation: 55,
+      lightness: 65,
+      alpha: 0.07,
+    },
+    // ゴールド: 高級感のある暖色
+    {
+      x: w * 0.3,
+      y: h * 0.45,
+      vx: 0.3,
       vy: -0.12,
       radius: Math.min(w, h) * 0.22,
-      hue: 170,
-      hueSpeed: 0.02,
-      saturation: 50,
-      lightness: 50,
-      alpha: 0.022,
+      hue: 42,
+      hueSpeed: -0.035,
+      saturation: 80,
+      lightness: 72,
+      alpha: 0.06,
     },
-    // 新: 浮遊するピンクの光 — 画面上部を漂う
+    // サクラピンク: 明るく柔らかい光
     {
-      x: w * 0.35,
-      y: h * 0.4,
-      vx: 0.3,
-      vy: -0.1,
-      radius: Math.min(w, h) * 0.18,
-      hue: 330,
-      hueSpeed: -0.04,
+      x: w * 0.75,
+      y: h * 0.5,
+      vx: -0.15,
+      vy: 0.22,
+      radius: Math.min(w, h) * 0.35,
+      hue: 350,
+      hueSpeed: 0.018,
       saturation: 65,
-      lightness: 60,
-      alpha: 0.02,
+      lightness: 75,
+      alpha: 0.09,
     },
   ];
 }
@@ -159,8 +172,9 @@ export default function AmbientBackground() {
         if (orb.y < -margin) orb.vy = Math.abs(orb.vy) * 0.8;
         if (orb.y > ch + margin) orb.vy = -Math.abs(orb.vy) * 0.8;
 
-        // Alpha は呼吸のように揺れる
-        orb.alpha = 0.02 + Math.sin(t * 0.3 + orb.hue) * 0.012;
+        // Alpha は呼吸のように揺れる（ベースalphaの±30%）
+        const baseAlpha = orb.radius > Math.min(cw, ch) * 0.35 ? 0.12 : 0.08;
+        orb.alpha = baseAlpha + Math.sin(t * 0.3 + orb.hue) * (baseAlpha * 0.3);
       }
 
       drawFrame(ctx, orbs, cw, ch, timeRef.current);

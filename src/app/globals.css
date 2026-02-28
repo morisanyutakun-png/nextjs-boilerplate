@@ -135,12 +135,18 @@ body {
   -webkit-backdrop-filter: blur(24px) saturate(200%);
 }
 
-/* Apple-style frosted header glass */
-.header-glass {
-  background: rgba(10, 10, 10, 0.72);
+/* Apple-style frosted header glass — LIGHT mode for scrolled state */
+.header-glass-light {
+  background: rgba(255, 253, 250, 0.82);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
-  box-shadow: 0 1px 20px rgba(0,0,0,0.08);
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(1px)) {
+  .header-glass-light {
+    background: rgba(255, 253, 250, 0.96);
+  }
 }
 
 /* Header shimmer line animation */

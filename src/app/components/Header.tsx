@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 
 /**
- * Apple-Inspired Premium Header
+ * Premium Header — Luxury × Bright
  *
- * - 超薄型フロステッドグラス
- * - シマーライン装飾
- * - スクロールでエレガントに変形
- * - モバイルファースト
+ * - ヒーロー上: 透明 + 白テキスト
+ * - スクロール後: ウォームクリームガラス + ダークテキスト
+ * - backdrop-filter 非対応でもフォールバック背景色で可読性を保証
+ * - シマーライン + ゴールドアクセント
  */
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -44,17 +44,17 @@ export default function Header() {
         visible ? "translate-y-0" : "-translate-y-full"
       } ${
         scrolled
-          ? "header-glass border-b border-white/[0.08]"
+          ? "header-glass-light border-b border-stone-200/60 shadow-[0_1px_24px_rgba(0,0,0,0.06)]"
           : "bg-transparent"
       }`}
     >
-      {/* ── シマーライン (ヘッダー下部の光の帯) ── */}
+      {/* ── シマーライン ── */}
       <div
         className={`absolute bottom-0 left-0 right-0 h-px transition-opacity duration-700 ${
           scrolled ? "opacity-100" : "opacity-0"
         }`}
       >
-        <div className="h-full w-full bg-gradient-to-r from-transparent via-rose-400/40 to-transparent animate-header-shimmer" />
+        <div className="h-full w-full bg-gradient-to-r from-transparent via-rose-400/30 to-transparent animate-header-shimmer" />
       </div>
 
       <div
@@ -70,7 +70,9 @@ export default function Header() {
             }`}
             style={{
               background: "linear-gradient(135deg, #e11d48 0%, #be123c 40%, #9f1239 100%)",
-              boxShadow: "0 4px 20px rgba(225,29,72,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
+              boxShadow: scrolled
+                ? "0 2px 12px rgba(225,29,72,0.2)"
+                : "0 4px 20px rgba(225,29,72,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
             }}
           >
             <svg
@@ -86,14 +88,15 @@ export default function Header() {
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            {/* Glow ring */}
             <span className="absolute -inset-[1px] rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: "linear-gradient(135deg, rgba(251,113,133,0.4), rgba(190,18,60,0.2))", filter: "blur(4px)" }} />
           </span>
 
           <div className="flex flex-col">
             <span
               className={`font-bold tracking-tight transition-all duration-500 ${
-                scrolled ? "text-[13px] text-white" : "text-[15px] sm:text-base text-white"
+                scrolled
+                  ? "text-[13px] text-stone-800"
+                  : "text-[15px] sm:text-base text-white"
               }`}
             >
               Yoyaku
@@ -112,13 +115,16 @@ export default function Header() {
 
         {/* ─── ナビ ─── */}
         <nav className="flex items-center gap-2 sm:gap-4">
-          {/* ナビリンク群 */}
           <div className="hidden sm:flex items-center gap-1">
             {["トップ", "検索"].map((label) => (
               <a
                 key={label}
                 href="/"
-                className="group relative px-3 py-1.5 text-[13px] font-medium text-white/50 transition-colors duration-300 hover:text-white touch-target flex items-center justify-center rounded-lg hover:bg-white/[0.06]"
+                className={`group relative px-3 py-1.5 text-[13px] font-medium transition-colors duration-300 touch-target flex items-center justify-center rounded-lg ${
+                  scrolled
+                    ? "text-stone-500 hover:text-stone-800 hover:bg-stone-100/60"
+                    : "text-white/50 hover:text-white hover:bg-white/[0.06]"
+                }`}
               >
                 {label}
               </a>
@@ -127,10 +133,10 @@ export default function Header() {
 
           {/* ステータスバッジ */}
           <div
-            className={`flex items-center gap-2 rounded-full border border-white/[0.08] font-medium tracking-wide text-white/60 transition-all duration-500 ${
+            className={`flex items-center gap-2 rounded-full font-medium tracking-wide transition-all duration-500 ${
               scrolled
-                ? "bg-white/[0.04] px-2.5 py-1 text-[10px]"
-                : "bg-white/[0.05] px-3 py-1.5 text-[10px] sm:text-[11px]"
+                ? "border border-stone-200/80 bg-white/60 px-2.5 py-1 text-[10px] text-stone-500 shadow-sm"
+                : "border border-white/[0.08] bg-white/[0.05] px-3 py-1.5 text-[10px] sm:text-[11px] text-white/60"
             }`}
             style={{ backdropFilter: "blur(12px) saturate(160%)" }}
           >

@@ -92,15 +92,18 @@ export default function PortalTopPage() {
       {/* ═══ ヒーロー — ブランド + エルゴノミクス検索 ═══ */}
       <section className="relative -mx-4 sm:-mx-6 -mt-6 sm:-mt-10 mb-12 sm:mb-16 overflow-hidden px-4 sm:px-6 pb-24 sm:pb-32 pt-16 sm:pt-24">
         {/* 背景 */}
-        <div className="absolute inset-0 bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-stone-950 via-stone-900/95 to-stone-900" />
         <div
-          className="absolute inset-0 opacity-[0.012]"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage: "radial-gradient(circle at 1px 1px, white 0.5px, transparent 0)",
             backgroundSize: "48px 48px",
           }}
         />
-        <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] rounded-full bg-rose-500/[0.03] blur-[160px]" />
+        {/* ヒーロー内の光のグロー: より明るくダイナミックに */}
+        <div className="absolute left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] rounded-full bg-rose-500/[0.06] blur-[120px] animate-glow-ambient" />
+        <div className="absolute right-0 bottom-1/4 h-[300px] w-[400px] rounded-full bg-amber-400/[0.04] blur-[100px] animate-orb-1" />
+        <div className="absolute left-0 top-1/2 h-[250px] w-[350px] rounded-full bg-violet-400/[0.03] blur-[100px] animate-orb-2" />
 
         {/* ── ブランドセクション ── */}
         <div className="relative mx-auto max-w-3xl text-center">

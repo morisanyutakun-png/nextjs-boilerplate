@@ -84,7 +84,7 @@ export default function EndRollBackground() {
       <ScrollColumn
         keywords={KEYWORDS_COL1}
         duration="45s"
-        opacity="0.03"
+        opacity="0.07"
         left="8%"
         fontSize="clamp(14px, 2vw, 22px)"
       />
@@ -92,7 +92,7 @@ export default function EndRollBackground() {
       <ScrollColumn
         keywords={KEYWORDS_COL2}
         duration="35s"
-        opacity="0.025"
+        opacity="0.055"
         left="45%"
         fontSize="clamp(12px, 1.5vw, 18px)"
         delay="-12s"
@@ -101,7 +101,7 @@ export default function EndRollBackground() {
       <ScrollColumn
         keywords={KEYWORDS_COL3}
         duration="40s"
-        opacity="0.02"
+        opacity="0.045"
         left="78%"
         fontSize="clamp(11px, 1.3vw, 16px)"
         delay="-8s"
