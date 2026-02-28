@@ -21,16 +21,16 @@ export default function RootLayout({
         <ScrollProgress />
 
         {/* ヘッダー分のスペーサー */}
-        <div className="h-[60px]" />
+        <div className="h-[52px] sm:h-[60px]" />
 
-        <main className="mx-auto max-w-6xl px-5 py-10">{children}</main>
+        <main className="mx-auto max-w-6xl px-4 sm:px-5 py-6 sm:py-10">{children}</main>
 
         {/* ─── フッター ─── */}
-        <footer className="relative overflow-hidden border-t border-stone-800 bg-stone-900">
-          {/* 装飾オーブ */}
-          <div className="absolute -left-32 -top-32 h-64 w-64 rounded-full bg-rose-500/5 blur-[100px]" />
-          <div className="mx-auto max-w-6xl px-5 py-12">
-            <div className="flex flex-col items-center gap-8 sm:flex-row sm:justify-between">
+        <footer className="relative overflow-hidden border-t border-stone-800 bg-stone-900 safe-bottom">
+          {/* 装飾オーブ — 常にパルス */}
+          <div className="absolute -left-32 -top-32 h-64 w-64 rounded-full bg-rose-500/5 blur-[100px] animate-glow-ambient" />
+          <div className="mx-auto max-w-6xl px-4 sm:px-5 py-10 sm:py-12">
+            <div className="flex flex-col items-center gap-6 sm:gap-8 sm:flex-row sm:justify-between">
               <div className="flex items-center gap-3">
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 shadow-lg shadow-rose-500/15">
                   <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
@@ -43,12 +43,12 @@ export default function RootLayout({
                 </div>
               </div>
               <div className="flex flex-col items-center gap-3 sm:items-end">
-                <div className="flex items-center gap-5">
-                  <span className="text-[12px] text-stone-500 transition-colors duration-200 hover:text-stone-300 cursor-pointer">利用規約</span>
+                <div className="flex items-center gap-4 sm:gap-5">
+                  <span className="text-[12px] text-stone-500 transition-colors duration-200 hover:text-stone-300 active:text-white cursor-pointer touch-target flex items-center justify-center">利用規約</span>
                   <span className="h-3 w-px bg-stone-700" />
-                  <span className="text-[12px] text-stone-500 transition-colors duration-200 hover:text-stone-300 cursor-pointer">プライバシー</span>
+                  <span className="text-[12px] text-stone-500 transition-colors duration-200 hover:text-stone-300 active:text-white cursor-pointer touch-target flex items-center justify-center">プライバシー</span>
                   <span className="h-3 w-px bg-stone-700" />
-                  <span className="text-[12px] text-stone-500 transition-colors duration-200 hover:text-stone-300 cursor-pointer">お問い合わせ</span>
+                  <span className="text-[12px] text-stone-500 transition-colors duration-200 hover:text-stone-300 active:text-white cursor-pointer touch-target flex items-center justify-center">お問い合わせ</span>
                 </div>
                 <p className="text-[11px] text-stone-600">
                   © 2026 予約ポータル — 各企業の予約ページへのご案内のみを行います

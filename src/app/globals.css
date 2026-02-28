@@ -29,6 +29,8 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -146,6 +148,22 @@ body {
   box-shadow: var(--shadow-card-hover);
   border-color: var(--color-border-hover);
   transform: translateY(-4px);
+}
+
+/* Touch devices: active replaces hover */
+@media (hover: none) and (pointer: coarse) {
+  .card-premium:hover {
+    transform: none;
+    box-shadow: var(--shadow-card);
+  }
+  .card-premium:active {
+    transform: scale(0.97);
+    transition-duration: 0.15s;
+  }
+  .btn-premium:active {
+    transform: scale(0.95);
+    transition-duration: 0.1s;
+  }
 }
 
 /* --- Premium Button --- */
@@ -391,6 +409,167 @@ body {
 }
 
 /* ═══════════════════════════════════════════════
+   Continuous Ambient Animations (常時モーション)
+   ═══════════════════════════════════════════════ */
+
+/* Card breathing — 生きているような微動 */
+@keyframes breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-4px) scale(1.006); }
+}
+
+/* Ambient particle float */
+@keyframes ambient-float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
+  25% { transform: translate(15px, -20px) rotate(90deg); opacity: 0.6; }
+  50% { transform: translate(-10px, -35px) rotate(180deg); opacity: 0.4; }
+  75% { transform: translate(20px, -15px) rotate(270deg); opacity: 0.7; }
+}
+
+/* Glow pulse for ambient background elements */
+@keyframes glow-ambient {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.15); }
+}
+
+/* Continuous shimmer slide on surfaces */
+@keyframes shimmer-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* Star twinkle */
+@keyframes twinkle {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  50% { opacity: 0.3; transform: scale(0.7) rotate(180deg); }
+}
+
+/* Ripple expand */
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 0.4; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* Floating tag/badge gentle sway */
+@keyframes sway {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1deg); }
+  75% { transform: rotate(-1deg); }
+}
+
+.animate-breathe {
+  animation: breathe var(--breathe-duration, 4s) ease-in-out var(--breathe-delay, 0s) infinite;
+}
+
+.animate-ambient-float {
+  animation: ambient-float var(--float-duration, 10s) ease-in-out var(--float-delay, 0s) infinite;
+}
+
+.animate-glow-ambient {
+  animation: glow-ambient 5s ease-in-out infinite;
+}
+
+.animate-shimmer-slide {
+  position: relative;
+  overflow: hidden;
+}
+.animate-shimmer-slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  animation: shimmer-slide 4s ease-in-out infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle var(--twinkle-duration, 3s) ease-in-out var(--twinkle-delay, 0s) infinite;
+}
+
+.animate-sway {
+  animation: sway 3s ease-in-out infinite;
+}
+
+/* Touch ripple effect */
+.touch-ripple {
+  position: relative;
+  overflow: hidden;
+}
+.touch-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(190,18,60,0.12) 0%, transparent 70%);
+  transform: scale(0);
+  opacity: 0;
+  transition: none;
+}
+.touch-ripple:active::after {
+  animation: ripple 0.5s ease-out forwards;
+}
+
+/* ═══════════════════════════════════════════════
+   Mobile-First Responsive System
+   ═══════════════════════════════════════════════ */
+
+/* Responsive hero text — fluid typography */
+.text-hero {
+  font-size: clamp(1.625rem, 6.5vw, 3.5rem);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+
+.text-section-title {
+  font-size: clamp(1.25rem, 4vw, 2rem);
+  line-height: 1.2;
+}
+
+/* Safe area for notched devices */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Min touch target per WCAG */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Sticky bottom bar */
+.sticky-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 12px 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  transform: translateY(0);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sticky-bottom-bar.hidden {
+  transform: translateY(100%);
+}
+
+/* Mobile horizontal scroll snap */
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-snap-x > * {
+  scroll-snap-align: start;
+}
+
+/* ═══════════════════════════════════════════════
    Responsive Motion Preferences
    ═══════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
@@ -404,7 +583,12 @@ body {
   .animate-text-gradient,
   .animate-badge-shimmer,
   .animate-subtle-bounce,
-  .animate-rotate-slow {
+  .animate-rotate-slow,
+  .animate-breathe,
+  .animate-ambient-float,
+  .animate-glow-ambient,
+  .animate-twinkle,
+  .animate-sway {
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;
@@ -414,5 +598,9 @@ body {
   .scroll-reveal {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .animate-shimmer-slide::after {
+    animation: none !important;
   }
 }
