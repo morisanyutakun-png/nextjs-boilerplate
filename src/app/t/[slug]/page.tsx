@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getTenantBySlug } from "@/lib/tenantRegistry";
 import { validateBookingUrl } from "@/lib/urlGuard";
+import ScrollReveal from "@/app/components/ScrollReveal";
 
 /* ── SVG Icons ── */
 const CalendarIcon = ({ className = "h-5 w-5" }: { className?: string }) => (
@@ -87,201 +88,217 @@ export default async function TenantDetailPage({ params }: PageProps) {
   return (
     <div className="pb-16">
       {/* パンくず */}
-      <nav className="mb-8 flex items-center gap-2 text-sm text-stone-400">
-        <Link href="/" className="transition-colors duration-200 hover:text-rose-500">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+      <ScrollReveal variant="fadeIn">
+        <nav className="mb-8 flex items-center gap-2 text-sm text-stone-400">
+          <Link href="/" className="transition-colors duration-200 hover:text-rose-500">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+            </svg>
+          </Link>
+          <svg className="h-3 w-3 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
           </svg>
-        </Link>
-        <svg className="h-3 w-3 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
-        <span className="font-medium text-stone-600">{tenant.name}</span>
-      </nav>
+          <span className="font-medium text-stone-600">{tenant.name}</span>
+        </nav>
+      </ScrollReveal>
 
       {/* ヒーロー写真 */}
-      <div className="relative mb-10 overflow-hidden rounded-3xl bg-stone-200 aspect-[16/7] shadow-xl shadow-stone-200/50">
-        {tenant.photoUrl ? (
-          <img
-            src={tenant.photoUrl}
-            alt={tenant.name}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200">
-            <CameraIcon />
-          </div>
-        )}
-        {/* グラデーションオーバーレイ */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-8">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/15 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-md">
-              {tenant.category}
-            </span>
-            {bookingAvailable && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1.5 text-xs font-medium text-emerald-300 backdrop-blur-md">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50" />
-                予約受付中
+      <ScrollReveal variant="scale">
+        <div className="group/hero relative mb-10 overflow-hidden rounded-3xl bg-stone-200 aspect-[16/7] shadow-xl shadow-stone-200/50">
+          {tenant.photoUrl ? (
+            <img
+              src={tenant.photoUrl}
+              alt={tenant.name}
+              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover/hero:scale-[1.03]"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200">
+              <CameraIcon />
+            </div>
+          )}
+          {/* グラデーションオーバーレイ */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-8">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/15 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-md">
+                {tenant.category}
               </span>
+              {bookingAvailable && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1.5 text-xs font-medium text-emerald-300 backdrop-blur-md">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-subtle-bounce" />
+                  予約受付中
+                </span>
+              )}
+            </div>
+            <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl tracking-tight">{tenant.name}</h1>
+            {tenant.catchCopy && (
+              <p className="mt-2 text-base text-white/70 drop-shadow max-w-xl">{tenant.catchCopy}</p>
             )}
           </div>
-          <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl tracking-tight">{tenant.name}</h1>
-          {tenant.catchCopy && (
-            <p className="mt-2 text-base text-white/70 drop-shadow max-w-xl">{tenant.catchCopy}</p>
-          )}
         </div>
-      </div>
+      </ScrollReveal>
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* メインコンテンツ */}
         <div className="lg:col-span-2 space-y-8">
           {/* 紹介文 */}
           {tenant.description && (
-            <section className="card-premium p-7">
-              <h2 className="mb-5 flex items-center gap-3 text-lg font-bold text-stone-900">
-                <span className="icon-container h-9 w-9">
-                  <PenIcon />
-                </span>
-                お店の紹介
-              </h2>
-              <p className="whitespace-pre-line text-[15px] leading-[1.85] text-stone-600">{tenant.description}</p>
-            </section>
+            <ScrollReveal variant="fadeUp" delay={100}>
+              <section className="card-premium p-7">
+                <h2 className="mb-5 flex items-center gap-3 text-lg font-bold text-stone-900">
+                  <span className="icon-container h-9 w-9">
+                    <PenIcon />
+                  </span>
+                  お店の紹介
+                </h2>
+                <p className="whitespace-pre-line text-[15px] leading-[1.85] text-stone-600">{tenant.description}</p>
+              </section>
+            </ScrollReveal>
           )}
 
           {/* メニュー */}
           {tenant.menus && tenant.menus.length > 0 && (
-            <section className="card-premium p-7">
-              <h2 className="mb-5 flex items-center gap-3 text-lg font-bold text-stone-900">
-                <span className="icon-container h-9 w-9" style={{background: "linear-gradient(135deg, rgba(217,119,6,0.08), rgba(217,119,6,0.04))", color: "#b45309"}}>
-                  <MenuIcon />
-                </span>
-                メニュー概要
-              </h2>
-              <div className="divide-y divide-stone-100">
-                {tenant.menus.map((menu, i) => (
-                  <div key={i} className="group/menu flex items-start justify-between py-5 first:pt-0 last:pb-0 transition-colors">
-                    <div>
-                      <p className="font-semibold text-stone-900">{menu.name}</p>
-                      {menu.description && (
-                        <p className="mt-1 text-sm text-stone-400 leading-relaxed">{menu.description}</p>
-                      )}
+            <ScrollReveal variant="fadeUp" delay={200}>
+              <section className="card-premium p-7">
+                <h2 className="mb-5 flex items-center gap-3 text-lg font-bold text-stone-900">
+                  <span className="icon-container h-9 w-9" style={{background: "linear-gradient(135deg, rgba(217,119,6,0.08), rgba(217,119,6,0.04))", color: "#b45309"}}>
+                    <MenuIcon />
+                  </span>
+                  メニュー概要
+                </h2>
+                <div className="divide-y divide-stone-100">
+                  {tenant.menus.map((menu, i) => (
+                    <div key={i} className="group/menu flex items-start justify-between py-5 first:pt-0 last:pb-0 transition-all duration-300 hover:bg-rose-50/30 hover:px-3 rounded-xl -mx-1">
+                      <div>
+                        <p className="font-semibold text-stone-900 transition-colors duration-200 group-hover/menu:text-rose-700">{menu.name}</p>
+                        {menu.description && (
+                          <p className="mt-1 text-sm text-stone-400 leading-relaxed">{menu.description}</p>
+                        )}
+                      </div>
+                      <span className="ml-4 whitespace-nowrap rounded-lg bg-rose-50 px-3 py-1 text-sm font-bold text-rose-600 transition-all duration-200 group-hover/menu:bg-rose-100 group-hover/menu:scale-105">{menu.price}</span>
                     </div>
-                    <span className="ml-4 whitespace-nowrap rounded-lg bg-rose-50 px-3 py-1 text-sm font-bold text-rose-600">{menu.price}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 flex items-center gap-2 rounded-xl bg-stone-50 px-4 py-3 text-xs text-stone-400">
-                <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                </svg>
-                詳しいメニューは予約ページでご確認ください
-              </div>
-            </section>
+                  ))}
+                </div>
+                <div className="mt-6 flex items-center gap-2 rounded-xl bg-stone-50 px-4 py-3 text-xs text-stone-400">
+                  <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                  </svg>
+                  詳しいメニューは予約ページでご確認ください
+                </div>
+              </section>
+            </ScrollReveal>
           )}
 
           {/* タグ */}
           {tenant.tags && tenant.tags.length > 0 && (
-            <section className="flex flex-wrap gap-2">
-              {tenant.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-4 py-2 text-xs font-medium text-stone-600 shadow-sm"
-                >
-                  <CheckBadgeIcon />
-                  {tag}
-                </span>
-              ))}
-            </section>
+            <ScrollReveal variant="fadeUp" delay={300}>
+              <section className="flex flex-wrap gap-2">
+                {tenant.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-4 py-2 text-xs font-medium text-stone-600 shadow-sm transition-all duration-300 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 hover:shadow-md hover:scale-105 cursor-default"
+                  >
+                    <CheckBadgeIcon />
+                    {tag}
+                  </span>
+                ))}
+              </section>
+            </ScrollReveal>
           )}
         </div>
 
         {/* サイドバー */}
         <aside className="space-y-6">
           {/* 予約ボタン（CTA） */}
-          <div className="card-premium p-7 text-center">
-            <div className="mb-4 flex items-center justify-center gap-2">
-              <CalendarIcon className="h-5 w-5 text-rose-500" />
-              <p className="text-sm font-bold text-stone-700">Webで簡単予約</p>
-            </div>
-            {bookingAvailable ? (
-              <a
-                href={tenant.bookingUrl}
-                rel="noopener noreferrer"
-                className="group btn-premium flex w-full items-center justify-center gap-2 py-4 text-sm animate-pulse-glow"
-              >
-                <CalendarIcon className="h-4 w-4" />
-                予約ページへ進む
-                <ArrowRightIcon />
-              </a>
-            ) : (
-              <div className="rounded-xl border border-stone-100 bg-stone-50 py-3.5 text-center text-sm text-stone-400">
-                現在予約を受け付けていません
+          <ScrollReveal variant="slideLeft" delay={150}>
+            <div className="card-premium p-7 text-center">
+              <div className="mb-4 flex items-center justify-center gap-2">
+                <CalendarIcon className="h-5 w-5 text-rose-500" />
+                <p className="text-sm font-bold text-stone-700">Webで簡単予約</p>
               </div>
-            )}
-            <p className="mt-4 flex items-center justify-center gap-1 text-[11px] text-stone-400">
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-              </svg>
-              外部の予約システムへ移動します
-            </p>
-          </div>
+              {bookingAvailable ? (
+                <a
+                  href={tenant.bookingUrl}
+                  rel="noopener noreferrer"
+                  className="group btn-premium flex w-full items-center justify-center gap-2 py-4 text-sm animate-pulse-glow"
+                >
+                  <CalendarIcon className="h-4 w-4" />
+                  予約ページへ進む
+                  <ArrowRightIcon />
+                </a>
+              ) : (
+                <div className="rounded-xl border border-stone-100 bg-stone-50 py-3.5 text-center text-sm text-stone-400">
+                  現在予約を受け付けていません
+                </div>
+              )}
+              <p className="mt-4 flex items-center justify-center gap-1 text-[11px] text-stone-400">
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                </svg>
+                外部の予約システムへ移動します
+              </p>
+            </div>
+          </ScrollReveal>
 
           {/* 店舗情報 */}
-          <div className="card-premium p-7">
-            <h3 className="mb-5 flex items-center gap-3 text-sm font-bold text-stone-900">
-              <span className="icon-container h-8 w-8" style={{background: "linear-gradient(135deg, rgba(37,99,235,0.08), rgba(37,99,235,0.04))", color: "#2563eb"}}>
-                <MapPinIcon />
-              </span>
-              店舗情報
-            </h3>
-            <dl className="space-y-4 text-sm">
-              {tenant.address && (
-                <div className="flex items-start gap-3">
-                  <MapIcon />
-                  <div>
-                    <dt className="text-[11px] font-semibold tracking-wider text-stone-400 uppercase">住所</dt>
-                    <dd className="mt-0.5 text-stone-700">{tenant.address}</dd>
+          <ScrollReveal variant="slideLeft" delay={250}>
+            <div className="card-premium p-7">
+              <h3 className="mb-5 flex items-center gap-3 text-sm font-bold text-stone-900">
+                <span className="icon-container h-8 w-8" style={{background: "linear-gradient(135deg, rgba(37,99,235,0.08), rgba(37,99,235,0.04))", color: "#2563eb"}}>
+                  <MapPinIcon />
+                </span>
+                店舗情報
+              </h3>
+              <dl className="space-y-4 text-sm">
+                {tenant.address && (
+                  <div className="flex items-start gap-3 group/info transition-all duration-200 hover:translate-x-1">
+                    <MapIcon />
+                    <div>
+                      <dt className="text-[11px] font-semibold tracking-wider text-stone-400 uppercase">住所</dt>
+                      <dd className="mt-0.5 text-stone-700">{tenant.address}</dd>
+                    </div>
                   </div>
-                </div>
-              )}
-              {tenant.phone && (
-                <div className="flex items-start gap-3">
-                  <PhoneIcon />
-                  <div>
-                    <dt className="text-[11px] font-semibold tracking-wider text-stone-400 uppercase">電話番号</dt>
-                    <dd className="mt-0.5 text-stone-700">{tenant.phone}</dd>
+                )}
+                {tenant.phone && (
+                  <div className="flex items-start gap-3 group/info transition-all duration-200 hover:translate-x-1">
+                    <PhoneIcon />
+                    <div>
+                      <dt className="text-[11px] font-semibold tracking-wider text-stone-400 uppercase">電話番号</dt>
+                      <dd className="mt-0.5 text-stone-700">{tenant.phone}</dd>
+                    </div>
                   </div>
-                </div>
-              )}
-              {tenant.businessHours && (
-                <div className="flex items-start gap-3">
-                  <ClockIcon />
-                  <div>
-                    <dt className="text-[11px] font-semibold tracking-wider text-stone-400 uppercase">営業時間</dt>
-                    <dd className="mt-0.5 text-stone-700">{tenant.businessHours}</dd>
+                )}
+                {tenant.businessHours && (
+                  <div className="flex items-start gap-3 group/info transition-all duration-200 hover:translate-x-1">
+                    <ClockIcon />
+                    <div>
+                      <dt className="text-[11px] font-semibold tracking-wider text-stone-400 uppercase">営業時間</dt>
+                      <dd className="mt-0.5 text-stone-700">{tenant.businessHours}</dd>
+                    </div>
                   </div>
-                </div>
-              )}
-              {tenant.closedDays && (
-                <div className="flex items-start gap-3">
-                  <CalendarDaysIcon />
-                  <div>
-                    <dt className="text-[11px] font-semibold tracking-wider text-stone-400 uppercase">定休日</dt>
-                    <dd className="mt-0.5 text-stone-700">{tenant.closedDays}</dd>
+                )}
+                {tenant.closedDays && (
+                  <div className="flex items-start gap-3 group/info transition-all duration-200 hover:translate-x-1">
+                    <CalendarDaysIcon />
+                    <div>
+                      <dt className="text-[11px] font-semibold tracking-wider text-stone-400 uppercase">定休日</dt>
+                      <dd className="mt-0.5 text-stone-700">{tenant.closedDays}</dd>
+                    </div>
                   </div>
-                </div>
-              )}
-            </dl>
-          </div>
+                )}
+              </dl>
+            </div>
+          </ScrollReveal>
 
           {/* 更新日 */}
-          <div className="flex items-center justify-center gap-2 text-xs text-stone-400">
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M21.012 14.339V19.331" />
-            </svg>
-            最終更新: {new Date(tenant.updatedAtISO).toLocaleDateString("ja-JP")}
-          </div>
+          <ScrollReveal variant="fadeIn" delay={350}>
+            <div className="flex items-center justify-center gap-2 text-xs text-stone-400">
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M21.012 14.339V19.331" />
+              </svg>
+              最終更新: {new Date(tenant.updatedAtISO).toLocaleDateString("ja-JP")}
+            </div>
+          </ScrollReveal>
         </aside>
       </div>
     </div>

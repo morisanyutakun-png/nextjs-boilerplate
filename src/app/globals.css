@@ -216,3 +216,203 @@ body {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* ═══════════════════════════════════════════════
+   Scroll Reveal Animations
+   ═══════════════════════════════════════════════ */
+
+.scroll-reveal {
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scroll-reveal-fadeUp {
+  transform: translateY(30px);
+}
+
+.scroll-reveal-fadeIn {
+  transform: none;
+}
+
+.scroll-reveal-slideLeft {
+  transform: translateX(40px);
+}
+
+.scroll-reveal-slideRight {
+  transform: translateX(-40px);
+}
+
+.scroll-reveal-scale {
+  transform: scale(0.92);
+}
+
+.scroll-revealed {
+  opacity: 1 !important;
+  transform: translateY(0) translateX(0) scale(1) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   Parallax & Motion Effects
+   ═══════════════════════════════════════════════ */
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes orb-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+@keyframes orb-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-25px, 25px) scale(1.08); }
+  66% { transform: translate(15px, -30px) scale(0.92); }
+}
+
+@keyframes text-gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes badge-shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes underline-expand {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes subtle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+.animate-orb-1 {
+  animation: orb-float-1 12s ease-in-out infinite;
+}
+
+.animate-orb-2 {
+  animation: orb-float-2 15s ease-in-out infinite;
+}
+
+.animate-text-gradient {
+  background-size: 200% auto;
+  animation: text-gradient-flow 4s ease infinite;
+}
+
+.animate-badge-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: badge-shimmer 3s ease-in-out infinite;
+}
+
+.animate-subtle-bounce {
+  animation: subtle-bounce 2s ease-in-out infinite;
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 20s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════
+   Enhanced Hover & Interactive States
+   ═══════════════════════════════════════════════ */
+
+/* Card image reveal overlay */
+.card-premium .card-overlay {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.card-premium:hover .card-overlay {
+  opacity: 1;
+}
+
+/* Category tab active transition */
+.category-tab {
+  position: relative;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.category-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #be123c, #ec4899);
+  border-radius: 1px;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.category-tab:hover::after,
+.category-tab.active::after {
+  width: 60%;
+}
+
+/* Magnetic button effect */
+.btn-magnetic {
+  transition: transform 0.2s ease;
+}
+
+/* Smooth image loading */
+.img-reveal {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.img-reveal.loaded {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════
+   Responsive Motion Preferences
+   ═══════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal,
+  .animate-fade-in-up,
+  .animate-fade-in,
+  .animate-float,
+  .animate-orb-1,
+  .animate-orb-2,
+  .animate-gradient-shift,
+  .animate-text-gradient,
+  .animate-badge-shimmer,
+  .animate-subtle-bounce,
+  .animate-rotate-slow {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
