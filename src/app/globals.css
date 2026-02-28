@@ -105,7 +105,7 @@ body {
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, #f5f5f4 25%, #e7e5e4 50%, #f5f5f4 75%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -135,17 +135,17 @@ body {
   -webkit-backdrop-filter: blur(24px) saturate(200%);
 }
 
-/* Apple-style frosted header glass — LIGHT mode for scrolled state */
-.header-glass-light {
-  background: rgba(255, 253, 250, 0.82);
+/* Apple-style frosted header glass — dark luxury  */
+.header-glass {
+  background: rgba(10, 10, 10, 0.88);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04);
 }
 
-/* Fallback for browsers without backdrop-filter */
 @supports not (backdrop-filter: blur(1px)) {
-  .header-glass-light {
-    background: rgba(255, 253, 250, 0.96);
+  .header-glass {
+    background: rgba(10, 10, 10, 0.96);
   }
 }
 
@@ -262,26 +262,25 @@ body {
 }
 
 /* ═══════════════════════════════════════════════
-   End-Roll Background Animation (Cinema Credits)
+   Marquee Background Animation (Luxury Brand)
    ═══════════════════════════════════════════════ */
-@keyframes endroll-scroll {
+@keyframes marquee-scroll {
   0% {
-    transform: translateY(100vh);
+    transform: translateX(0);
   }
   100% {
-    transform: translateY(-100%);
+    transform: translateX(-50%);
   }
 }
 
-.endroll-column {
-  animation: endroll-scroll 40s linear infinite;
+.marquee-track {
+  animation: marquee-scroll 40s linear infinite;
   will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .endroll-column {
+  .marquee-track {
     animation: none !important;
-    display: none;
   }
 }
 
@@ -638,7 +637,8 @@ body {
   .animate-ambient-float,
   .animate-glow-ambient,
   .animate-twinkle,
-  .animate-sway {
+  .animate-sway,
+  .marquee-track {
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;

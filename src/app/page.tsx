@@ -92,18 +92,18 @@ export default function PortalTopPage() {
       {/* ═══ ヒーロー — ブランド + エルゴノミクス検索 ═══ */}
       <section className="relative -mx-4 sm:-mx-6 -mt-6 sm:-mt-10 mb-12 sm:mb-16 overflow-hidden px-4 sm:px-6 pb-24 sm:pb-32 pt-16 sm:pt-24">
         {/* 背景 */}
-        <div className="absolute inset-0 bg-gradient-to-b from-stone-950 via-stone-900/95 to-stone-900" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-stone-950 to-stone-950" />
         <div
-          className="absolute inset-0 opacity-[0.02]"
+          className="absolute inset-0 opacity-[0.025]"
           style={{
             backgroundImage: "radial-gradient(circle at 1px 1px, white 0.5px, transparent 0)",
             backgroundSize: "48px 48px",
           }}
         />
-        {/* ヒーロー内の光のグロー: より明るくダイナミックに */}
-        <div className="absolute left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] rounded-full bg-rose-500/[0.06] blur-[120px] animate-glow-ambient" />
-        <div className="absolute right-0 bottom-1/4 h-[300px] w-[400px] rounded-full bg-amber-400/[0.04] blur-[100px] animate-orb-1" />
-        <div className="absolute left-0 top-1/2 h-[250px] w-[350px] rounded-full bg-violet-400/[0.03] blur-[100px] animate-orb-2" />
+        {/* ヒーロー内の光のグロー */}
+        <div className="absolute left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] rounded-full bg-rose-500/[0.08] blur-[120px] animate-glow-ambient" />
+        <div className="absolute right-0 bottom-1/4 h-[300px] w-[400px] rounded-full bg-amber-400/[0.05] blur-[100px] animate-orb-1" />
+        <div className="absolute left-0 top-1/2 h-[250px] w-[350px] rounded-full bg-violet-400/[0.04] blur-[100px] animate-orb-2" />
 
         {/* ── ブランドセクション ── */}
         <div className="relative mx-auto max-w-3xl text-center">
@@ -251,7 +251,7 @@ export default function PortalTopPage() {
         </div>
 
         {/* ボトムフェード */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-stone-50 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-stone-950 to-transparent" />
       </section>
 
       {/* ═══ カテゴリタブ — Apple-style pill ═══ */}
@@ -263,8 +263,8 @@ export default function PortalTopPage() {
               onClick={() => setActiveCategory(cat.label)}
               className={`group flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-[12px] sm:text-[13px] font-medium transition-all duration-300 active:scale-95 ${
                 activeCategory === cat.label
-                  ? "bg-stone-900 text-white shadow-md shadow-stone-900/20"
-                  : "bg-white text-stone-500 shadow-sm shadow-stone-200/50 hover:text-stone-800 hover:shadow-md"
+                  ? "bg-white text-stone-900 shadow-lg shadow-white/10"
+                  : "bg-white/[0.05] text-stone-400 hover:text-stone-200 hover:bg-white/[0.1]"
               }`}
             >
               {cat.label !== "すべて" && <CategoryIcon label={cat.label} />}
@@ -278,11 +278,11 @@ export default function PortalTopPage() {
       {!loading && (
         <ScrollReveal variant="fadeIn">
           <div className="mb-6 sm:mb-8 flex items-center justify-between">
-            <p className="text-[13px] sm:text-sm text-stone-400">
-              <span className="text-lg sm:text-xl font-semibold text-stone-800 tabular-nums">{tenants.length}</span>
+            <p className="text-[13px] sm:text-sm text-stone-500">
+              <span className="text-lg sm:text-xl font-semibold text-white tabular-nums">{tenants.length}</span>
               <span className="ml-1">件</span>
             </p>
-            <span className="text-[11px] sm:text-[12px] text-stone-400">おすすめ順</span>
+            <span className="text-[11px] sm:text-[12px] text-stone-500">おすすめ順</span>
           </div>
         </ScrollReveal>
       )}
@@ -291,7 +291,7 @@ export default function PortalTopPage() {
       {loading ? (
         <div className="grid gap-5 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="overflow-hidden rounded-2xl bg-white shadow-sm">
+            <div key={i} className="overflow-hidden rounded-2xl bg-white/[0.04] border border-white/[0.06]">
               <div className="aspect-[16/10] sm:aspect-[4/3] animate-shimmer" />
               <div className="space-y-3 p-5">
                 <div className="h-5 w-2/3 rounded-lg animate-shimmer" />
@@ -305,17 +305,17 @@ export default function PortalTopPage() {
       ) : tenants.length === 0 ? (
         <ScrollReveal variant="scale">
           <div className="py-20 sm:py-28 text-center">
-            <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-stone-100">
-              <SearchIcon className="h-7 w-7 text-stone-300" />
+            <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-white/[0.05]">
+              <SearchIcon className="h-7 w-7 text-stone-600" />
             </div>
-            <p className="mb-2 text-lg font-semibold text-stone-700">見つかりませんでした</p>
-            <p className="mb-8 text-[13px] text-stone-400">検索条件を変更してお試しください</p>
+            <p className="mb-2 text-lg font-semibold text-stone-200">見つかりませんでした</p>
+            <p className="mb-8 text-[13px] text-stone-500">検索条件を変更してお試しください</p>
             <button
               onClick={() => {
                 setSearchText("");
                 setActiveCategory("すべて");
               }}
-              className="group inline-flex items-center gap-2 rounded-full bg-stone-900 px-6 py-2.5 text-[13px] font-medium text-white transition-all duration-300 hover:bg-stone-800 active:scale-95 touch-target"
+              className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-[13px] font-medium text-stone-900 transition-all duration-300 hover:shadow-[0_0_24px_rgba(255,255,255,0.15)] active:scale-95 touch-target"
             >
               条件をリセット
             </button>
@@ -333,7 +333,7 @@ export default function PortalTopPage() {
 
       {/* ═══ ボトムCTA — Apple風ミニマルダーク ═══ */}
       <ScrollReveal variant="scale" delay={80}>
-        <section className="mt-20 sm:mt-28 overflow-hidden rounded-3xl bg-stone-950 p-10 sm:p-16 text-center relative">
+        <section className="mt-20 sm:mt-28 overflow-hidden rounded-3xl bg-white/[0.03] border border-white/[0.06] p-10 sm:p-16 text-center relative">
           {/* ソフトグロー背景 */}
           <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[400px] w-[600px] rounded-full bg-rose-500/[0.04] blur-[120px]" />
 
@@ -376,10 +376,10 @@ function TenantCard({ tenant }: { tenant: Tenant }) {
   return (
     <a
       href={`/t/${tenant.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm shadow-stone-200/60 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-xl hover:shadow-stone-200/80 hover:-translate-y-1 active:scale-[0.98]"
+      className="group flex flex-col overflow-hidden rounded-2xl bg-white/[0.04] border border-white/[0.06] backdrop-blur-sm transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white/[0.07] hover:border-white/[0.12] hover:-translate-y-1 hover:shadow-[0_8px_40px_rgba(0,0,0,0.3)] active:scale-[0.98]"
     >
       {/* 写真 */}
-      <div className="relative aspect-[16/10] sm:aspect-[4/3] overflow-hidden bg-stone-100">
+      <div className="relative aspect-[16/10] sm:aspect-[4/3] overflow-hidden bg-stone-800">
         {tenant.photoUrl ? (
           <img
             src={tenant.photoUrl}
@@ -390,12 +390,12 @@ function TenantCard({ tenant }: { tenant: Tenant }) {
             }`}
           />
         ) : (
-          <div className="flex h-full items-center justify-center bg-gradient-to-br from-stone-50 to-stone-100">
+          <div className="flex h-full items-center justify-center bg-gradient-to-br from-stone-800 to-stone-900">
             <BuildingIcon />
           </div>
         )}
         {/* カテゴリバッジ */}
-        <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-stone-600 shadow-sm backdrop-blur-md">
+        <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/50 px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-white/80 backdrop-blur-md">
           <CategoryIcon label={tenant.category} />
           {tenant.category}
         </span>
@@ -403,23 +403,23 @@ function TenantCard({ tenant }: { tenant: Tenant }) {
 
       {/* テキスト */}
       <div className="flex flex-1 flex-col p-4 sm:p-5">
-        <h2 className="mb-1 text-[15px] sm:text-base font-semibold text-stone-900 transition-colors duration-300 group-hover:text-rose-600 line-clamp-1">
+        <h2 className="mb-1 text-[15px] sm:text-base font-semibold text-white transition-colors duration-300 group-hover:text-rose-400 line-clamp-1">
           {tenant.name}
         </h2>
 
         {tenant.catchCopy && (
-          <p className="mb-3 text-[12px] sm:text-[13px] leading-relaxed text-stone-400 line-clamp-2 font-light">
+          <p className="mb-3 text-[12px] sm:text-[13px] leading-relaxed text-stone-500 line-clamp-2 font-light">
             {tenant.catchCopy}
           </p>
         )}
 
         {/* メニュープレビュー */}
         {tenant.menus && tenant.menus.length > 0 && (
-          <div className="mb-3 rounded-xl bg-stone-50 p-3 space-y-2 transition-colors duration-300 group-hover:bg-rose-50/50">
+          <div className="mb-3 rounded-xl bg-white/[0.03] p-3 space-y-2 transition-colors duration-300 group-hover:bg-rose-500/[0.06]">
             {tenant.menus.slice(0, 2).map((m, i) => (
               <div key={i} className="flex items-center justify-between text-[12px] sm:text-[13px]">
-                <span className="text-stone-600 truncate">{m.name}</span>
-                <span className="ml-2 font-semibold text-rose-600 whitespace-nowrap">{m.price}</span>
+                <span className="text-stone-400 truncate">{m.name}</span>
+                <span className="ml-2 font-semibold text-rose-400 whitespace-nowrap">{m.price}</span>
               </div>
             ))}
           </div>
@@ -429,7 +429,7 @@ function TenantCard({ tenant }: { tenant: Tenant }) {
         {tenant.tags && tenant.tags.length > 0 && (
           <div className="mb-3 flex flex-wrap gap-1">
             {tenant.tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="inline-flex items-center gap-1 rounded-md bg-stone-50 px-2 py-0.5 text-[9px] sm:text-[10px] font-medium text-stone-500">
+              <span key={tag} className="inline-flex items-center gap-1 rounded-md bg-white/[0.05] px-2 py-0.5 text-[9px] sm:text-[10px] font-medium text-stone-400">
                 <CheckIcon />
                 {tag}
               </span>
@@ -439,7 +439,7 @@ function TenantCard({ tenant }: { tenant: Tenant }) {
 
         {/* CTA */}
         <div className="mt-auto pt-1">
-          <span className="flex items-center justify-center gap-2 rounded-xl bg-stone-900 py-3 text-[12px] sm:text-[13px] font-medium text-white transition-all duration-300 group-hover:bg-rose-600 group">
+          <span className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 py-3 text-[12px] sm:text-[13px] font-medium text-white transition-all duration-300 group-hover:from-rose-500 group-hover:to-pink-500 group-hover:shadow-[0_4px_20px_rgba(225,29,72,0.3)]">
             <CalendarIcon className="h-3.5 w-3.5" />
             詳細・予約はこちら
             <ArrowRightIcon className="h-3 w-3" />

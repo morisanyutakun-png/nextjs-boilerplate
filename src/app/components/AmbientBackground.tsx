@@ -3,115 +3,41 @@
 import { useEffect, useRef } from "react";
 
 /**
- * AmbientBackground — Apple風の常時背景アニメーション
+ * AmbientBackground — Aurora Wave Animation
  *
- * Canvas で描画するグラデーションオーブが
- * ゆっくりと浮遊し、有機的に色を変えながら動く。
- * 全ページの背後に常時表示される。
- * GPU accelerated, 低負荷, 60fps 目標。
+ * ダーク背景上に流れるオーロラ風の波線 + グローイングオーブ +
+ * スパークルパーティクルを Canvas で描画。
+ * 常時表示・GPU accelerated・低負荷。
  */
 
-interface Orb {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  radius: number;
+interface WaveConfig {
+  baseY: number;
+  amplitude: number;
+  frequency: number;
+  speed: number;
+  phase: number;
   hue: number;
-  hueSpeed: number;
-  saturation: number;
-  lightness: number;
-  alpha: number;
+  hueShift: number;
+  lineWidth: number;
+  glowWidth: number;
+  opacity: number;
 }
 
-function createOrbs(w: number, h: number): Orb[] {
-  return [
-    // メインオーブ: ローズピンクの大きな光
-    {
-      x: w * 0.65,
-      y: h * 0.25,
-      vx: 0.35,
-      vy: -0.2,
-      radius: Math.min(w, h) * 0.5,
-      hue: 340,
-      hueSpeed: 0.025,
-      saturation: 75,
-      lightness: 65,
-      alpha: 0.14,
-    },
-    // ウォームアンバー: 暖かみのある光
-    {
-      x: w * 0.15,
-      y: h * 0.65,
-      vx: -0.22,
-      vy: 0.28,
-      radius: Math.min(w, h) * 0.4,
-      hue: 32,
-      hueSpeed: -0.02,
-      saturation: 70,
-      lightness: 70,
-      alpha: 0.1,
-    },
-    // バイオレット: 高級感のある紫
-    {
-      x: w * 0.5,
-      y: h * 0.1,
-      vx: 0.18,
-      vy: 0.2,
-      radius: Math.min(w, h) * 0.32,
-      hue: 285,
-      hueSpeed: 0.03,
-      saturation: 60,
-      lightness: 60,
-      alpha: 0.08,
-    },
-    // ティール: クールなアクセント
-    {
-      x: w * 0.85,
-      y: h * 0.78,
-      vx: -0.25,
-      vy: -0.15,
-      radius: Math.min(w, h) * 0.28,
-      hue: 175,
-      hueSpeed: 0.02,
-      saturation: 55,
-      lightness: 65,
-      alpha: 0.07,
-    },
-    // ゴールド: 高級感のある暖色
-    {
-      x: w * 0.3,
-      y: h * 0.45,
-      vx: 0.3,
-      vy: -0.12,
-      radius: Math.min(w, h) * 0.22,
-      hue: 42,
-      hueSpeed: -0.035,
-      saturation: 80,
-      lightness: 72,
-      alpha: 0.06,
-    },
-    // サクラピンク: 明るく柔らかい光
-    {
-      x: w * 0.75,
-      y: h * 0.5,
-      vx: -0.15,
-      vy: 0.22,
-      radius: Math.min(w, h) * 0.35,
-      hue: 350,
-      hueSpeed: 0.018,
-      saturation: 65,
-      lightness: 75,
-      alpha: 0.09,
-    },
-  ];
+interface Particle {
+  x: number;
+  y: number;
+  size: number;
+  baseOpacity: number;
+  twinkleSpeed: number;
+  phase: number;
 }
 
 export default function AmbientBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const orbsRef = useRef<Orb[]>([]);
   const animRef = useRef<number>(0);
   const timeRef = useRef(0);
+  const particlesRef = useRef<Particle[]>([]);
+  const sizeRef = useRef({ w: 0, h: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -120,7 +46,6 @@ export default function AmbientBackground() {
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    // Reduced motion check
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -133,51 +58,156 @@ export default function AmbientBackground() {
       canvas.height = h * dpr;
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
-      ctx.scale(dpr, dpr);
-      orbsRef.current = createOrbs(w, h);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      sizeRef.current = { w, h };
+
+      // パーティクル再生成
+      particlesRef.current = Array.from({ length: 50 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        size: Math.random() * 1.5 + 0.5,
+        baseOpacity: Math.random() * 0.5 + 0.15,
+        twinkleSpeed: Math.random() * 2 + 1,
+        phase: Math.random() * Math.PI * 2,
+      }));
     };
 
     resize();
     window.addEventListener("resize", resize);
 
-    const w = () => canvas.width / (Math.min(window.devicePixelRatio || 1, 2));
-    const h = () => canvas.height / (Math.min(window.devicePixelRatio || 1, 2));
+    const getWaves = (): WaveConfig[] => {
+      const { h } = sizeRef.current;
+      return [
+        // ローズオーロラ (メイン)
+        { baseY: h * 0.3, amplitude: h * 0.08, frequency: 0.003, speed: 0.4, phase: 0, hue: 340, hueShift: 8, lineWidth: 1.5, glowWidth: 30, opacity: 0.5 },
+        // バイオレット
+        { baseY: h * 0.45, amplitude: h * 0.06, frequency: 0.004, speed: -0.3, phase: 1.5, hue: 280, hueShift: -6, lineWidth: 1.2, glowWidth: 25, opacity: 0.35 },
+        // ティール
+        { baseY: h * 0.6, amplitude: h * 0.07, frequency: 0.0025, speed: 0.2, phase: 3.0, hue: 185, hueShift: 5, lineWidth: 1, glowWidth: 20, opacity: 0.3 },
+        // アンバーゴールド
+        { baseY: h * 0.55, amplitude: h * 0.05, frequency: 0.0035, speed: -0.25, phase: 4.5, hue: 35, hueShift: -4, lineWidth: 1, glowWidth: 18, opacity: 0.25 },
+        // サブローズ (上部)
+        { baseY: h * 0.2, amplitude: h * 0.04, frequency: 0.005, speed: 0.35, phase: 2.2, hue: 350, hueShift: 10, lineWidth: 0.8, glowWidth: 15, opacity: 0.2 },
+      ];
+    };
+
+    const drawWave = (wave: WaveConfig, t: number) => {
+      const { w } = sizeRef.current;
+      const currentHue = ((wave.hue + t * wave.hueShift) % 360 + 360) % 360;
+
+      // 波のポイント計算
+      const points: { x: number; y: number }[] = [];
+      for (let x = -10; x <= w + 10; x += 3) {
+        const y =
+          wave.baseY +
+          wave.amplitude * Math.sin(x * wave.frequency + t * wave.speed + wave.phase) +
+          wave.amplitude * 0.4 * Math.sin(x * wave.frequency * 2.1 + t * wave.speed * 1.4 + wave.phase + 1) +
+          wave.amplitude * 0.2 * Math.cos(x * wave.frequency * 3.5 + t * wave.speed * 0.6 + 2);
+        points.push({ x, y });
+      }
+
+      // フィル: 波線下のグラデーショングロー
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.lineTo(w + 10, points[points.length - 1].y + wave.amplitude * 4);
+      ctx.lineTo(-10, points[0].y + wave.amplitude * 4);
+      ctx.closePath();
+
+      const fillGrad = ctx.createLinearGradient(
+        0,
+        wave.baseY - wave.amplitude,
+        0,
+        wave.baseY + wave.amplitude * 4
+      );
+      fillGrad.addColorStop(0, `hsla(${currentHue}, 70%, 55%, ${wave.opacity * 0.12})`);
+      fillGrad.addColorStop(0.3, `hsla(${currentHue}, 60%, 50%, ${wave.opacity * 0.06})`);
+      fillGrad.addColorStop(1, `hsla(${currentHue}, 50%, 40%, 0)`);
+      ctx.fillStyle = fillGrad;
+      ctx.fill();
+
+      // グローライン (太く半透明)
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.strokeStyle = `hsla(${currentHue}, 70%, 55%, ${wave.opacity * 0.15})`;
+      ctx.lineWidth = wave.glowWidth;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.stroke();
+
+      // コアライン (細く明るい)
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.strokeStyle = `hsla(${currentHue}, 80%, 70%, ${wave.opacity * 0.6})`;
+      ctx.lineWidth = wave.lineWidth;
+      ctx.stroke();
+    };
+
+    const drawOrbs = (t: number) => {
+      const { w, h } = sizeRef.current;
+      const orbs = [
+        { cx: w * 0.15, cy: h * 0.25, r: Math.min(w, h) * 0.35, hue: 340, speed: 0.3 },
+        { cx: w * 0.8, cy: h * 0.65, r: Math.min(w, h) * 0.3, hue: 270, speed: -0.2 },
+        { cx: w * 0.5, cy: h * 0.85, r: Math.min(w, h) * 0.25, hue: 30, speed: 0.15 },
+      ];
+
+      for (const orb of orbs) {
+        const x = orb.cx + Math.sin(t * orb.speed) * 60;
+        const y = orb.cy + Math.cos(t * orb.speed * 0.7) * 45;
+        const hue = ((orb.hue + t * 3) % 360 + 360) % 360;
+        const alpha = 0.035 + Math.sin(t * 0.5 + orb.hue) * 0.015;
+
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, orb.r);
+        gradient.addColorStop(0, `hsla(${hue}, 70%, 55%, ${alpha * 1.8})`);
+        gradient.addColorStop(0.5, `hsla(${hue}, 60%, 50%, ${alpha})`);
+        gradient.addColorStop(1, `hsla(${hue}, 50%, 40%, 0)`);
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x, y, orb.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+
+    const drawParticles = (t: number) => {
+      for (const p of particlesRef.current) {
+        const twinkle = Math.sin(t * p.twinkleSpeed + p.phase) * 0.5 + 0.5;
+        const alpha = p.baseOpacity * twinkle;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fill();
+      }
+    };
 
     const animate = () => {
+      const { w, h } = sizeRef.current;
+
       if (prefersReducedMotion) {
-        // 静止状態で1回だけ描画
-        drawFrame(ctx, orbsRef.current, w(), h(), 0);
+        ctx.clearRect(0, 0, w, h);
+        drawOrbs(0);
+        getWaves().forEach((wave) => drawWave(wave, 0));
+        drawParticles(0);
         return;
       }
 
-      timeRef.current += 0.008;
-      const orbs = orbsRef.current;
-      const cw = w();
-      const ch = h();
+      timeRef.current += 0.016;
+      const t = timeRef.current;
 
-      // オーブの更新
-      for (const orb of orbs) {
-        // 有機的な動き (Perlin-like sine combinations)
-        const t = timeRef.current;
-        orb.x += orb.vx + Math.sin(t * 0.7 + orb.hue) * 0.3;
-        orb.y += orb.vy + Math.cos(t * 0.5 + orb.hue * 0.1) * 0.25;
+      ctx.clearRect(0, 0, w, h);
+      drawOrbs(t);
+      getWaves().forEach((wave) => drawWave(wave, t));
+      drawParticles(t);
 
-        // Hue シフト
-        orb.hue = (orb.hue + orb.hueSpeed) % 360;
-
-        // バウンス (ソフトバウンダリ)
-        const margin = orb.radius * 0.5;
-        if (orb.x < -margin) orb.vx = Math.abs(orb.vx) * 0.8;
-        if (orb.x > cw + margin) orb.vx = -Math.abs(orb.vx) * 0.8;
-        if (orb.y < -margin) orb.vy = Math.abs(orb.vy) * 0.8;
-        if (orb.y > ch + margin) orb.vy = -Math.abs(orb.vy) * 0.8;
-
-        // Alpha は呼吸のように揺れる（ベースalphaの±30%）
-        const baseAlpha = orb.radius > Math.min(cw, ch) * 0.35 ? 0.12 : 0.08;
-        orb.alpha = baseAlpha + Math.sin(t * 0.3 + orb.hue) * (baseAlpha * 0.3);
-      }
-
-      drawFrame(ctx, orbs, cw, ch, timeRef.current);
       animRef.current = requestAnimationFrame(animate);
     };
 
@@ -194,44 +224,6 @@ export default function AmbientBackground() {
       ref={canvasRef}
       className="pointer-events-none fixed inset-0 z-0"
       aria-hidden="true"
-      style={{ mixBlendMode: "normal" }}
     />
   );
-}
-
-function drawFrame(
-  ctx: CanvasRenderingContext2D,
-  orbs: Orb[],
-  w: number,
-  h: number,
-  _time: number
-) {
-  ctx.clearRect(0, 0, w, h);
-
-  for (const orb of orbs) {
-    const gradient = ctx.createRadialGradient(
-      orb.x,
-      orb.y,
-      0,
-      orb.x,
-      orb.y,
-      orb.radius
-    );
-
-    const hue = ((orb.hue % 360) + 360) % 360;
-    gradient.addColorStop(
-      0,
-      `hsla(${hue}, ${orb.saturation}%, ${orb.lightness}%, ${orb.alpha * 1.5})`
-    );
-    gradient.addColorStop(
-      0.4,
-      `hsla(${hue}, ${orb.saturation}%, ${orb.lightness}%, ${orb.alpha * 0.8})`
-    );
-    gradient.addColorStop(1, `hsla(${hue}, ${orb.saturation}%, ${orb.lightness}%, 0)`);
-
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(orb.x, orb.y, orb.radius, 0, Math.PI * 2);
-    ctx.fill();
-  }
 }

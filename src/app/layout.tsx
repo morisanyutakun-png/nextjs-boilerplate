@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className="noise-bg min-h-screen bg-stone-50 text-stone-800 antialiased">
+      <body className="noise-bg min-h-screen bg-stone-950 text-stone-200 antialiased">
         {/* ── 常時背景アニメーション ── */}
         <AmbientBackground />
         <EndRollBackground />
@@ -32,10 +32,10 @@ export default function RootLayout({
         <main className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-10">{children}</main>
 
         {/* ─── フッター ─── */}
-        <footer className="relative z-10 overflow-hidden border-t border-stone-200/60 bg-white/70 backdrop-blur-xl safe-bottom">
+        <footer className="relative z-10 overflow-hidden border-t border-white/[0.06] bg-white/[0.03] backdrop-blur-xl safe-bottom">
           {/* 装飾グロー */}
-          <div className="absolute -left-32 top-0 h-48 w-48 rounded-full bg-rose-500/[0.04] blur-[80px]" />
-          <div className="absolute -right-24 -bottom-12 h-40 w-40 rounded-full bg-amber-500/[0.03] blur-[60px]" />
+          <div className="absolute -left-32 top-0 h-48 w-48 rounded-full bg-rose-500/[0.06] blur-[80px]" />
+          <div className="absolute -right-24 -bottom-12 h-40 w-40 rounded-full bg-amber-500/[0.04] blur-[60px]" />
 
           <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-12">
             <div className="flex flex-col items-center gap-6 sm:gap-8 sm:flex-row sm:justify-between">
@@ -52,19 +52,19 @@ export default function RootLayout({
                   </svg>
                 </span>
                 <div className="flex flex-col">
-                  <span className="text-[15px] font-bold text-stone-800">Yoyaku</span>
-                  <span className="text-[10px] tracking-[0.15em] text-stone-400">BOOKING PORTAL</span>
+                  <span className="text-[15px] font-bold text-white">Yoyaku</span>
+                  <span className="text-[10px] tracking-[0.15em] text-stone-500">BOOKING PORTAL</span>
                 </div>
               </div>
               <div className="flex flex-col items-center gap-3 sm:items-end">
                 <div className="flex items-center gap-4 sm:gap-5">
-                  <span className="text-[12px] text-stone-400 transition-colors duration-200 hover:text-stone-700 active:text-stone-900 cursor-pointer touch-target flex items-center justify-center">利用規約</span>
-                  <span className="h-3 w-px bg-stone-200" />
-                  <span className="text-[12px] text-stone-400 transition-colors duration-200 hover:text-stone-700 active:text-stone-900 cursor-pointer touch-target flex items-center justify-center">プライバシー</span>
-                  <span className="h-3 w-px bg-stone-200" />
-                  <span className="text-[12px] text-stone-400 transition-colors duration-200 hover:text-stone-700 active:text-stone-900 cursor-pointer touch-target flex items-center justify-center">お問い合わせ</span>
+                  <span className="text-[12px] text-stone-500 transition-colors duration-200 hover:text-stone-300 active:text-white cursor-pointer touch-target flex items-center justify-center">利用規約</span>
+                  <span className="h-3 w-px bg-white/[0.08]" />
+                  <span className="text-[12px] text-stone-500 transition-colors duration-200 hover:text-stone-300 active:text-white cursor-pointer touch-target flex items-center justify-center">プライバシー</span>
+                  <span className="h-3 w-px bg-white/[0.08]" />
+                  <span className="text-[12px] text-stone-500 transition-colors duration-200 hover:text-stone-300 active:text-white cursor-pointer touch-target flex items-center justify-center">お問い合わせ</span>
                 </div>
-                <p className="text-[11px] text-stone-400">
+                <p className="text-[11px] text-stone-600">
                   © 2026 Yoyaku — 各企業の予約ページへのご案内のみを行います
                 </p>
               </div>

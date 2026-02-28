@@ -44,7 +44,7 @@ export default function Header() {
         visible ? "translate-y-0" : "-translate-y-full"
       } ${
         scrolled
-          ? "header-glass-light border-b border-stone-200/60 shadow-[0_1px_24px_rgba(0,0,0,0.06)]"
+          ? "header-glass border-b border-white/[0.06] shadow-[0_1px_24px_rgba(0,0,0,0.3)]"
           : "bg-transparent"
       }`}
     >
@@ -95,7 +95,7 @@ export default function Header() {
             <span
               className={`font-bold tracking-tight transition-all duration-500 ${
                 scrolled
-                  ? "text-[13px] text-stone-800"
+                  ? "text-[13px] text-white"
                   : "text-[15px] sm:text-base text-white"
               }`}
             >
@@ -122,7 +122,7 @@ export default function Header() {
                 href="/"
                 className={`group relative px-3 py-1.5 text-[13px] font-medium transition-colors duration-300 touch-target flex items-center justify-center rounded-lg ${
                   scrolled
-                    ? "text-stone-500 hover:text-stone-800 hover:bg-stone-100/60"
+                    ? "text-white/50 hover:text-white hover:bg-white/[0.06]"
                     : "text-white/50 hover:text-white hover:bg-white/[0.06]"
                 }`}
               >
@@ -135,7 +135,7 @@ export default function Header() {
           <div
             className={`flex items-center gap-2 rounded-full font-medium tracking-wide transition-all duration-500 ${
               scrolled
-                ? "border border-stone-200/80 bg-white/60 px-2.5 py-1 text-[10px] text-stone-500 shadow-sm"
+                ? "border border-white/[0.08] bg-white/[0.05] px-2.5 py-1 text-[10px] text-white/60"
                 : "border border-white/[0.08] bg-white/[0.05] px-3 py-1.5 text-[10px] sm:text-[11px] text-white/60"
             }`}
             style={{ backdropFilter: "blur(12px) saturate(160%)" }}
