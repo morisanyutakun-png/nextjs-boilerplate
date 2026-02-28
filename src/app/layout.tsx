@@ -3,9 +3,10 @@ import "./globals.css";
 import Header from "./components/Header";
 import ScrollProgress from "./components/ScrollProgress";
 import AmbientBackground from "./components/AmbientBackground";
+import EndRollBackground from "./components/EndRollBackground";
 
 export const metadata: Metadata = {
-  title: "予約ポータル | 導入企業のWeb予約をまとめて検索",
+  title: "Yoyaku | 導入企業のWeb予約をまとめて検索",
   description:
     "提携企業の予約ページへ安全にご案内するポータルサイトです。サロン・クリニック・スクールなど多彩なジャンルから選べます。",
 };
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body className="noise-bg min-h-screen bg-stone-50 text-stone-800 antialiased">
         {/* ── 常時背景アニメーション ── */}
         <AmbientBackground />
+        <EndRollBackground />
 
         <Header />
         <ScrollProgress />
@@ -50,7 +52,7 @@ export default function RootLayout({
                   </svg>
                 </span>
                 <div className="flex flex-col">
-                  <span className="text-[15px] font-bold text-stone-800">予約ポータル</span>
+                  <span className="text-[15px] font-bold text-stone-800">Yoyaku</span>
                   <span className="text-[10px] tracking-[0.15em] text-stone-400">BOOKING PORTAL</span>
                 </div>
               </div>
@@ -63,7 +65,7 @@ export default function RootLayout({
                   <span className="text-[12px] text-stone-400 transition-colors duration-200 hover:text-stone-700 active:text-stone-900 cursor-pointer touch-target flex items-center justify-center">お問い合わせ</span>
                 </div>
                 <p className="text-[11px] text-stone-400">
-                  © 2026 予約ポータル — 各企業の予約ページへのご案内のみを行います
+                  © 2026 Yoyaku — 各企業の予約ページへのご案内のみを行います
                 </p>
               </div>
             </div>

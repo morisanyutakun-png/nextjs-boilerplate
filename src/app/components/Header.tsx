@@ -96,7 +96,7 @@ export default function Header() {
                 scrolled ? "text-[13px] text-white" : "text-[15px] sm:text-base text-white"
               }`}
             >
-              予約ポータル
+              Yoyaku
             </span>
             <span
               className={`text-[9px] sm:text-[10px] font-medium tracking-[0.15em] transition-all duration-500 overflow-hidden ${
@@ -138,7 +138,7 @@ export default function Header() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" style={{ boxShadow: "0 0 6px rgba(52,211,153,0.6)" }} />
             </span>
-            <span>公式サイト</span>
+            <span>公式</span>
           </div>
         </nav>
       </div>

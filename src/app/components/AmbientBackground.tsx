@@ -26,57 +26,70 @@ interface Orb {
 
 function createOrbs(w: number, h: number): Orb[] {
   return [
-    // 大きなメインオーブ (rose/pink系)
+    // 大きなメインオーブ (rose/pink系) — より大きく、より流動的
     {
       x: w * 0.7,
       y: h * 0.3,
-      vx: 0.15,
-      vy: -0.12,
-      radius: Math.min(w, h) * 0.35,
+      vx: 0.25,
+      vy: -0.18,
+      radius: Math.min(w, h) * 0.42,
       hue: 340,
-      hueSpeed: 0.02,
+      hueSpeed: 0.03,
       saturation: 70,
       lightness: 55,
-      alpha: 0.035,
+      alpha: 0.04,
     },
     // 中くらいオーブ (amber/warm系)
     {
       x: w * 0.2,
       y: h * 0.7,
-      vx: -0.1,
-      vy: 0.14,
-      radius: Math.min(w, h) * 0.28,
+      vx: -0.18,
+      vy: 0.22,
+      radius: Math.min(w, h) * 0.34,
       hue: 35,
-      hueSpeed: -0.015,
+      hueSpeed: -0.025,
       saturation: 60,
       lightness: 60,
-      alpha: 0.025,
+      alpha: 0.03,
     },
-    // 小さいアクセントオーブ (violet系)
+    // アクセントオーブ (violet系)
     {
       x: w * 0.5,
       y: h * 0.15,
-      vx: 0.08,
-      vy: 0.1,
-      radius: Math.min(w, h) * 0.2,
+      vx: 0.14,
+      vy: 0.16,
+      radius: Math.min(w, h) * 0.26,
       hue: 280,
-      hueSpeed: 0.025,
-      saturation: 50,
+      hueSpeed: 0.035,
+      saturation: 55,
       lightness: 50,
-      alpha: 0.02,
+      alpha: 0.025,
     },
-    // 追加の小さいオーブ (teal系)
+    // 追加オーブ (teal系)
     {
       x: w * 0.85,
       y: h * 0.8,
-      vx: -0.12,
-      vy: -0.08,
-      radius: Math.min(w, h) * 0.18,
+      vx: -0.2,
+      vy: -0.12,
+      radius: Math.min(w, h) * 0.22,
       hue: 170,
-      hueSpeed: 0.018,
-      saturation: 45,
+      hueSpeed: 0.02,
+      saturation: 50,
       lightness: 50,
-      alpha: 0.018,
+      alpha: 0.022,
+    },
+    // 新: 浮遊するピンクの光 — 画面上部を漂う
+    {
+      x: w * 0.35,
+      y: h * 0.4,
+      vx: 0.3,
+      vy: -0.1,
+      radius: Math.min(w, h) * 0.18,
+      hue: 330,
+      hueSpeed: -0.04,
+      saturation: 65,
+      lightness: 60,
+      alpha: 0.02,
     },
   ];
 }

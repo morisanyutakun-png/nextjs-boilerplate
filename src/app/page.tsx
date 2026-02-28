@@ -89,25 +89,42 @@ export default function PortalTopPage() {
 
   return (
     <>
-      {/* ═══ ヒーロー — Apple-style minimal + typographic ═══ */}
-      <section className="relative -mx-4 sm:-mx-6 -mt-6 sm:-mt-10 mb-12 sm:mb-16 overflow-hidden px-4 sm:px-6 pb-20 sm:pb-28 pt-20 sm:pt-32">
-        {/* 背景 — ダーク with subtle gradient */}
+      {/* ═══ ヒーロー — ブランド + エルゴノミクス検索 ═══ */}
+      <section className="relative -mx-4 sm:-mx-6 -mt-6 sm:-mt-10 mb-12 sm:mb-16 overflow-hidden px-4 sm:px-6 pb-24 sm:pb-32 pt-16 sm:pt-24">
+        {/* 背景 */}
         <div className="absolute inset-0 bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950" />
-        {/* 極薄メッシュ — Apple的な質感 */}
         <div
-          className="absolute inset-0 opacity-[0.015]"
+          className="absolute inset-0 opacity-[0.012]"
           style={{
             backgroundImage: "radial-gradient(circle at 1px 1px, white 0.5px, transparent 0)",
             backgroundSize: "48px 48px",
           }}
         />
-        {/* ソフトグロー — Canvasと協調する最小限のアクセント */}
         <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] rounded-full bg-rose-500/[0.03] blur-[160px]" />
 
-        {/* テキストコンテンツ */}
+        {/* ── ブランドセクション ── */}
         <div className="relative mx-auto max-w-3xl text-center">
-          {/* タイトル — Apple的 大きく堂々としたタイポグラフィ */}
-          <h1 className="mb-5 sm:mb-6 text-[clamp(2rem,6vw,3.5rem)] font-bold leading-[1.1] tracking-tight text-white animate-fade-in-up">
+          {/* ブランドロゴ */}
+          <div className="mb-6 sm:mb-8 animate-fade-in">
+            <p
+              className="text-[clamp(2.5rem,10vw,5rem)] font-black tracking-tighter leading-none select-none"
+              style={{
+                background: "linear-gradient(135deg, #ffffff 0%, #fda4af 35%, #fb7185 55%, #e879f9 75%, #fbbf24 100%)",
+                backgroundSize: "300% auto",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                animation: "text-gradient-flow 8s ease infinite",
+              }}
+            >
+              Yoyaku
+            </p>
+            <p className="mt-1 text-[10px] sm:text-[12px] font-medium tracking-[0.35em] text-white/20 uppercase">
+              Booking Portal
+            </p>
+          </div>
+
+          {/* タイトル */}
+          <h1 className="mb-4 sm:mb-5 text-[clamp(1.5rem,4.5vw,2.5rem)] font-bold leading-[1.15] tracking-tight text-white animate-fade-in-up">
             あなたにぴったりの
             <br />
             <span
@@ -122,59 +139,116 @@ export default function PortalTopPage() {
             </span>
           </h1>
 
-          <p className="mx-auto mb-10 sm:mb-14 max-w-md text-[14px] sm:text-[16px] leading-relaxed text-white/40 font-light animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
-            厳選されたサロン・クリニックから
-            <br className="sm:hidden" />
-            あなたに最適な一店を。
+          <p className="mx-auto mb-10 sm:mb-12 max-w-md text-[14px] sm:text-[16px] leading-relaxed text-white/35 font-light animate-fade-in-up" style={{ animationDelay: "0.12s" }}>
+            厳選されたサロン・クリニックから、あなたに最適な一店を。
           </p>
 
-          {/* 検索バー — ミニマルなグラスモーフィズム */}
-          <div
-            className={`animate-fade-in-up mx-auto flex max-w-lg items-center gap-3 rounded-2xl border px-5 py-4 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              searchFocused
-                ? "border-white/20 bg-white/[0.10] shadow-[0_8px_40px_rgba(225,29,72,0.08)]"
-                : "border-white/[0.06] bg-white/[0.04]"
-            }`}
-            style={{ animationDelay: "0.3s", backdropFilter: "blur(20px) saturate(150%)" }}
-          >
-            <SearchIcon className={`h-[18px] w-[18px] shrink-0 transition-colors duration-300 ${searchFocused ? "text-rose-300" : "text-white/25"}`} />
-            <input
-              type="text"
-              placeholder="サロン名やジャンルで検索"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
-              className="w-full bg-transparent text-[15px] text-white placeholder-white/20 outline-none font-light"
-            />
-            {searchText && (
-              <button
-                onClick={() => setSearchText("")}
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/50 transition-all duration-200 active:scale-90 hover:bg-white/20 touch-target"
-              >
-                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
+          {/*
+            検索バー — 人間工学・心理学ベース設計
+            ───────────────────────────────
+            フィッツの法則: 大きなターゲット分面で素早くクリック可能
+            フォン・レストルフ効果: 周囲との視覚的差別化で注目を引く
+            ゲシュタルト近接性: 検索バー直下にカテゴリショートカット
+            色彩心理: フォーカス時の暖色グローで「歓迎感」
+            アフォーダンス: アイコン+テキストで「検索できる」ことを明示
+          */}
+          <div className="animate-fade-in-up" style={{ animationDelay: "0.24s" }}>
+            <div
+              className={`search-container mx-auto max-w-xl rounded-[1.25rem] border-2 p-1 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                searchFocused
+                  ? "border-rose-400/40 bg-white/[0.12] shadow-[0_0_0_4px_rgba(251,113,133,0.08),0_12px_48px_rgba(225,29,72,0.12)] scale-[1.02]"
+                  : "border-white/[0.08] bg-white/[0.05] shadow-[0_4px_24px_rgba(0,0,0,0.15)]"
+              }`}
+              style={{ backdropFilter: "blur(24px) saturate(160%)" }}
+            >
+              <div className="flex items-center gap-3 px-4 py-3">
+                {/* 検索アイコン — アフォーダンス明示 */}
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-400 ${
+                  searchFocused
+                    ? "bg-rose-500/20 shadow-[0_0_20px_rgba(251,113,133,0.2)]"
+                    : "bg-white/[0.06]"
+                }`}>
+                  <SearchIcon className={`h-5 w-5 transition-all duration-300 ${
+                    searchFocused ? "text-rose-300 scale-110" : "text-white/30"
+                  }`} />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  {/* ラベル — 何ができるか明示 (アフォーダンス) */}
+                  <label className={`block text-[10px] font-medium tracking-wider uppercase transition-all duration-300 mb-0.5 ${
+                    searchFocused ? "text-rose-300/70" : "text-white/20"
+                  }`}>
+                    キーワード検索
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="サロン名・エリア・ジャンルで探す…"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => setSearchFocused(false)}
+                    className="w-full bg-transparent text-[16px] text-white placeholder-white/25 outline-none font-light leading-tight"
+                  />
+                </div>
+
+                {/* クリアボタン or 検索ボタン */}
+                {searchText ? (
+                  <button
+                    onClick={() => setSearchText("")}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white/60 transition-all duration-200 active:scale-90 hover:bg-white/20 touch-target"
+                    aria-label="検索をクリア"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                ) : (
+                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
+                    searchFocused ? "bg-rose-500/25" : "bg-white/[0.04]"
+                  }`}>
+                    <svg className={`h-4 w-4 transition-colors duration-300 ${searchFocused ? "text-rose-300" : "text-white/15"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M3 8h18M3 12h12" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* クイックフィルター — ゲシュタルト近接性: 検索とカテゴリの近接配置 */}
+              <div className="flex gap-1.5 px-2 pb-2 overflow-x-auto scrollbar-hide">
+                {["人気サロン", "クリニック", "初回割引", "駅近"].map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => setSearchText(tag)}
+                    className="whitespace-nowrap rounded-lg bg-white/[0.06] px-3 py-1.5 text-[11px] font-medium text-white/35 transition-all duration-200 hover:bg-white/[0.12] hover:text-white/60 active:scale-95"
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* 信頼バッジ — 控えめ */}
-          <div className="mt-8 sm:mt-10 flex items-center justify-center gap-6 animate-fade-in" style={{ animationDelay: "0.5s" }}>
-            <div className="flex items-center gap-2 text-white/25 text-[12px]">
-              <svg className="h-4 w-4 text-emerald-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              安全な予約導線
+          {/* 信頼指標 — 社会的証明 (social proof) */}
+          <div className="mt-10 sm:mt-12 flex items-center justify-center gap-5 sm:gap-8 animate-fade-in" style={{ animationDelay: "0.45s" }}>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[20px] sm:text-[24px] font-bold text-white/80 tabular-nums">150+</span>
+              <span className="text-[10px] sm:text-[11px] text-white/25 tracking-wider">導入店舗</span>
             </div>
-            <div className="h-3 w-px bg-white/10" />
-            <div className="flex items-center gap-2 text-white/25 text-[12px]">
-              <svg className="h-4 w-4 text-amber-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>
-              厳選パートナー
+            <div className="h-8 w-px bg-white/[0.06]" />
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[20px] sm:text-[24px] font-bold text-white/80 tabular-nums">4.8</span>
+              <span className="text-[10px] sm:text-[11px] text-white/25 tracking-wider">平均評価</span>
+            </div>
+            <div className="h-8 w-px bg-white/[0.06]" />
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[20px] sm:text-[24px] font-bold text-white/80 tabular-nums">24h</span>
+              <span className="text-[10px] sm:text-[11px] text-white/25 tracking-wider">予約可能</span>
             </div>
           </div>
         </div>
 
         {/* ボトムフェード */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-stone-50 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-stone-50 to-transparent" />
       </section>
 
       {/* ═══ カテゴリタブ — Apple-style pill ═══ */}

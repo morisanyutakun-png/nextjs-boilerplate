@@ -256,6 +256,30 @@ body {
 }
 
 /* ═══════════════════════════════════════════════
+   End-Roll Background Animation (Cinema Credits)
+   ═══════════════════════════════════════════════ */
+@keyframes endroll-scroll {
+  0% {
+    transform: translateY(100vh);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.endroll-column {
+  animation: endroll-scroll 40s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .endroll-column {
+    animation: none !important;
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════
    Scroll Reveal Animations
    ═══════════════════════════════════════════════ */
 
