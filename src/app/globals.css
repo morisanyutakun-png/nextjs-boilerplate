@@ -105,7 +105,7 @@ body {
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%);
+  background: linear-gradient(90deg, rgba(0,0,0,0.03) 25%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.03) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -135,17 +135,17 @@ body {
   -webkit-backdrop-filter: blur(24px) saturate(200%);
 }
 
-/* Apple-style frosted header glass — dark luxury  */
+/* Apple-style frosted header glass — warm cream  */
 .header-glass {
-  background: rgba(10, 10, 10, 0.88);
+  background: rgba(253, 250, 245, 0.88);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.04);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
 }
 
 @supports not (backdrop-filter: blur(1px)) {
   .header-glass {
-    background: rgba(10, 10, 10, 0.96);
+    background: rgba(253, 250, 245, 0.97);
   }
 }
 
@@ -262,24 +262,24 @@ body {
 }
 
 /* ═══════════════════════════════════════════════
-   Marquee Background Animation (Luxury Brand)
+   EndRoll Vertical Scroll Animation
    ═══════════════════════════════════════════════ */
-@keyframes marquee-scroll {
+@keyframes endroll-scroll {
   0% {
-    transform: translateX(0);
+    transform: translateY(0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translateY(-50%);
   }
 }
 
-.marquee-track {
-  animation: marquee-scroll 40s linear infinite;
+.endroll-column {
+  animation: endroll-scroll 60s linear infinite;
   will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track {
+  .endroll-column {
     animation: none !important;
   }
 }
@@ -526,7 +526,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.02), transparent);
   animation: shimmer-slide 4s ease-in-out infinite;
 }
 
@@ -638,7 +638,7 @@ body {
   .animate-glow-ambient,
   .animate-twinkle,
   .animate-sway,
-  .marquee-track {
+  .endroll-column {
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;

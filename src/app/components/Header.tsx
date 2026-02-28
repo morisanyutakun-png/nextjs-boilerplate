@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 
 /**
- * Premium Header — Luxury × Bright
+ * Premium Header — Warm & Inviting
  *
- * - ヒーロー上: 透明 + 白テキスト
+ * - ヒーロー上: 透明 + ダークテキスト（ウォーム背景想定）
  * - スクロール後: ウォームクリームガラス + ダークテキスト
  * - backdrop-filter 非対応でもフォールバック背景色で可読性を保証
- * - シマーライン + ゴールドアクセント
+ * - シマーライン + ローズアクセント
  */
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -44,7 +44,7 @@ export default function Header() {
         visible ? "translate-y-0" : "-translate-y-full"
       } ${
         scrolled
-          ? "header-glass border-b border-white/[0.06] shadow-[0_1px_24px_rgba(0,0,0,0.3)]"
+          ? "header-glass border-b border-stone-200/40 shadow-[0_1px_24px_rgba(0,0,0,0.06)]"
           : "bg-transparent"
       }`}
     >
@@ -95,8 +95,8 @@ export default function Header() {
             <span
               className={`font-bold tracking-tight transition-all duration-500 ${
                 scrolled
-                  ? "text-[13px] text-white"
-                  : "text-[15px] sm:text-base text-white"
+                  ? "text-[13px] text-stone-800"
+                  : "text-[15px] sm:text-base text-stone-800"
               }`}
             >
               Yoyaku
@@ -105,7 +105,7 @@ export default function Header() {
               className={`text-[9px] sm:text-[10px] font-medium tracking-[0.15em] transition-all duration-500 overflow-hidden ${
                 scrolled
                   ? "max-h-0 opacity-0 -translate-y-1"
-                  : "max-h-4 opacity-100 translate-y-0 text-white/35"
+                  : "max-h-4 opacity-100 translate-y-0 text-stone-400"
               }`}
             >
               BOOKING PORTAL
@@ -122,8 +122,8 @@ export default function Header() {
                 href="/"
                 className={`group relative px-3 py-1.5 text-[13px] font-medium transition-colors duration-300 touch-target flex items-center justify-center rounded-lg ${
                   scrolled
-                    ? "text-white/50 hover:text-white hover:bg-white/[0.06]"
-                    : "text-white/50 hover:text-white hover:bg-white/[0.06]"
+                    ? "text-stone-500 hover:text-stone-800 hover:bg-stone-100/60"
+                    : "text-stone-500 hover:text-stone-800 hover:bg-stone-100/60"
                 }`}
               >
                 {label}
@@ -135,8 +135,8 @@ export default function Header() {
           <div
             className={`flex items-center gap-2 rounded-full font-medium tracking-wide transition-all duration-500 ${
               scrolled
-                ? "border border-white/[0.08] bg-white/[0.05] px-2.5 py-1 text-[10px] text-white/60"
-                : "border border-white/[0.08] bg-white/[0.05] px-3 py-1.5 text-[10px] sm:text-[11px] text-white/60"
+                ? "border border-stone-200/60 bg-white/50 px-2.5 py-1 text-[10px] text-stone-500"
+                : "border border-stone-200/40 bg-white/30 px-3 py-1.5 text-[10px] sm:text-[11px] text-stone-500"
             }`}
             style={{ backdropFilter: "blur(12px) saturate(160%)" }}
           >

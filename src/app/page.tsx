@@ -91,19 +91,19 @@ export default function PortalTopPage() {
     <>
       {/* ═══ ヒーロー — ブランド + エルゴノミクス検索 ═══ */}
       <section className="relative -mx-4 sm:-mx-6 -mt-6 sm:-mt-10 mb-12 sm:mb-16 overflow-hidden px-4 sm:px-6 pb-24 sm:pb-32 pt-16 sm:pt-24">
-        {/* 背景 */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-stone-950 to-stone-950" />
+        {/* 背景 — ウォームグラデーション */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#fef7f0] via-[#fdf2ea] to-[#faf8f5]" />
         <div
-          className="absolute inset-0 opacity-[0.025]"
+          className="absolute inset-0 opacity-[0.03]"
           style={{
-            backgroundImage: "radial-gradient(circle at 1px 1px, white 0.5px, transparent 0)",
+            backgroundImage: "radial-gradient(circle at 1px 1px, #c4a882 0.5px, transparent 0)",
             backgroundSize: "48px 48px",
           }}
         />
-        {/* ヒーロー内の光のグロー */}
-        <div className="absolute left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] rounded-full bg-rose-500/[0.08] blur-[120px] animate-glow-ambient" />
-        <div className="absolute right-0 bottom-1/4 h-[300px] w-[400px] rounded-full bg-amber-400/[0.05] blur-[100px] animate-orb-1" />
-        <div className="absolute left-0 top-1/2 h-[250px] w-[350px] rounded-full bg-violet-400/[0.04] blur-[100px] animate-orb-2" />
+        {/* ヒーロー内の暖色グロー */}
+        <div className="absolute left-1/2 top-1/4 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] rounded-full bg-rose-300/[0.12] blur-[120px] animate-glow-ambient" />
+        <div className="absolute right-0 bottom-1/4 h-[300px] w-[400px] rounded-full bg-amber-300/[0.1] blur-[100px] animate-orb-1" />
+        <div className="absolute left-0 top-1/2 h-[250px] w-[350px] rounded-full bg-pink-200/[0.08] blur-[100px] animate-orb-2" />
 
         {/* ── ブランドセクション ── */}
         <div className="relative mx-auto max-w-3xl text-center">
@@ -112,7 +112,7 @@ export default function PortalTopPage() {
             <p
               className="text-[clamp(2.5rem,10vw,5rem)] font-black tracking-tighter leading-none select-none"
               style={{
-                background: "linear-gradient(135deg, #ffffff 0%, #fda4af 35%, #fb7185 55%, #e879f9 75%, #fbbf24 100%)",
+                background: "linear-gradient(135deg, #be123c 0%, #e11d48 35%, #fb7185 55%, #f472b6 75%, #d97706 100%)",
                 backgroundSize: "300% auto",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -121,19 +121,19 @@ export default function PortalTopPage() {
             >
               Yoyaku
             </p>
-            <p className="mt-1 text-[10px] sm:text-[12px] font-medium tracking-[0.35em] text-white/20 uppercase">
+            <p className="mt-1 text-[10px] sm:text-[12px] font-medium tracking-[0.35em] text-stone-400 uppercase">
               Booking Portal
             </p>
           </div>
 
           {/* タイトル */}
-          <h1 className="mb-4 sm:mb-5 text-[clamp(1.5rem,4.5vw,2.5rem)] font-bold leading-[1.15] tracking-tight text-white animate-fade-in-up">
+          <h1 className="mb-4 sm:mb-5 text-[clamp(1.5rem,4.5vw,2.5rem)] font-bold leading-[1.15] tracking-tight text-stone-800 animate-fade-in-up">
             あなたにぴったりの
             <br />
             <span
               className="bg-clip-text text-transparent"
               style={{
-                backgroundImage: "linear-gradient(135deg, #fda4af 0%, #fb7185 30%, #e879f9 60%, #fbbf24 100%)",
+                backgroundImage: "linear-gradient(135deg, #e11d48 0%, #fb7185 30%, #f472b6 60%, #d97706 100%)",
                 backgroundSize: "200% auto",
                 animation: "text-gradient-flow 6s linear infinite",
               }}
@@ -142,7 +142,7 @@ export default function PortalTopPage() {
             </span>
           </h1>
 
-          <p className="mx-auto mb-10 sm:mb-12 max-w-md text-[14px] sm:text-[16px] leading-relaxed text-white/35 font-light animate-fade-in-up" style={{ animationDelay: "0.12s" }}>
+          <p className="mx-auto mb-10 sm:mb-12 max-w-md text-[14px] sm:text-[16px] leading-relaxed text-stone-500 font-light animate-fade-in-up" style={{ animationDelay: "0.12s" }}>
             厳選されたサロン・クリニックから、あなたに最適な一店を。
           </p>
 
@@ -159,8 +159,8 @@ export default function PortalTopPage() {
             <div
               className={`search-container mx-auto max-w-xl rounded-[1.25rem] border-2 p-1 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                 searchFocused
-                  ? "border-rose-400/40 bg-white/[0.12] shadow-[0_0_0_4px_rgba(251,113,133,0.08),0_12px_48px_rgba(225,29,72,0.12)] scale-[1.02]"
-                  : "border-white/[0.08] bg-white/[0.05] shadow-[0_4px_24px_rgba(0,0,0,0.15)]"
+                  ? "border-rose-300/50 bg-white/90 shadow-[0_0_0_4px_rgba(251,113,133,0.08),0_12px_48px_rgba(225,29,72,0.08)] scale-[1.02]"
+                  : "border-stone-200/60 bg-white/70 shadow-[0_4px_24px_rgba(0,0,0,0.04)]"
               }`}
               style={{ backdropFilter: "blur(24px) saturate(160%)" }}
             >
@@ -168,18 +168,18 @@ export default function PortalTopPage() {
                 {/* 検索アイコン — アフォーダンス明示 */}
                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-400 ${
                   searchFocused
-                    ? "bg-rose-500/20 shadow-[0_0_20px_rgba(251,113,133,0.2)]"
-                    : "bg-white/[0.06]"
+                    ? "bg-rose-50 shadow-[0_0_20px_rgba(251,113,133,0.1)]"
+                    : "bg-stone-100/60"
                 }`}>
                   <SearchIcon className={`h-5 w-5 transition-all duration-300 ${
-                    searchFocused ? "text-rose-300 scale-110" : "text-white/30"
+                    searchFocused ? "text-rose-500 scale-110" : "text-stone-400"
                   }`} />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   {/* ラベル — 何ができるか明示 (アフォーダンス) */}
                   <label className={`block text-[10px] font-medium tracking-wider uppercase transition-all duration-300 mb-0.5 ${
-                    searchFocused ? "text-rose-300/70" : "text-white/20"
+                    searchFocused ? "text-rose-400" : "text-stone-400"
                   }`}>
                     キーワード検索
                   </label>
@@ -190,7 +190,7 @@ export default function PortalTopPage() {
                     onChange={(e) => setSearchText(e.target.value)}
                     onFocus={() => setSearchFocused(true)}
                     onBlur={() => setSearchFocused(false)}
-                    className="w-full bg-transparent text-[16px] text-white placeholder-white/25 outline-none font-light leading-tight"
+                    className="w-full bg-transparent text-[16px] text-stone-800 placeholder-stone-300 outline-none font-light leading-tight"
                   />
                 </div>
 
@@ -198,7 +198,7 @@ export default function PortalTopPage() {
                 {searchText ? (
                   <button
                     onClick={() => setSearchText("")}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white/60 transition-all duration-200 active:scale-90 hover:bg-white/20 touch-target"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-stone-100 text-stone-500 transition-all duration-200 active:scale-90 hover:bg-stone-200 touch-target"
                     aria-label="検索をクリア"
                   >
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -207,9 +207,9 @@ export default function PortalTopPage() {
                   </button>
                 ) : (
                   <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
-                    searchFocused ? "bg-rose-500/25" : "bg-white/[0.04]"
+                    searchFocused ? "bg-rose-50" : "bg-stone-100/40"
                   }`}>
-                    <svg className={`h-4 w-4 transition-colors duration-300 ${searchFocused ? "text-rose-300" : "text-white/15"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg className={`h-4 w-4 transition-colors duration-300 ${searchFocused ? "text-rose-400" : "text-stone-300"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M3 8h18M3 12h12" />
                     </svg>
                   </div>
@@ -222,7 +222,7 @@ export default function PortalTopPage() {
                   <button
                     key={tag}
                     onClick={() => setSearchText(tag)}
-                    className="whitespace-nowrap rounded-lg bg-white/[0.06] px-3 py-1.5 text-[11px] font-medium text-white/35 transition-all duration-200 hover:bg-white/[0.12] hover:text-white/60 active:scale-95"
+                    className="whitespace-nowrap rounded-lg bg-stone-100/70 px-3 py-1.5 text-[11px] font-medium text-stone-500 transition-all duration-200 hover:bg-rose-50 hover:text-rose-600 active:scale-95"
                   >
                     {tag}
                   </button>
@@ -234,24 +234,24 @@ export default function PortalTopPage() {
           {/* 信頼指標 — 社会的証明 (social proof) */}
           <div className="mt-10 sm:mt-12 flex items-center justify-center gap-5 sm:gap-8 animate-fade-in" style={{ animationDelay: "0.45s" }}>
             <div className="flex flex-col items-center gap-1">
-              <span className="text-[20px] sm:text-[24px] font-bold text-white/80 tabular-nums">150+</span>
-              <span className="text-[10px] sm:text-[11px] text-white/25 tracking-wider">導入店舗</span>
+              <span className="text-[20px] sm:text-[24px] font-bold text-stone-700 tabular-nums">150+</span>
+              <span className="text-[10px] sm:text-[11px] text-stone-400 tracking-wider">導入店舗</span>
             </div>
-            <div className="h-8 w-px bg-white/[0.06]" />
+            <div className="h-8 w-px bg-stone-200" />
             <div className="flex flex-col items-center gap-1">
-              <span className="text-[20px] sm:text-[24px] font-bold text-white/80 tabular-nums">4.8</span>
-              <span className="text-[10px] sm:text-[11px] text-white/25 tracking-wider">平均評価</span>
+              <span className="text-[20px] sm:text-[24px] font-bold text-stone-700 tabular-nums">4.8</span>
+              <span className="text-[10px] sm:text-[11px] text-stone-400 tracking-wider">平均評価</span>
             </div>
-            <div className="h-8 w-px bg-white/[0.06]" />
+            <div className="h-8 w-px bg-stone-200" />
             <div className="flex flex-col items-center gap-1">
-              <span className="text-[20px] sm:text-[24px] font-bold text-white/80 tabular-nums">24h</span>
-              <span className="text-[10px] sm:text-[11px] text-white/25 tracking-wider">予約可能</span>
+              <span className="text-[20px] sm:text-[24px] font-bold text-stone-700 tabular-nums">24h</span>
+              <span className="text-[10px] sm:text-[11px] text-stone-400 tracking-wider">予約可能</span>
             </div>
           </div>
         </div>
 
         {/* ボトムフェード */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-stone-950 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#faf8f5] to-transparent" />
       </section>
 
       {/* ═══ カテゴリタブ — Apple-style pill ═══ */}
@@ -263,8 +263,8 @@ export default function PortalTopPage() {
               onClick={() => setActiveCategory(cat.label)}
               className={`group flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-[12px] sm:text-[13px] font-medium transition-all duration-300 active:scale-95 ${
                 activeCategory === cat.label
-                  ? "bg-white text-stone-900 shadow-lg shadow-white/10"
-                  : "bg-white/[0.05] text-stone-400 hover:text-stone-200 hover:bg-white/[0.1]"
+                  ? "bg-stone-800 text-white shadow-lg shadow-stone-800/10"
+                  : "bg-white/70 text-stone-500 hover:text-stone-700 hover:bg-white border border-stone-200/40"
               }`}
             >
               {cat.label !== "すべて" && <CategoryIcon label={cat.label} />}
@@ -279,10 +279,10 @@ export default function PortalTopPage() {
         <ScrollReveal variant="fadeIn">
           <div className="mb-6 sm:mb-8 flex items-center justify-between">
             <p className="text-[13px] sm:text-sm text-stone-500">
-              <span className="text-lg sm:text-xl font-semibold text-white tabular-nums">{tenants.length}</span>
+              <span className="text-lg sm:text-xl font-semibold text-stone-800 tabular-nums">{tenants.length}</span>
               <span className="ml-1">件</span>
             </p>
-            <span className="text-[11px] sm:text-[12px] text-stone-500">おすすめ順</span>
+            <span className="text-[11px] sm:text-[12px] text-stone-400">おすすめ順</span>
           </div>
         </ScrollReveal>
       )}
@@ -291,7 +291,7 @@ export default function PortalTopPage() {
       {loading ? (
         <div className="grid gap-5 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="overflow-hidden rounded-2xl bg-white/[0.04] border border-white/[0.06]">
+            <div key={i} className="overflow-hidden rounded-2xl bg-white/80 border border-stone-200/50 shadow-sm">
               <div className="aspect-[16/10] sm:aspect-[4/3] animate-shimmer" />
               <div className="space-y-3 p-5">
                 <div className="h-5 w-2/3 rounded-lg animate-shimmer" />
@@ -305,17 +305,17 @@ export default function PortalTopPage() {
       ) : tenants.length === 0 ? (
         <ScrollReveal variant="scale">
           <div className="py-20 sm:py-28 text-center">
-            <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-white/[0.05]">
-              <SearchIcon className="h-7 w-7 text-stone-600" />
+            <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-stone-100">
+              <SearchIcon className="h-7 w-7 text-stone-400" />
             </div>
-            <p className="mb-2 text-lg font-semibold text-stone-200">見つかりませんでした</p>
-            <p className="mb-8 text-[13px] text-stone-500">検索条件を変更してお試しください</p>
+            <p className="mb-2 text-lg font-semibold text-stone-700">見つかりませんでした</p>
+            <p className="mb-8 text-[13px] text-stone-400">検索条件を変更してお試しください</p>
             <button
               onClick={() => {
                 setSearchText("");
                 setActiveCategory("すべて");
               }}
-              className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-[13px] font-medium text-stone-900 transition-all duration-300 hover:shadow-[0_0_24px_rgba(255,255,255,0.15)] active:scale-95 touch-target"
+              className="group inline-flex items-center gap-2 rounded-full bg-stone-800 px-6 py-2.5 text-[13px] font-medium text-white transition-all duration-300 hover:shadow-[0_0_24px_rgba(0,0,0,0.08)] hover:bg-stone-700 active:scale-95 touch-target"
             >
               条件をリセット
             </button>
@@ -331,32 +331,32 @@ export default function PortalTopPage() {
         </div>
       )}
 
-      {/* ═══ ボトムCTA — Apple風ミニマルダーク ═══ */}
+      {/* ═══ ボトムCTA — ウォーム & 穏やか ═══ */}
       <ScrollReveal variant="scale" delay={80}>
-        <section className="mt-20 sm:mt-28 overflow-hidden rounded-3xl bg-white/[0.03] border border-white/[0.06] p-10 sm:p-16 text-center relative">
+        <section className="mt-20 sm:mt-28 overflow-hidden rounded-3xl bg-white/70 border border-stone-200/50 p-10 sm:p-16 text-center relative shadow-sm backdrop-blur-sm">
           {/* ソフトグロー背景 */}
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[400px] w-[600px] rounded-full bg-rose-500/[0.04] blur-[120px]" />
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[400px] w-[600px] rounded-full bg-rose-200/[0.15] blur-[120px]" />
 
           <div className="relative">
-            <p className="mb-3 text-[12px] font-medium tracking-widest text-white/30 uppercase">Partner Program</p>
-            <h2 className="mb-4 text-[clamp(1.5rem,4vw,2.5rem)] font-bold leading-tight tracking-tight text-white">
+            <p className="mb-3 text-[12px] font-medium tracking-widest text-stone-400 uppercase">Partner Program</p>
+            <h2 className="mb-4 text-[clamp(1.5rem,4vw,2.5rem)] font-bold leading-tight tracking-tight text-stone-800">
               あなたのお店も
               <br className="sm:hidden" />
               <span
                 className="bg-clip-text text-transparent"
                 style={{
-                  backgroundImage: "linear-gradient(135deg, #fda4af, #fb7185, #fbbf24)",
+                  backgroundImage: "linear-gradient(135deg, #e11d48, #fb7185, #d97706)",
                 }}
               >
                 掲載しませんか？
               </span>
             </h2>
-            <p className="mx-auto mb-10 max-w-md text-[14px] sm:text-[15px] leading-relaxed text-white/35 font-light">
+            <p className="mx-auto mb-10 max-w-md text-[14px] sm:text-[15px] leading-relaxed text-stone-500 font-light">
               Web予約システムを導入して、
               <br className="hidden sm:block" />
               24時間予約受付を始めましょう。
             </p>
-            <span className="group inline-flex items-center gap-2.5 rounded-full bg-white px-8 py-3.5 text-[14px] font-semibold text-stone-900 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(255,255,255,0.15)] hover:scale-[1.02] active:scale-[0.98] cursor-pointer touch-target">
+            <span className="group inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-rose-600 to-rose-500 px-8 py-3.5 text-[14px] font-semibold text-white transition-all duration-300 hover:shadow-[0_8px_30px_rgba(225,29,72,0.2)] hover:scale-[1.02] active:scale-[0.98] cursor-pointer touch-target">
               お問い合わせ
               <ArrowRightIcon className="h-4 w-4" />
             </span>
@@ -376,10 +376,10 @@ function TenantCard({ tenant }: { tenant: Tenant }) {
   return (
     <a
       href={`/t/${tenant.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl bg-white/[0.04] border border-white/[0.06] backdrop-blur-sm transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white/[0.07] hover:border-white/[0.12] hover:-translate-y-1 hover:shadow-[0_8px_40px_rgba(0,0,0,0.3)] active:scale-[0.98]"
+      className="group flex flex-col overflow-hidden rounded-2xl bg-white/80 border border-stone-200/50 backdrop-blur-sm shadow-sm transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:border-stone-200 hover:-translate-y-1 hover:shadow-[0_8px_40px_rgba(0,0,0,0.06)] active:scale-[0.98]"
     >
       {/* 写真 */}
-      <div className="relative aspect-[16/10] sm:aspect-[4/3] overflow-hidden bg-stone-800">
+      <div className="relative aspect-[16/10] sm:aspect-[4/3] overflow-hidden bg-stone-100">
         {tenant.photoUrl ? (
           <img
             src={tenant.photoUrl}
@@ -390,12 +390,12 @@ function TenantCard({ tenant }: { tenant: Tenant }) {
             }`}
           />
         ) : (
-          <div className="flex h-full items-center justify-center bg-gradient-to-br from-stone-800 to-stone-900">
+          <div className="flex h-full items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200">
             <BuildingIcon />
           </div>
         )}
         {/* カテゴリバッジ */}
-        <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/50 px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-white/80 backdrop-blur-md">
+        <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/80 px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-stone-600 backdrop-blur-md shadow-sm">
           <CategoryIcon label={tenant.category} />
           {tenant.category}
         </span>
@@ -403,23 +403,23 @@ function TenantCard({ tenant }: { tenant: Tenant }) {
 
       {/* テキスト */}
       <div className="flex flex-1 flex-col p-4 sm:p-5">
-        <h2 className="mb-1 text-[15px] sm:text-base font-semibold text-white transition-colors duration-300 group-hover:text-rose-400 line-clamp-1">
+        <h2 className="mb-1 text-[15px] sm:text-base font-semibold text-stone-800 transition-colors duration-300 group-hover:text-rose-600 line-clamp-1">
           {tenant.name}
         </h2>
 
         {tenant.catchCopy && (
-          <p className="mb-3 text-[12px] sm:text-[13px] leading-relaxed text-stone-500 line-clamp-2 font-light">
+          <p className="mb-3 text-[12px] sm:text-[13px] leading-relaxed text-stone-400 line-clamp-2 font-light">
             {tenant.catchCopy}
           </p>
         )}
 
         {/* メニュープレビュー */}
         {tenant.menus && tenant.menus.length > 0 && (
-          <div className="mb-3 rounded-xl bg-white/[0.03] p-3 space-y-2 transition-colors duration-300 group-hover:bg-rose-500/[0.06]">
+          <div className="mb-3 rounded-xl bg-stone-50/80 p-3 space-y-2 transition-colors duration-300 group-hover:bg-rose-50/60">
             {tenant.menus.slice(0, 2).map((m, i) => (
               <div key={i} className="flex items-center justify-between text-[12px] sm:text-[13px]">
-                <span className="text-stone-400 truncate">{m.name}</span>
-                <span className="ml-2 font-semibold text-rose-400 whitespace-nowrap">{m.price}</span>
+                <span className="text-stone-500 truncate">{m.name}</span>
+                <span className="ml-2 font-semibold text-rose-600 whitespace-nowrap">{m.price}</span>
               </div>
             ))}
           </div>
@@ -429,7 +429,7 @@ function TenantCard({ tenant }: { tenant: Tenant }) {
         {tenant.tags && tenant.tags.length > 0 && (
           <div className="mb-3 flex flex-wrap gap-1">
             {tenant.tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="inline-flex items-center gap-1 rounded-md bg-white/[0.05] px-2 py-0.5 text-[9px] sm:text-[10px] font-medium text-stone-400">
+              <span key={tag} className="inline-flex items-center gap-1 rounded-md bg-stone-100/80 px-2 py-0.5 text-[9px] sm:text-[10px] font-medium text-stone-500">
                 <CheckIcon />
                 {tag}
               </span>
@@ -439,7 +439,7 @@ function TenantCard({ tenant }: { tenant: Tenant }) {
 
         {/* CTA */}
         <div className="mt-auto pt-1">
-          <span className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 py-3 text-[12px] sm:text-[13px] font-medium text-white transition-all duration-300 group-hover:from-rose-500 group-hover:to-pink-500 group-hover:shadow-[0_4px_20px_rgba(225,29,72,0.3)]">
+          <span className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 py-3 text-[12px] sm:text-[13px] font-medium text-white transition-all duration-300 group-hover:from-rose-500 group-hover:to-pink-500 group-hover:shadow-[0_4px_20px_rgba(225,29,72,0.2)]">
             <CalendarIcon className="h-3.5 w-3.5" />
             詳細・予約はこちら
             <ArrowRightIcon className="h-3 w-3" />
